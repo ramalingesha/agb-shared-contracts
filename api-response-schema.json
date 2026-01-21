@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AGB Standard API Response Schema",
+  "description": "Standard response envelope for all AGB microservices",
+  "version": "1.1.0",
+  "definitions": {
+    "SuccessResponse": {
+      "type": "object",
+      "required": [
+        "success",
+        "data"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "const": true,
+          "description": "Indicates successful operation"
+        },
+        "data": {
+          "description": "Response payload - can be any type"
+        },
+        "meta": {
+          "type": "object",
+          "description": "Optional metadata (pagination, timestamps, etc.)",
+          "properties": {
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO 8601 timestamp"
+            },
+            "requestId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Unique request identifier"
+            },
+            "pagination": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "total": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "totalPages": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "required": [
+        "success",
+        "error"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "const": false,
+          "description": "Indicates failed operation"
+        },
+        "error": {
+          "type": "object",
+          "required": [
+            "code",
+            "message"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Error code from error registry"
+            },
+            "message": {
+              "type": "string",
+              "description": "Human-readable error message"
+            },
+            "details": {
+              "description": "Additional error context (validation errors, stack trace in dev, etc.)"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO 8601 timestamp"
+            },
+            "requestId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Unique request identifier for tracing"
+            },
+            "path": {
+              "type": "string",
+              "description": "API endpoint that produced the error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

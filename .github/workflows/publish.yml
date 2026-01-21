@@ -1,0 +1,130 @@
+name: Publish to GitHub Packages
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # Trigger on version tags like v1.1.0
+
+jobs:
+  publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@ramalingesha"
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+          echo "version=$TAG_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Publishing version: $TAG_VERSION"
+
+      - name: Validate tag version matches package.json
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${{ steps.extract_version.outputs.version }}"
+
+          echo "📦 package.json version: $PACKAGE_VERSION"
+          echo "🏷️  Git tag version: $TAG_VERSION"
+
+          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+            echo "❌ Version mismatch!"
+            echo "package.json version ($PACKAGE_VERSION) does not match tag version ($TAG_VERSION)"
+            exit 1
+          fi
+
+          echo "✅ Version validated: $PACKAGE_VERSION"
+
+      - name: Validate JSON syntax
+        run: |
+          echo "🔍 Validating JSON files..."
+          node -e "JSON.parse(require('fs').readFileSync('error-codes.json', 'utf8'))" && echo "✅ error-codes.json"
+          node -e "JSON.parse(require('fs').readFileSync('api-response-schema.json', 'utf8'))" && echo "✅ api-response-schema.json"
+
+      - name: Run validation tests
+        run: |
+          echo "🧪 Running validation tests..."
+          node scripts/validate-error-codes.js
+
+      - name: Check version consistency
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          ERROR_CODES_VERSION=$(node -p "require('./error-codes.json').version")
+          API_SCHEMA_VERSION=$(node -p "require('./api-response-schema.json').version")
+
+          if [ "$PACKAGE_VERSION" != "$ERROR_CODES_VERSION" ] || [ "$PACKAGE_VERSION" != "$API_SCHEMA_VERSION" ]; then
+            echo "❌ Version inconsistency detected"
+            exit 1
+          fi
+
+          echo "✅ All versions consistent: $PACKAGE_VERSION"
+
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract CHANGELOG for this version
+        id: changelog
+        run: |
+          VERSION="${{ steps.extract_version.outputs.version }}"
+
+          # Extract the section for this version from CHANGELOG
+          CHANGELOG_CONTENT=$(awk "/## \[$VERSION\]/,/## \[/" CHANGELOG.md | sed '1d;$d' | sed '/^$/d')
+
+          if [ -z "$CHANGELOG_CONTENT" ]; then
+            CHANGELOG_CONTENT="Release version $VERSION"
+          fi
+
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release v${{ steps.extract_version.outputs.version }}
+          body: |
+            ## 🎉 Release v${{ steps.extract_version.outputs.version }}
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## 📦 Installation
+
+            ```bash
+            npm install @ramalingesha/shared-contracts@${{ steps.extract_version.outputs.version }}
+            ```
+
+            ## 📚 Documentation
+
+            See [README.md](https://github.com/ramalingesha/agb-shared-contracts#readme) for usage instructions.
+          draft: false
+          prerelease: false
+
+      - name: Publish summary
+        run: |
+          echo "## 🚀 Package Published Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ steps.extract_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Package:** @ramalingesha/shared-contracts" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** https://npm.pkg.github.com" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Installation" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "npm install @ramalingesha/shared-contracts@${{ steps.extract_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

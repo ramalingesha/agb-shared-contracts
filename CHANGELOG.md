@@ -1,0 +1,64 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.1.0] - 2026-01-21
+
+### Added
+- GitHub Actions CI/CD pipeline for automated validation and publishing
+- `validate.yml` workflow for PR validation
+- `publish.yml` workflow for automated publishing to GitHub Packages
+- Error code validation script (`scripts/validate-error-codes.js`)
+- Comprehensive validation checks:
+  - JSON syntax validation
+  - Error code uniqueness verification
+  - Required fields presence validation
+  - HTTP status code validation
+  - Severity level validation
+  - Category consistency validation
+  - Version consistency checks across all JSON files
+  - Breaking changes detection
+  - CHANGELOG update enforcement
+
+### Changed
+- Package name changed from `@agb/shared-contracts` to `@ramalingesha/shared-contracts`
+- Version bumped from 1.0.0 to 1.1.0
+- Repository structure updated for standalone GitHub repository
+- License changed from UNLICENSED to MIT
+- Added `publishConfig` for GitHub Packages registry
+- Enhanced README with installation instructions and usage examples
+- Added npm scripts: `validate` and `test`
+
+### Infrastructure
+- Repository URL: https://github.com/ramalingesha/agb-shared-contracts
+- Registry: https://npm.pkg.github.com/@ramalingesha
+- Branch protection enabled on main branch
+- Automated releases with CHANGELOG extraction
+
+## [1.0.0] - 2026-01-15
+
+### Added
+- Initial error code registry with 22 error codes across 5 categories:
+  - AUTH (5 codes): Authentication and authorization errors
+  - VAL (4 codes): Validation and input errors
+  - DB (5 codes): Database and data persistence errors
+  - SYS (5 codes): System and infrastructure errors
+  - BIZ (3 codes): Business logic and rule violations
+- Standard API response schema for success and error responses
+- Versioning strategy for error codes (semantic versioning)
+- Deprecation policy (never remove, only deprecate)
+- Severity levels: info, warning, error, critical
+- HTTP status code mappings
+- Comprehensive documentation
+
+### Structure
+- `error-codes.json`: Centralized error code registry
+- `api-response-schema.json`: Standard API response envelope
+- `README.md`: Usage documentation
+- `package.json`: Package configuration
+
+[1.1.0]: https://github.com/ramalingesha/agb-shared-contracts/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/ramalingesha/agb-shared-contracts/releases/tag/v1.0.0

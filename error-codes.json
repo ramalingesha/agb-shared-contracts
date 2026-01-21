@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AGB Error Code Registry",
+  "description": "Centralized error codes shared across Python and Node.js microservices. Error codes follow semantic versioning and are never removed, only deprecated.",
+  "version": "1.1.0",
+  "versioningStrategy": {
+    "description": "Semantic versioning is used for error codes. MAJOR version changes indicate breaking changes in error structure, MINOR version adds new error codes, PATCH version updates messages or documentation.",
+    "policy": "Error codes are never removed, only marked as deprecated with a deprecatedAt timestamp and replacedBy field pointing to the new error code."
+  },
+  "categories": {
+    "AUTH": "Authentication and authorization errors",
+    "VAL": "Validation and input errors",
+    "DB": "Database and data persistence errors",
+    "SYS": "System and infrastructure errors",
+    "BIZ": "Business logic and rule violations"
+  },
+  "severityLevels": {
+    "info": "Informational message, no action required",
+    "warning": "Warning condition, may require attention",
+    "error": "Error condition, requires immediate attention",
+    "critical": "Critical failure, system integrity at risk"
+  },
+  "errorCodes": {
+    "AUTH_001": {
+      "code": "AUTH_001",
+      "message": "Authentication token is missing",
+      "httpStatus": 401,
+      "severity": "error",
+      "category": "AUTH",
+      "description": "The request does not contain a required authentication token in the Authorization header"
+    },
+    "AUTH_002": {
+      "code": "AUTH_002",
+      "message": "Authentication token is invalid",
+      "httpStatus": 401,
+      "severity": "error",
+      "category": "AUTH",
+      "description": "The provided authentication token is malformed, corrupted, or does not match expected format"
+    },
+    "AUTH_003": {
+      "code": "AUTH_003",
+      "message": "Insufficient permissions to access resource",
+      "httpStatus": 403,
+      "severity": "error",
+      "category": "AUTH",
+      "description": "The authenticated user does not have the required permissions or role to perform this action"
+    },
+    "AUTH_004": {
+      "code": "AUTH_004",
+      "message": "Authentication token has expired",
+      "httpStatus": 401,
+      "severity": "warning",
+      "category": "AUTH",
+      "description": "The authentication token is valid but has passed its expiration time"
+    },
+    "AUTH_005": {
+      "code": "AUTH_005",
+      "message": "Invalid credentials provided",
+      "httpStatus": 401,
+      "severity": "error",
+      "category": "AUTH",
+      "description": "The username, email, or password provided does not match any existing user account"
+    },
+    "VAL_001": {
+      "code": "VAL_001",
+      "message": "Request validation failed",
+      "httpStatus": 400,
+      "severity": "error",
+      "category": "VAL",
+      "description": "The request body, query parameters, or path parameters failed validation against the expected schema"
+    },
+    "VAL_002": {
+      "code": "VAL_002",
+      "message": "Invalid email address format",
+      "httpStatus": 400,
+      "severity": "error",
+      "category": "VAL",
+      "description": "The provided email address does not conform to RFC 5322 email format standards"
+    },
+    "VAL_003": {
+      "code": "VAL_003",
+      "message": "Password does not meet requirements",
+      "httpStatus": 400,
+      "severity": "error",
+      "category": "VAL",
+      "description": "Password must contain minimum 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character"
+    },
+    "VAL_004": {
+      "code": "VAL_004",
+      "message": "Invalid UUID format",
+      "httpStatus": 400,
+      "severity": "error",
+      "category": "VAL",
+      "description": "The provided identifier is not a valid UUID v4 format"
+    },
+    "DB_001": {
+      "code": "DB_001",
+      "message": "Resource not found in database",
+      "httpStatus": 404,
+      "severity": "warning",
+      "category": "DB",
+      "description": "The requested entity does not exist in the database"
+    },
+    "DB_002": {
+      "code": "DB_002",
+      "message": "Database constraint conflict",
+      "httpStatus": 409,
+      "severity": "error",
+      "category": "DB",
+      "description": "The operation violates a unique constraint or other database constraint"
+    },
+    "DB_003": {
+      "code": "DB_003",
+      "message": "Database connection failed",
+      "httpStatus": 503,
+      "severity": "critical",
+      "category": "DB",
+      "description": "Unable to establish connection to the database server"
+    },
+    "DB_004": {
+      "code": "DB_004",
+      "message": "Database query timeout",
+      "httpStatus": 504,
+      "severity": "error",
+      "category": "DB",
+      "description": "The database query execution exceeded the maximum allowed time"
+    },
+    "DB_005": {
+      "code": "DB_005",
+      "message": "Foreign key constraint violation",
+      "httpStatus": 400,
+      "severity": "error",
+      "category": "DB",
+      "description": "The operation references a non-existent foreign key or attempts to delete a referenced entity"
+    },
+    "SYS_001": {
+      "code": "SYS_001",
+      "message": "Internal server error",
+      "httpStatus": 500,
+      "severity": "critical",
+      "category": "SYS",
+      "description": "An unexpected error occurred while processing the request"
+    },
+    "SYS_002": {
+      "code": "SYS_002",
+      "message": "Service temporarily unavailable",
+      "httpStatus": 503,
+      "severity": "error",
+      "category": "SYS",
+      "description": "The service is temporarily unavailable due to maintenance, overload, or system issues"
+    },
+    "SYS_003": {
+      "code": "SYS_003",
+      "message": "Rate limit exceeded",
+      "httpStatus": 429,
+      "severity": "warning",
+      "category": "SYS",
+      "description": "The client has exceeded the allowed number of requests in the given time window"
+    },
+    "SYS_004": {
+      "code": "SYS_004",
+      "message": "Request timeout",
+      "httpStatus": 504,
+      "severity": "error",
+      "category": "SYS",
+      "description": "The request processing exceeded the maximum allowed time"
+    },
+    "SYS_005": {
+      "code": "SYS_005",
+      "message": "External service error",
+      "httpStatus": 502,
+      "severity": "error",
+      "category": "SYS",
+      "description": "An external service dependency failed or returned an error"
+    },
+    "BIZ_001": {
+      "code": "BIZ_001",
+      "message": "Subscription limit reached",
+      "httpStatus": 403,
+      "severity": "warning",
+      "category": "BIZ",
+      "description": "The user or organization has reached the limit of their subscription plan"
+    },
+    "BIZ_002": {
+      "code": "BIZ_002",
+      "message": "Feature not available in current plan",
+      "httpStatus": 403,
+      "severity": "warning",
+      "category": "BIZ",
+      "description": "The requested feature is not included in the user's current subscription plan"
+    },
+    "BIZ_003": {
+      "code": "BIZ_003",
+      "message": "Insufficient credits",
+      "httpStatus": 402,
+      "severity": "warning",
+      "category": "BIZ",
+      "description": "The account does not have enough credits to complete this operation"
+    }
+  }
+}

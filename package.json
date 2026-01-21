@@ -1,0 +1,38 @@
+{
+  "name": "@ramalingesha/shared-contracts",
+  "version": "1.1.0",
+  "description": "Shared contracts and types for AGB microservices ecosystem - language-agnostic data structures",
+  "main": "error-codes.json",
+  "files": [
+    "error-codes.json",
+    "api-response-schema.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "validate": "node scripts/validate-error-codes.js",
+    "test": "npm run validate"
+  },
+  "keywords": [
+    "shared",
+    "contracts",
+    "error-codes",
+    "agb",
+    "microservices",
+    "api-response",
+    "error-registry"
+  ],
+  "author": "AGB Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ramalingesha/agb-shared-contracts.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ramalingesha"
+  },
+  "homepage": "https://github.com/ramalingesha/agb-shared-contracts#readme",
+  "bugs": {
+    "url": "https://github.com/ramalingesha/agb-shared-contracts/issues"
+  }
+}
