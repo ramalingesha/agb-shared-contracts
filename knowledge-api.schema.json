@@ -1,0 +1,400 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Gnanora Knowledge API Contract",
+  "description": "Read surface for the Gnanora Knowledge Platform. Implemented by the mock adapter, the static file adapter, and the live service — all three MUST satisfy this schema. Responses are wrapped in the AGB standard envelope (api-response-schema.json); the definitions here describe the `data` payload only. Source of truth: Confluence UPDS → Knowledge Platform → K3. Domain model: Gnanora Product → G3.",
+  "version": "0.1.0",
+  "definitions": {
+    "LanguageCode": {
+      "type": "string",
+      "enum": ["en", "kn", "hi", "ta", "te"],
+      "description": "BCP-47 primary subtag. The set is configuration, not a product limit."
+    },
+
+    "StyleId": {
+      "type": "string",
+      "enum": ["plain", "simple", "with-examples"],
+      "description": "A derived text Explanation. Launch set per G2/D13. Applies to master content only (G4 Part 3)."
+    },
+
+    "ExplanationForm": {
+      "type": "string",
+      "enum": ["text", "presentation", "video", "audio"],
+      "description": "G2. Every form carries a text spine (G3/D35)."
+    },
+
+    "ExplanationOrigin": {
+      "type": "string",
+      "enum": ["master", "derived", "contributed"],
+      "description": "G2. Only `master` may be style-derived (G4 Part 3)."
+    },
+
+    "Anchoring": {
+      "type": "string",
+      "enum": ["full", "sectioned", "whole"],
+      "description": "How this Explanation maps onto the master structure, and therefore how reading position survives a switch (G3/D36)."
+    },
+
+    "VariantStatus": {
+      "type": "string",
+      "enum": ["ready", "generating", "unavailable"],
+      "description": "Drives the calm inline generating state in G7. Adapters MUST be able to return every value — a mock that only returns `ready` hides a required UI state."
+    },
+
+    "Visibility": {
+      "type": "string",
+      "enum": ["private", "circle", "public"],
+      "description": "Set per Explanation, not per Knowledge (G5/D40)."
+    },
+
+    "BlockType": {
+      "type": "string",
+      "enum": [
+        "heading",
+        "paragraph",
+        "list",
+        "listItem",
+        "quote",
+        "image",
+        "table",
+        "divider",
+        "reference",
+        "example"
+      ]
+    },
+
+    "Block": {
+      "type": "object",
+      "description": "A unit of the text spine. Block IDs are stable across every full-anchored variant — this is what makes position-preserving axis switching possible (G3).",
+      "required": ["id", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+          "description": "Stable across styles and languages. A split block emits sub-blocks inheriting this id with a `-1`, `-2` suffix."
+        },
+        "type": { "$ref": "#/definitions/BlockType" },
+        "text": {
+          "type": "string",
+          "description": "Plain text content. Absent for divider and image blocks."
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Heading level. Required when type is `heading` — drives the semantic HTML outline gate (DS9)."
+        },
+        "ordered": {
+          "type": "boolean",
+          "description": "List blocks only."
+        },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Block" },
+          "description": "listItem children of a list block."
+        },
+        "media": { "$ref": "#/definitions/MediaRef" },
+        "alt": {
+          "type": "string",
+          "description": "Accessible description. Required for image blocks (DS10)."
+        },
+        "sectionId": {
+          "type": "string",
+          "description": "The section this block belongs to. Used for `sectioned` anchoring."
+        },
+        "lang": {
+          "$ref": "#/definitions/LanguageCode",
+          "description": "Per-block language override for mixed-script content, so screen readers switch pronunciation (DS10)."
+        }
+      }
+    },
+
+    "MediaRef": {
+      "type": "object",
+      "description": "Indirection over the media layer. Resolves to a managed provider or an in-house pipeline without the client knowing (G18/D28).",
+      "required": ["kind", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "type": "string", "enum": ["image", "audio", "video", "slide"] },
+        "url": { "type": "string", "format": "uri" },
+        "mimeType": { "type": "string" },
+        "durationSeconds": { "type": "number", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "captions": {
+          "type": "array",
+          "description": "Video only. One entry per published language (G18 — captions are mandatory).",
+          "items": {
+            "type": "object",
+            "required": ["lang", "url"],
+            "properties": {
+              "lang": { "$ref": "#/definitions/LanguageCode" },
+              "url": { "type": "string", "format": "uri" }
+            }
+          }
+        }
+      }
+    },
+
+    "Slide": {
+      "type": "object",
+      "description": "A presentation slide. The speaker notes are the text spine (G19).",
+      "required": ["index", "sectionId", "image"],
+      "additionalProperties": false,
+      "properties": {
+        "index": { "type": "integer", "minimum": 1 },
+        "sectionId": { "type": "string" },
+        "title": { "type": "string" },
+        "image": { "$ref": "#/definitions/MediaRef" },
+        "notesBlockIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Blocks of the spine that narrate this slide."
+        }
+      }
+    },
+
+    "Author": {
+      "type": "object",
+      "required": ["id", "name", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "kind": { "type": "string", "enum": ["platform", "person"] },
+        "context": {
+          "type": "string",
+          "description": "Free-text affiliation shown under the name in the picker, e.g. \"Class 8B\"."
+        }
+      }
+    },
+
+    "VoiceSummary": {
+      "type": "object",
+      "required": ["id", "name", "languages"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "languages": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/LanguageCode" }
+        },
+        "description": { "type": "string", "description": "e.g. \"calm, medium pace\"" }
+      }
+    },
+
+    "ExplanationSummary": {
+      "type": "object",
+      "description": "Entry in the Explanation picker (G7).",
+      "required": ["id", "form", "origin", "author", "anchoring", "languages"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "form": { "$ref": "#/definitions/ExplanationForm" },
+        "origin": { "$ref": "#/definitions/ExplanationOrigin" },
+        "author": { "$ref": "#/definitions/Author" },
+        "anchoring": { "$ref": "#/definitions/Anchoring" },
+        "visibility": { "$ref": "#/definitions/Visibility" },
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/LanguageCode" }
+        },
+        "styles": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/StyleId" },
+          "description": "Derived styles available. Master content only — empty for contributed (G4 Part 3)."
+        },
+        "voices": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Voice ids with narration available or generatable."
+        },
+        "estimatedMinutes": { "type": "number", "minimum": 0 },
+        "slideCount": { "type": "integer", "minimum": 1 },
+        "isDefault": {
+          "type": "boolean",
+          "description": "The Circle's designated default, or the master when none is set (G19/D41)."
+        }
+      }
+    },
+
+    "KnowledgeSummary": {
+      "type": "object",
+      "description": "Card payload for Discover and search results. Deliberately excludes view counts and popularity (G1 principle 6).",
+      "required": ["id", "title", "languages"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "collectionId": { "type": "string" },
+        "collectionTitle": { "type": "string" },
+        "cover": { "$ref": "#/definitions/MediaRef" },
+        "languages": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/LanguageCode" }
+        },
+        "explanationCount": { "type": "integer", "minimum": 1 },
+        "estimatedMinutes": { "type": "number", "minimum": 0 },
+        "hasAudio": { "type": "boolean" },
+        "hasVideo": { "type": "boolean" }
+      }
+    },
+
+    "Knowledge": {
+      "type": "object",
+      "description": "Knowledge detail with its Explanation index. Master content always exists (G3/D31).",
+      "required": ["id", "title", "version", "sourceLanguage", "explanations"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Master version. All variant cache keys include it (G13 Law 1)."
+        },
+        "sourceLanguage": { "$ref": "#/definitions/LanguageCode" },
+        "keyConcepts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The declared scope a contribution is checked against (G4 Part 2)."
+        },
+        "collectionId": { "type": "string" },
+        "collectionTitle": { "type": "string" },
+        "cover": { "$ref": "#/definitions/MediaRef" },
+        "explanations": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/ExplanationSummary" },
+          "description": "Ordered editorially: user's last choice, Circle default, master, then by author (G19)."
+        },
+        "voices": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/VoiceSummary" }
+        },
+        "related": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/KnowledgeSummary" }
+        }
+      }
+    },
+
+    "ExplanationContent": {
+      "type": "object",
+      "description": "The readable content of one Explanation at one style and language.",
+      "required": ["knowledgeId", "explanationId", "language", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "knowledgeId": { "type": "string" },
+        "explanationId": { "type": "string" },
+        "language": { "$ref": "#/definitions/LanguageCode" },
+        "style": { "$ref": "#/definitions/StyleId" },
+        "version": { "type": "integer", "minimum": 1 },
+        "status": { "$ref": "#/definitions/VariantStatus" },
+        "form": { "$ref": "#/definitions/ExplanationForm" },
+        "anchoring": { "$ref": "#/definitions/Anchoring" },
+        "blocks": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Block" },
+          "description": "Present when status is `ready`. Block ids match the master for full-anchored variants."
+        },
+        "slides": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Slide" },
+          "description": "Presentation form only."
+        },
+        "media": {
+          "$ref": "#/definitions/MediaRef",
+          "description": "Video or audio form only — the primary media for this Explanation."
+        },
+        "retryAfterSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Present when status is `generating`. Client polls after this interval."
+        },
+        "fallback": {
+          "type": "object",
+          "description": "Present when status is `unavailable` — the nearest available combination to offer (G7 rule 4).",
+          "properties": {
+            "language": { "$ref": "#/definitions/LanguageCode" },
+            "style": { "$ref": "#/definitions/StyleId" },
+            "explanationId": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "Narration": {
+      "type": "object",
+      "description": "Generated audio for one (Explanation, Style, Language, Voice) tuple.",
+      "required": ["knowledgeId", "explanationId", "language", "voiceId", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "knowledgeId": { "type": "string" },
+        "explanationId": { "type": "string" },
+        "language": { "$ref": "#/definitions/LanguageCode" },
+        "style": { "$ref": "#/definitions/StyleId" },
+        "voiceId": { "type": "string" },
+        "version": { "type": "integer", "minimum": 1 },
+        "status": { "$ref": "#/definitions/VariantStatus" },
+        "media": { "$ref": "#/definitions/MediaRef" },
+        "marks": {
+          "type": "array",
+          "description": "Block-level time markers. Drives highlight-and-follow and shared read/listen position (G3, G7).",
+          "items": {
+            "type": "object",
+            "required": ["blockId", "startSeconds"],
+            "additionalProperties": false,
+            "properties": {
+              "blockId": { "type": "string" },
+              "startSeconds": { "type": "number", "minimum": 0 },
+              "endSeconds": { "type": "number", "minimum": 0 }
+            }
+          }
+        },
+        "retryAfterSeconds": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "CollectionSummary": {
+      "type": "object",
+      "required": ["id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "cover": { "$ref": "#/definitions/MediaRef" },
+        "knowledgeCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "DiscoverIndex": {
+      "type": "object",
+      "description": "Payload for the Discover surface. Editorial ordering only — no trending, no counts (G1 principle 6).",
+      "required": ["knowledge"],
+      "additionalProperties": false,
+      "properties": {
+        "featured": {
+          "type": "array",
+          "maxItems": 2,
+          "items": { "$ref": "#/definitions/KnowledgeSummary" }
+        },
+        "collections": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/CollectionSummary" }
+        },
+        "knowledge": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/KnowledgeSummary" }
+        }
+      }
+    }
+  }
+}
