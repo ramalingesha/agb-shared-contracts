@@ -7,7 +7,7 @@ Where to look for what, in this repo. See `docs/ARCHITECTURE.md` for the "why."
 | Error code registry | `error-codes.json` |
 | Standard API response envelope | `api-response-schema.json` |
 | Knowledge Platform read-surface contract (K3) | `knowledge-api.schema.json` |
-| Generated TypeScript types for the Knowledge contract | `types/knowledge-api.d.ts` (generated — do not hand-edit) |
+| Generated TypeScript types for the Knowledge contract | `types/knowledge-api/*.d.ts` — topic-grouped split + `index.d.ts` barrel (generated — do not hand-edit) |
 | Type generator | `scripts/generate-knowledge-types.js` (`npm run generate:types`) |
 | Error-codes validation | `scripts/validate-error-codes.js` |
 | Knowledge-schema validation | `scripts/validate-knowledge-api-schema.js` |

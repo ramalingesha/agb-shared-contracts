@@ -195,8 +195,14 @@ import type { Knowledge, ExplanationContent, DiscoverIndex } from '@ramalingesha
 ```
 
 The types are generated from the schema via `npm run generate:types`
-(`json-schema-to-typescript`) and committed to `types/knowledge-api.d.ts` — CI fails
-the build if the committed file drifts from what the schema currently generates, so
+(`json-schema-to-typescript`) and committed under `types/knowledge-api/` — a
+topic-grouped split (`primitives.d.ts`, `media.d.ts`, `content-blocks.d.ts`,
+`explanation.d.ts`, `knowledge.d.ts`, `narration.d.ts`), each kept well under
+~200 lines, plus a barrel `index.d.ts` that re-exports all of them. The import path
+above is unchanged — TypeScript resolves `.../types/knowledge-api` to
+`types/knowledge-api/index.d.ts` the same way it would resolve to a single file — so
+existing consumers get every type they did before with no import changes. CI fails
+the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
 ## Version

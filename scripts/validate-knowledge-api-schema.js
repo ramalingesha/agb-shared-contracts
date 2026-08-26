@@ -11,7 +11,8 @@
  * - Schema compiles under ajv with no dangling $refs
  * - package.json "files" ships both the schema and the generated types (regression
  *   guard for the packaging gap this script's sibling story, AGB-586, fixed)
- * - types/knowledge-api.d.ts exists and is non-empty
+ * - every types/knowledge-api/*.d.ts split file (barrel included) exists and is
+ *   non-empty
  */
 
 const fs = require('fs');
@@ -113,7 +114,7 @@ function validateAjvCompiles(schema) {
 
 function validatePackageFilesAllowlist(packageJson) {
   const files = packageJson.files || [];
-  const required = ['knowledge-api.schema.json', 'types/knowledge-api.d.ts'];
+  const required = ['knowledge-api.schema.json', 'types/knowledge-api'];
 
   for (const entry of required) {
     if (files.includes(entry)) {
@@ -126,23 +127,38 @@ function validatePackageFilesAllowlist(packageJson) {
   }
 }
 
-function validateGeneratedTypesExist(typesPath) {
-  if (!fs.existsSync(typesPath)) {
-    logError(`Generated types file not found: ${typesPath}. Run "npm run generate:types".`);
+function validateGeneratedTypesExist(typesDir) {
+  if (!fs.existsSync(typesDir)) {
+    logError(`Generated types directory not found: ${typesDir}. Run "npm run generate:types".`);
     return;
   }
-  const stats = fs.statSync(typesPath);
-  if (stats.size === 0) {
-    logError(`Generated types file is empty: ${typesPath}`);
-  } else {
-    logSuccess(`Generated types file present and non-empty (${stats.size} bytes)`);
+  const files = fs.readdirSync(typesDir).filter((f) => f.endsWith('.d.ts'));
+  if (files.length === 0) {
+    logError(`Generated types directory has no .d.ts files: ${typesDir}. Run "npm run generate:types".`);
+    return;
+  }
+  if (!files.includes('index.d.ts')) {
+    logError(`Generated types directory is missing its barrel index.d.ts: ${typesDir}`);
+    return;
+  }
+
+  let allNonEmpty = true;
+  for (const file of files) {
+    const stats = fs.statSync(path.join(typesDir, file));
+    if (stats.size === 0) {
+      logError(`Generated types file is empty: ${file}`);
+      allNonEmpty = false;
+    }
+  }
+  if (allNonEmpty) {
+    logSuccess(`Generated types split present and non-empty (${files.length} files: ${files.sort().join(', ')})`);
   }
 }
 
 function validateKnowledgeApiSchema() {
   const schemaPath = path.join(__dirname, '..', 'knowledge-api.schema.json');
   const packageJsonPath = path.join(__dirname, '..', 'package.json');
-  const typesPath = path.join(__dirname, '..', 'types', 'knowledge-api.d.ts');
+  const typesPath = path.join(__dirname, '..', 'types', 'knowledge-api');
 
   console.log('🔍 Validating knowledge-api.schema.json...\n');
 

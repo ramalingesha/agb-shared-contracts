@@ -7,7 +7,7 @@
     "error-codes.json",
     "api-response-schema.json",
     "knowledge-api.schema.json",
-    "types/knowledge-api.d.ts",
+    "types/knowledge-api",
     "README.md",
     "LICENSE"
   ],
@@ -18,7 +18,8 @@
   },
   "devDependencies": {
     "ajv": "^8.20.0",
-    "json-schema-to-typescript": "^15.0.4"
+    "json-schema-to-typescript": "^15.0.4",
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "shared",

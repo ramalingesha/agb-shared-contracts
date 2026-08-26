@@ -103,7 +103,7 @@
           "description": "The section this block belongs to. Used for `sectioned` anchoring."
         },
         "lang": {
-          "$ref": "#/definitions/LanguageCode",
+          "allOf": [{ "$ref": "#/definitions/LanguageCode" }],
           "description": "Per-block language override for mixed-script content, so screen readers switch pronunciation (DS10)."
         }
       }
@@ -310,7 +310,7 @@
           "description": "Presentation form only."
         },
         "media": {
-          "$ref": "#/definitions/MediaRef",
+          "allOf": [{ "$ref": "#/definitions/MediaRef" }],
           "description": "Video or audio form only — the primary media for this Explanation."
         },
         "retryAfterSeconds": {

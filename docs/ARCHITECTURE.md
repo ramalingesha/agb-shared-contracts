@@ -43,7 +43,18 @@ git/CHANGELOG question instead of a cross-repo archaeology exercise.
 
 ## Generated artifacts
 
-`types/knowledge-api.d.ts` is generated from `knowledge-api.schema.json` via
+`types/knowledge-api/` is generated from `knowledge-api.schema.json` via
 `json-schema-to-typescript` (`npm run generate:types`) and committed — not built at
-consumer install time. CI's "types are up to date" check in `validate.yml` fails the
-build if the committed file drifts from what the schema currently generates.
+consumer install time. It's a topic-grouped split rather than one large file
+(`primitives.d.ts`, `media.d.ts`, `content-blocks.d.ts`, `explanation.d.ts`,
+`knowledge.d.ts`, `narration.d.ts`, each kept well under ~200 lines) plus a barrel
+`index.d.ts` that re-exports everything, so the public import path
+(`@ramalingesha/shared-contracts/types/knowledge-api`) is unchanged. The split is
+computed automatically every run — `scripts/generate-knowledge-types.js` compiles
+the whole schema in one pass with `json-schema-to-typescript`, then uses the
+TypeScript compiler API to distribute each generated type into its group file per a
+manifest in that script, inserting cross-file `import type` statements as needed.
+Nothing under `types/knowledge-api/` is hand-written or hand-split; regenerating
+always fully overwrites the directory. CI's "types are up to date" check in
+`validate.yml` fails the build if the committed directory drifts from what the
+schema currently generates (including a newly-generated file that wasn't committed).

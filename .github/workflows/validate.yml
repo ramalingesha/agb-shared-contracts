@@ -12,7 +12,7 @@ on:
       - "scripts/validate-error-codes.js"
       - "scripts/validate-knowledge-api-schema.js"
       - "scripts/generate-knowledge-types.js"
-      - "types/knowledge-api.d.ts"
+      - "types/knowledge-api/**"
       - ".github/workflows/validate.yml"
   push:
     branches:
@@ -52,11 +52,15 @@ jobs:
       - name: Validate generated TypeScript types are up to date
         run: |
           npm run generate:types
-          if ! git diff --exit-code -- types/knowledge-api.d.ts; then
-            echo "❌ types/knowledge-api.d.ts is stale — run 'npm run generate:types' and commit the result"
+          if ! git diff --exit-code -- types/knowledge-api/; then
+            echo "❌ types/knowledge-api/ is stale — run 'npm run generate:types' and commit the result"
             exit 1
           fi
-          echo "✅ types/knowledge-api.d.ts matches the schema"
+          if [ -n "$(git status --porcelain -- types/knowledge-api/)" ]; then
+            echo "❌ types/knowledge-api/ has untracked files after regeneration — commit the result"
+            exit 1
+          fi
+          echo "✅ types/knowledge-api/ matches the schema"
 
       - name: Check version consistency
         run: |
