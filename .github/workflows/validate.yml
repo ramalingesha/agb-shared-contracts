@@ -7,8 +7,12 @@ on:
     paths:
       - "error-codes.json"
       - "api-response-schema.json"
+      - "knowledge-api.schema.json"
       - "package.json"
       - "scripts/validate-error-codes.js"
+      - "scripts/validate-knowledge-api-schema.js"
+      - "scripts/generate-knowledge-types.js"
+      - "types/knowledge-api/**"
       - ".github/workflows/validate.yml"
   push:
     branches:
@@ -30,16 +34,33 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Validate JSON syntax
         run: |
           echo "🔍 Validating JSON files..."
           node -e "JSON.parse(require('fs').readFileSync('error-codes.json', 'utf8'))" && echo "✅ error-codes.json is valid"
           node -e "JSON.parse(require('fs').readFileSync('api-response-schema.json', 'utf8'))" && echo "✅ api-response-schema.json is valid"
+          node -e "JSON.parse(require('fs').readFileSync('knowledge-api.schema.json', 'utf8'))" && echo "✅ knowledge-api.schema.json is valid"
           node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))" && echo "✅ package.json is valid"
 
-      - name: Run error code validation
+      - name: Run contract validation scripts
         run: |
-          node scripts/validate-error-codes.js
+          npm run validate
+
+      - name: Validate generated TypeScript types are up to date
+        run: |
+          npm run generate:types
+          if ! git diff --exit-code -- types/knowledge-api/; then
+            echo "❌ types/knowledge-api/ is stale — run 'npm run generate:types' and commit the result"
+            exit 1
+          fi
+          if [ -n "$(git status --porcelain -- types/knowledge-api/)" ]; then
+            echo "❌ types/knowledge-api/ has untracked files after regeneration — commit the result"
+            exit 1
+          fi
+          echo "✅ types/knowledge-api/ matches the schema"
 
       - name: Check version consistency
         run: |
@@ -67,7 +88,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           # Check if schema files were modified
-          if git diff --name-only origin/${{ github.base_ref }} HEAD | grep -E '(error-codes|api-response-schema)\.json'; then
+          if git diff --name-only origin/${{ github.base_ref }} HEAD | grep -E '(error-codes|api-response-schema|knowledge-api\.schema)\.json'; then
             echo "📝 Schema files were modified, checking CHANGELOG..."
             
             if git diff origin/${{ github.base_ref }} HEAD -- CHANGELOG.md | grep -q '^+'; then
