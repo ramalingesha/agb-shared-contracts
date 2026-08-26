@@ -11,6 +11,7 @@ This package contains centralized contracts that ensure consistency across Pytho
 
 - **Error Code Registry**: Standardized error codes with HTTP status mappings across 5 categories (AUTH, VAL, DB, SYS, BIZ)
 - **API Response Schema**: Standard success/error response envelopes
+- **Knowledge API Contract**: Read-surface JSON Schema (plus generated TypeScript types) for the Gnanora Knowledge Platform
 - **Data Contracts**: Shared type definitions and validation schemas
 
 ## Installation
@@ -163,9 +164,44 @@ JSON Schema defining standard API response format for all services.
 }
 ```
 
+### knowledge-api.schema.json
+
+Read surface for the Gnanora Knowledge Platform — JSON Schema (draft-07), the
+contract behind the mock adapter, the static-file adapter, and the eventual live
+service. All three MUST satisfy this schema; responses are wrapped in the standard
+envelope above (the schema's definitions describe the `data` payload only). Source of
+truth: Confluence UPDS → Knowledge Platform → K3.
+
+**Covers:** `DiscoverIndex`, `Knowledge`, `ExplanationSummary`, `ExplanationContent`,
+`Block`, `Slide`, `Narration`, `MediaRef`, and their supporting types
+(`LanguageCode`, `StyleId`, `ExplanationForm`, `VariantStatus`, etc.).
+
+**Variant status** (`VariantStatus`) is part of the contract, not an implementation
+detail — every adapter must be able to return all three:
+- `ready` — content present
+- `generating` — content absent, `retryAfterSeconds` present; client polls
+- `unavailable` — content absent, `fallback` present (nearest available combination)
+
+**Consuming the raw schema** (e.g. for runtime `ajv` validation of fixtures/responses):
+
+```javascript
+const knowledgeApiSchema = require('@ramalingesha/shared-contracts/knowledge-api.schema.json');
+```
+
+**Consuming the generated TypeScript types**:
+
+```typescript
+import type { Knowledge, ExplanationContent, DiscoverIndex } from '@ramalingesha/shared-contracts/types/knowledge-api';
+```
+
+The types are generated from the schema via `npm run generate:types`
+(`json-schema-to-typescript`) and committed to `types/knowledge-api.d.ts` — CI fails
+the build if the committed file drifts from what the schema currently generates, so
+there is no separate build step for a consumer that only wants types.
+
 ## Version
 
-Current version: **1.1.0** (Updated 2026-01-21)
+Current version: **1.2.0** (Updated 2026-08-26)
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 

@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-08-26
+
+### Added
+- `knowledge-api.schema.json` — the Gnanora Knowledge Platform read-surface contract
+  (Confluence UPDS → Knowledge Platform → K3), covering `DiscoverIndex`, `Knowledge`,
+  `ExplanationSummary`, `ExplanationContent`, `Block`, `Slide`, `Narration`, `MediaRef`,
+  and supporting types. `VariantStatus` (`ready`/`generating`/`unavailable`) is part of
+  the contract so every adapter (mock, static, live) can represent all three states.
+- `types/knowledge-api.d.ts` — generated TypeScript types for the schema
+  (`scripts/generate-knowledge-types.js`, `npm run generate:types`), committed so
+  TS/Node consumers get compile-time types with no build step of their own.
+- `scripts/validate-knowledge-api-schema.js` — extends `npm run validate` to check the
+  new schema's structure, required definitions, the `VariantStatus` enum, and that it
+  compiles cleanly under `ajv` with no dangling `$ref`s.
+- New `devDependencies`: `ajv@^8.20.0`, `json-schema-to-typescript@^15.0.4`.
+
+### Fixed
+- `package.json`'s `"files"` allowlist was missing `knowledge-api.schema.json` (added
+  to the repo ahead of this release, PR #3) — the published npm tarball silently
+  omitted it even though it was committed to `main`. Existing `^1.1.0` consumers (e.g.
+  `gnanora-content`) that expected `node_modules/@ramalingesha/shared-contracts/knowledge-api.schema.json`
+  to exist would not have found it until this fix.
+
+### Changed
+- `validate.yml`: added path triggers, JSON-syntax check, and a generated-types
+  freshness check for the new schema/types files; added an `npm ci` install step
+  (this package now has real `devDependencies` for the first time).
+- `publish.yml`: validation step now runs `npm run validate` (covers both
+  `error-codes.json` and `knowledge-api.schema.json`); added an `npm ci` install step.
+
 ## [1.1.0] - 2026-01-21
 
 ### Added
@@ -60,5 +90,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `README.md`: Usage documentation
 - `package.json`: Package configuration
 
+[1.2.0]: https://github.com/ramalingesha/agb-shared-contracts/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ramalingesha/agb-shared-contracts/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ramalingesha/agb-shared-contracts/releases/tag/v1.0.0

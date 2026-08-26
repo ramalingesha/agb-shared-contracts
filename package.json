@@ -1,17 +1,24 @@
 {
   "name": "@ramalingesha/shared-contracts",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Shared contracts and types for AGB microservices ecosystem - language-agnostic data structures",
   "main": "error-codes.json",
   "files": [
     "error-codes.json",
     "api-response-schema.json",
+    "knowledge-api.schema.json",
+    "types/knowledge-api.d.ts",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "validate": "node scripts/validate-error-codes.js",
+    "generate:types": "node scripts/generate-knowledge-types.js",
+    "validate": "node scripts/validate-error-codes.js && node scripts/validate-knowledge-api-schema.js",
     "test": "npm run validate"
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "json-schema-to-typescript": "^15.0.4"
   },
   "keywords": [
     "shared",

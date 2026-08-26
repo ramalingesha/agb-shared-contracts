@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AGB Error Code Registry",
   "description": "Centralized error codes shared across Python and Node.js microservices. Error codes follow semantic versioning and are never removed, only deprecated.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "versioningStrategy": {
     "description": "Semantic versioning is used for error codes. MAJOR version changes indicate breaking changes in error structure, MINOR version adds new error codes, PATCH version updates messages or documentation.",
     "policy": "Error codes are never removed, only marked as deprecated with a deprecatedAt timestamp and replacedBy field pointing to the new error code."
