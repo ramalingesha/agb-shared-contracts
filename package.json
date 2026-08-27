@@ -14,7 +14,8 @@
   "scripts": {
     "generate:types": "node scripts/generate-knowledge-types.js",
     "validate": "node scripts/validate-error-codes.js && node scripts/validate-knowledge-api-schema.js",
-    "test": "npm run validate"
+    "test": "npm run validate",
+    "build": "echo \"agb-shared-contracts: nothing to build (error-codes.json, api-response-schema.json, knowledge-api.schema.json, and types/knowledge-api are committed source, not build output)\""
   },
   "devDependencies": {
     "ajv": "^8.20.0",
