@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-09-03
+
+### Changed (BREAKING)
+- `StyleId` redefined from `["plain", "simple", "with-examples"]` to
+  `["simple", "favorite-teacher", "professional", "friend"]` — four voice/register
+  options (Simple, Favorite Teacher, Professional/Domain Expert, Friend), documented
+  in `gnanora-content`'s `README.md` (AGB-649). Any consumer matching on the old enum
+  values must update to the new set; there is no backward-compatible overlap beyond
+  `"simple"`.
+
+### Added
+- `Knowledge.discoverable?: boolean` — controls whether a `Knowledge` appears in the
+  Discover listing (`GET /knowledge`). Defaults to `true` when absent; a `Knowledge`
+  with `discoverable: false` is still directly fetchable by id. Purely additive
+  (AGB-649).
+
 ## [1.2.0] - 2026-08-26
 
 ### Added
@@ -104,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `README.md`: Usage documentation
 - `package.json`: Package configuration
 
+[2.0.0]: https://github.com/ramalingesha/agb-shared-contracts/compare/v1.2.0...v2.0.0
 [1.2.0]: https://github.com/ramalingesha/agb-shared-contracts/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ramalingesha/agb-shared-contracts/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ramalingesha/agb-shared-contracts/releases/tag/v1.0.0

@@ -42,6 +42,10 @@ export interface Knowledge {
   collectionTitle?: string;
   cover?: MediaRef;
   /**
+   * Whether this Knowledge appears in the Discover listing (GET /knowledge). Defaults to true when absent. A Knowledge with discoverable: false is still directly fetchable by id — this only controls listing/aggregation, matching the distinction between the Discover index and a direct knowledge fetch (AGB-649).
+   */
+  discoverable?: boolean;
+  /**
    * Ordered editorially: user's last choice, Circle default, master, then by author (G19).
    *
    * @minItems 1

@@ -17,12 +17,12 @@
  */
 export type LanguageCode = 'en' | 'kn' | 'hi' | 'ta' | 'te';
 /**
- * A derived text Explanation. Launch set per G2/D13. Applies to master content only (G4 Part 3).
+ * A derived text Explanation. Redefined per AGB-649 — four voice/register options (Simple, Favorite Teacher, Professional/Domain Expert, Friend), documented in gnanora-content's README. Applies to master content only (G4 Part 3).
  *
  * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
  * via the `definition` "StyleId".
  */
-export type StyleId = 'plain' | 'simple' | 'with-examples';
+export type StyleId = 'simple' | 'favorite-teacher' | 'professional' | 'friend';
 /**
  * G2. Every form carries a text spine (G3/D35).
  *
