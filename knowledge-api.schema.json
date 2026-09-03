@@ -12,8 +12,8 @@
 
     "StyleId": {
       "type": "string",
-      "enum": ["plain", "simple", "with-examples"],
-      "description": "A derived text Explanation. Launch set per G2/D13. Applies to master content only (G4 Part 3)."
+      "enum": ["simple", "favorite-teacher", "professional", "friend"],
+      "description": "A derived text Explanation. Redefined per AGB-649 — four voice/register options (Simple, Favorite Teacher, Professional/Domain Expert, Friend), documented in gnanora-content's README. Applies to master content only (G4 Part 3)."
     },
 
     "ExplanationForm": {
@@ -268,6 +268,10 @@
         "collectionId": { "type": "string" },
         "collectionTitle": { "type": "string" },
         "cover": { "$ref": "#/definitions/MediaRef" },
+        "discoverable": {
+          "type": "boolean",
+          "description": "Whether this Knowledge appears in the Discover listing (GET /knowledge). Defaults to true when absent. A Knowledge with discoverable: false is still directly fetchable by id — this only controls listing/aggregation, matching the distinction between the Discover index and a direct knowledge fetch (AGB-649)."
+        },
         "explanations": {
           "type": "array",
           "minItems": 1,
