@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AGB Standard API Response Schema",
   "description": "Standard response envelope for all AGB microservices",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "definitions": {
     "SuccessResponse": {
       "type": "object",
