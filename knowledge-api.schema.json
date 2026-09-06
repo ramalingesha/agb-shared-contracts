@@ -116,7 +116,11 @@
       "additionalProperties": false,
       "properties": {
         "kind": { "type": "string", "enum": ["image", "audio", "video", "slide"] },
-        "url": { "type": "string", "format": "uri" },
+        "url": {
+          "type": "string",
+          "format": "uri-reference",
+          "description": "Absolute for a live/CDN-served asset; may be relative to the corpus base for the static-adapter layout, where the corpus is a relocatable file tree that cannot know its own host. Widened from `uri` to `uri-reference` in 2.1.0 — an over-constraint that only went unnoticed while no fixture carried media."
+        },
         "mimeType": { "type": "string" },
         "durationSeconds": { "type": "number", "minimum": 0 },
         "width": { "type": "integer", "minimum": 1 },
@@ -130,7 +134,7 @@
             "required": ["lang", "url"],
             "properties": {
               "lang": { "$ref": "#/definitions/LanguageCode" },
-              "url": { "type": "string", "format": "uri" }
+              "url": { "type": "string", "format": "uri-reference" }
             }
           }
         }

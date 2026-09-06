@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-09-06
+
+### Changed
+- `MediaRef.url` and `MediaRef.captions[].url` widened from `format: "uri"` to
+  `format: "uri-reference"` (AGB-607). Non-breaking: every value valid before is still
+  valid. `uri` required an absolute URL with a scheme, which the K3 static-adapter
+  layout cannot satisfy — that corpus is a relocatable file tree served from whatever
+  base a consumer points at, so a fixture genuinely cannot know its own host and must
+  express media relative to the corpus root. The constraint only went unnoticed because
+  no fixture carried media until the seed narration corpus existed; every one of the
+  first 60 narration fixtures failed validation against it. A live/CDN-served asset
+  still returns an absolute URL, and consumers resolve a relative one against the same
+  base they fetched the JSON from.
+
 ## [2.0.0] - 2026-09-03
 
 ### Changed (BREAKING)
