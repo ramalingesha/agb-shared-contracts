@@ -19,6 +19,9 @@ import type { LanguageCode } from './primitives';
  */
 export interface MediaRef {
   kind: 'image' | 'audio' | 'video' | 'slide';
+  /**
+   * Absolute for a live/CDN-served asset; may be relative to the corpus base for the static-adapter layout, where the corpus is a relocatable file tree that cannot know its own host. Widened from `uri` to `uri-reference` in 2.1.0 — an over-constraint that only went unnoticed while no fixture carried media.
+   */
   url: string;
   mimeType?: string;
   durationSeconds?: number;
