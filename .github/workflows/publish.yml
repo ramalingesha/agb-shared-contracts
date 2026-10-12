@@ -79,6 +79,10 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The repo's own .npmrc authenticates with ${GITHUB_TOKEN}, and a project .npmrc wins over
+          # the one setup-node writes; without this, npm sent an empty token and every tag publish
+          # since v1.2.0 failed with 401 (those versions were published by hand). AGB-672.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract CHANGELOG for this version
         id: changelog
