@@ -43,6 +43,10 @@ export interface BuddyTerm {
    */
   example?: string;
   /**
+   * Where the source book says it differently: the book's words kept as they are, with what is more accurate (as a `book-note` callout does in the text). Never a silent fix.
+   */
+  bookNote?: string;
+  /**
    * The blocks that explain it; the first is where "Read more" goes, and the reader does not mark the word in their sections.
    */
   blockIds?: string[];

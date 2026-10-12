@@ -549,6 +549,10 @@
         },
         "meaning": { "type": "string", "minLength": 1 },
         "example": { "type": "string", "description": "An everyday example." },
+        "bookNote": {
+          "type": "string",
+          "description": "Where the source book says it differently: the book's words kept as they are, with what is more accurate (as a `book-note` callout does in the text). Never a silent fix."
+        },
         "blockIds": {
           "type": "array",
           "items": { "type": "string" },

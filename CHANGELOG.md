@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Knowledge.prerequisites: string[]`.
 - `ExplanationSummary.sectionId` (video explanations): where the clip plays inline.
 - `MediaRef.quality` (`RenditionQuality`): `phone`, `tablet` or `desktop`.
-- `BuddyBank`, `BuddyTerm`, `BuddyQuestion`: the Curious Buddy's glossary and prepared questions, served only by the Buddy service.
+- `BuddyBank`, `BuddyTerm`, `BuddyQuestion`: the Curious Buddy's glossary and prepared questions, served only by the Buddy service. A term's optional `bookNote` keeps the book's wording with what is more accurate.
 - `scripts/contract-samples.json`: real pilot-chapter snippets the schema must accept, and samples it must reject for a named field; checked by `npm test`.
 
 ## [2.1.0] - 2026-09-06

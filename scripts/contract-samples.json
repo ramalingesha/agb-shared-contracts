@@ -203,6 +203,14 @@
               "s5-l1",
               "s5-l2"
             ]
+          },
+          {
+            "term": "koala",
+            "meaning": "An Australian animal that carries its baby, a joey, in a pouch.",
+            "bookNote": "Your book says \"koala bears\". More exactly, a koala is a marsupial, not a bear. Use your book's words in class and tests.",
+            "blockIds": [
+              "s3-p6"
+            ]
           }
         ],
         "questions": [
