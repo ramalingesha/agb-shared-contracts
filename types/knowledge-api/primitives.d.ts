@@ -63,4 +63,54 @@ export type Visibility = 'private' | 'circle' | 'public';
  * via the `definition` "BlockType".
  */
 export type BlockType =
-  'heading' | 'paragraph' | 'list' | 'listItem' | 'quote' | 'image' | 'table' | 'divider' | 'reference' | 'example';
+  | 'heading'
+  | 'paragraph'
+  | 'list'
+  | 'listItem'
+  | 'quote'
+  | 'image'
+  | 'table'
+  | 'divider'
+  | 'reference'
+  | 'example'
+  | 'callout'
+  | 'qa'
+  | 'takeaways';
+/**
+ * What a `callout` block is (AGB-672). `did-you-know`: a surprising fact. `book-note`: the source book's words kept as they are, with what is more accurate (never a silent fix). `mix-up`: a common misunderstanding and the correction. `another-way`: an everyday comparison for a hard idea. `example`: a worked example. The app shows the label for the variant; the text itself is plain.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "CalloutVariant".
+ */
+export type CalloutVariant = 'did-you-know' | 'book-note' | 'mix-up' | 'another-way' | 'example';
+/**
+ * What a `qa` block asks for (AGB-672). `check`: a 'Before you start' question whose answer says where to read if unsure. `explain-back`: the learner explains it in their own words, with `listenFor` as the checklist. The rest follow the source book's question types. Absent: an in-section practice question.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "QaKind".
+ */
+export type QaKind =
+  | 'check'
+  | 'explain-back'
+  | 'mcq'
+  | 'odd-one-out'
+  | 'fill-blank'
+  | 'true-false'
+  | 'short'
+  | 'long'
+  | 'activity'
+  | 'personal';
+/**
+ * Who a block is for (AGB-672). `parent`: the parent guide, shown in the parent view. Absent means `learner`.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "Audience".
+ */
+export type Audience = 'learner' | 'parent';
+/**
+ * Which device class a media rendition is made for (AGB-672), so a player can pick the right one.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "RenditionQuality".
+ */
+export type RenditionQuality = 'phone' | 'tablet' | 'desktop';

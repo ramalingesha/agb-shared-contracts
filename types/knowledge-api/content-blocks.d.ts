@@ -9,7 +9,7 @@
  * index.d.ts barrel) rather than from an individual file.
  */
 
-import type { BlockType, LanguageCode } from './primitives';
+import type { Audience, BlockType, CalloutVariant, LanguageCode, QaKind } from './primitives';
 import type { MediaRef } from './media';
 
 /**
@@ -25,7 +25,7 @@ export interface Block {
   id: string;
   type: BlockType;
   /**
-   * Plain text content. Absent for divider and image blocks.
+   * Plain text content. Absent for divider and image blocks. For a `qa` block, the question.
    */
   text?: string;
   /**
@@ -37,7 +37,7 @@ export interface Block {
    */
   ordered?: boolean;
   /**
-   * listItem children of a list block.
+   * Children of a `list` block, or the key points of a `takeaways` block (each a `listItem`).
    */
   items?: Block[];
   media?: MediaRef;
@@ -53,6 +53,39 @@ export interface Block {
    * Per-block language override for mixed-script content, so screen readers switch pronunciation (DS10).
    */
   lang?: LanguageCode;
+  /**
+   * `callout` blocks only.
+   */
+  variant?: CalloutVariant;
+  /**
+   * `qa` blocks only: the answer, shown when the learner asks for it. For `answerKind: guidance`, how to approach it rather than one right answer.
+   */
+  answer?: string;
+  /**
+   * `qa` blocks only.
+   */
+  kind?: QaKind;
+  /**
+   * `qa` blocks only: the source book's own number for the question (e.g. `QT-II.3`, `3.4`), so a learner can match it to their book.
+   */
+  ref?: string;
+  /**
+   * `qa` blocks only: the choices (two or more), for `mcq` and `odd-one-out`.
+   */
+  options?: string[];
+  /**
+   * `qa` blocks only. `model`: a model answer. `guidance`: how to approach a question with no single right answer (personal questions, activities). Absent means `model`.
+   */
+  answerKind?: 'model' | 'guidance';
+  /**
+   * `qa` blocks with `kind: explain-back` only: what a good explanation includes, as a checklist for the listener (a parent, later the parent dashboard). The same in every style.
+   */
+  listenFor?: string[];
+  /**
+   * `qa` blocks only: the sections that teach this, so a learner who is unsure knows where to read.
+   */
+  sectionRefs?: string[];
+  audience?: Audience;
 }
 /**
  * A presentation slide. The speaker notes are the text spine (G19).
