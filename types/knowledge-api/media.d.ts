@@ -9,7 +9,7 @@
  * index.d.ts barrel) rather than from an individual file.
  */
 
-import type { LanguageCode } from './primitives';
+import type { LanguageCode, RenditionQuality } from './primitives';
 
 /**
  * Indirection over the media layer. Resolves to a managed provider or an in-house pipeline without the client knowing (G18/D28).
@@ -36,6 +36,10 @@ export interface MediaRef {
     url: string;
     [k: string]: unknown;
   }[];
+  /**
+   * For one of several renditions of the same media (AGB-672).
+   */
+  quality?: RenditionQuality;
 }
 /**
  * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema

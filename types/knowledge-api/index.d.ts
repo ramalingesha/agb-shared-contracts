@@ -15,3 +15,4 @@ export * from './content-blocks';
 export * from './explanation';
 export * from './knowledge';
 export * from './narration';
+export * from './buddy';

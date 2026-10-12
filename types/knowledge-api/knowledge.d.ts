@@ -9,7 +9,7 @@
  * index.d.ts barrel) rather than from an individual file.
  */
 
-import type { LanguageCode } from './primitives';
+import type { LanguageCode, StyleId } from './primitives';
 import type { MediaRef, VoiceSummary } from './media';
 import type { ExplanationSummary } from './explanation';
 
@@ -53,6 +53,15 @@ export interface Knowledge {
   explanations: [ExplanationSummary, ...ExplanationSummary[]];
   voices?: VoiceSummary[];
   related?: KnowledgeSummary[];
+  /**
+   * Catalog chapters this Knowledge teaches (AGB-672).
+   */
+  catalogRefs?: CatalogRef[];
+  availability?: Availability;
+  /**
+   * What this Knowledge builds on, in plain words (AGB-672), e.g. 'Living and non-living things'. Its 'Before you start' check questions test these.
+   */
+  prerequisites?: string[];
 }
 /**
  * Card payload for Discover and search results. Deliberately excludes view counts and popularity (G1 principle 6).
@@ -97,4 +106,26 @@ export interface DiscoverIndex {
   featured?: [] | [KnowledgeSummary] | [KnowledgeSummary, KnowledgeSummary];
   collections?: CollectionSummary[];
   knowledge: KnowledgeSummary[];
+}
+/**
+ * The owner's on/off control for a Knowledge or one of its explanations (AGB-672). Languages and styles not listed are turned off: hidden in the app and skipped by the pipeline. An absent (or empty) list (or an absent `availability`) means every supported one is on.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "Availability".
+ */
+export interface Availability {
+  languages?: LanguageCode[];
+  styles?: StyleId[];
+}
+/**
+ * A link from a Knowledge to a catalog chapter in user management (AGB-672), so a Circle's catalog can point at the content that teaches it.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "CatalogRef".
+ */
+export interface CatalogRef {
+  /**
+   * The user-management BookChapter id.
+   */
+  chapterId: string;
 }

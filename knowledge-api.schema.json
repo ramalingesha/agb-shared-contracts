@@ -58,8 +58,78 @@
         "table",
         "divider",
         "reference",
-        "example"
+        "example",
+        "callout",
+        "qa",
+        "takeaways"
       ]
+    },
+
+    "CalloutVariant": {
+      "type": "string",
+      "enum": ["did-you-know", "book-note", "mix-up", "another-way", "example"],
+      "description": "What a `callout` block is (AGB-672). `did-you-know`: a surprising fact. `book-note`: the source book's words kept as they are, with what is more accurate (never a silent fix). `mix-up`: a common misunderstanding and the correction. `another-way`: an everyday comparison for a hard idea. `example`: a worked example. The app shows the label for the variant; the text itself is plain."
+    },
+
+    "QaKind": {
+      "type": "string",
+      "enum": [
+        "check",
+        "explain-back",
+        "mcq",
+        "odd-one-out",
+        "fill-blank",
+        "true-false",
+        "short",
+        "long",
+        "activity",
+        "personal"
+      ],
+      "description": "What a `qa` block asks for (AGB-672). `check`: a 'Before you start' question whose answer says where to read if unsure. `explain-back`: the learner explains it in their own words, with `listenFor` as the checklist. The rest follow the source book's question types. Absent: an in-section practice question."
+    },
+
+    "Audience": {
+      "type": "string",
+      "enum": ["learner", "parent"],
+      "description": "Who a block is for (AGB-672). `parent`: the parent guide, shown in the parent view. Absent means `learner`."
+    },
+
+    "RenditionQuality": {
+      "type": "string",
+      "enum": ["phone", "tablet", "desktop"],
+      "description": "Which device class a media rendition is made for (AGB-672), so a player can pick the right one."
+    },
+
+    "Availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The owner's on/off control for a Knowledge or one of its explanations (AGB-672). Languages and styles not listed are turned off: hidden in the app and skipped by the pipeline. An absent (or empty) list (or an absent `availability`) means every supported one is on.",
+      "properties": {
+        "languages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/LanguageCode" }
+        },
+        "styles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/StyleId" }
+        }
+      }
+    },
+
+    "CatalogRef": {
+      "type": "object",
+      "required": ["chapterId"],
+      "additionalProperties": false,
+      "description": "A link from a Knowledge to a catalog chapter in user management (AGB-672), so a Circle's catalog can point at the content that teaches it.",
+      "properties": {
+        "chapterId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The user-management BookChapter id."
+        }
+      }
     },
 
     "Block": {
@@ -76,7 +146,7 @@
         "type": { "$ref": "#/definitions/BlockType" },
         "text": {
           "type": "string",
-          "description": "Plain text content. Absent for divider and image blocks."
+          "description": "Plain text content. Absent for divider and image blocks. For a `qa` block, the question."
         },
         "level": {
           "type": "integer",
@@ -91,7 +161,7 @@
         "items": {
           "type": "array",
           "items": { "$ref": "#/definitions/Block" },
-          "description": "listItem children of a list block."
+          "description": "Children of a `list` block, or the key points of a `takeaways` block (each a `listItem`)."
         },
         "media": { "$ref": "#/definitions/MediaRef" },
         "alt": {
@@ -105,7 +175,44 @@
         "lang": {
           "allOf": [{ "$ref": "#/definitions/LanguageCode" }],
           "description": "Per-block language override for mixed-script content, so screen readers switch pronunciation (DS10)."
-        }
+        },
+        "variant": {
+          "allOf": [{ "$ref": "#/definitions/CalloutVariant" }],
+          "description": "`callout` blocks only."
+        },
+        "answer": {
+          "type": "string",
+          "description": "`qa` blocks only: the answer, shown when the learner asks for it. For `answerKind: guidance`, how to approach it rather than one right answer."
+        },
+        "kind": {
+          "allOf": [{ "$ref": "#/definitions/QaKind" }],
+          "description": "`qa` blocks only."
+        },
+        "ref": {
+          "type": "string",
+          "description": "`qa` blocks only: the source book's own number for the question (e.g. `QT-II.3`, `3.4`), so a learner can match it to their book."
+        },
+        "options": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "`qa` blocks only: the choices (two or more), for `mcq` and `odd-one-out`."
+        },
+        "answerKind": {
+          "type": "string",
+          "enum": ["model", "guidance"],
+          "description": "`qa` blocks only. `model`: a model answer. `guidance`: how to approach a question with no single right answer (personal questions, activities). Absent means `model`."
+        },
+        "listenFor": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "`qa` blocks with `kind: explain-back` only: what a good explanation includes, as a checklist for the listener (a parent, later the parent dashboard). The same in every style."
+        },
+        "sectionRefs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "`qa` blocks only: the sections that teach this, so a learner who is unsure knows where to read."
+        },
+        "audience": { "$ref": "#/definitions/Audience" }
       }
     },
 
@@ -137,6 +244,10 @@
               "url": { "type": "string", "format": "uri-reference" }
             }
           }
+        },
+        "quality": {
+          "allOf": [{ "$ref": "#/definitions/RenditionQuality" }],
+          "description": "For one of several renditions of the same media (AGB-672)."
         }
       }
     },
@@ -222,6 +333,14 @@
         "isDefault": {
           "type": "boolean",
           "description": "The Circle's designated default, or the master when none is set (G19/D41)."
+        },
+        "availability": {
+          "allOf": [{ "$ref": "#/definitions/Availability" }],
+          "description": "Overrides the Knowledge's `availability` for this explanation (AGB-672)."
+        },
+        "sectionId": {
+          "type": "string",
+          "description": "Video explanations only (AGB-672): the section of the text explanation where this clip plays inline."
         }
       }
     },
@@ -289,6 +408,17 @@
         "related": {
           "type": "array",
           "items": { "$ref": "#/definitions/KnowledgeSummary" }
+        },
+        "catalogRefs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/CatalogRef" },
+          "description": "Catalog chapters this Knowledge teaches (AGB-672)."
+        },
+        "availability": { "$ref": "#/definitions/Availability" },
+        "prerequisites": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "What this Knowledge builds on, in plain words (AGB-672), e.g. 'Living and non-living things'. Its 'Before you start' check questions test these."
         }
       }
     },
@@ -401,6 +531,76 @@
         "knowledge": {
           "type": "array",
           "items": { "$ref": "#/definitions/KnowledgeSummary" }
+        }
+      }
+    },
+
+    "BuddyTerm": {
+      "type": "object",
+      "required": ["term", "meaning"],
+      "additionalProperties": false,
+      "description": "A key word of the chapter, with its meaning (AGB-672). Shown as a word card when the word is tapped or asked about.",
+      "properties": {
+        "term": { "type": "string", "minLength": 1 },
+        "forms": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Other forms of the word used in the chapter (plurals, verb forms), so they find the same card."
+        },
+        "meaning": { "type": "string", "minLength": 1 },
+        "example": { "type": "string", "description": "An everyday example." },
+        "bookNote": {
+          "type": "string",
+          "description": "Where the source book says it differently: the book's words kept as they are, with what is more accurate (as a `book-note` callout does in the text). Never a silent fix."
+        },
+        "blockIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The blocks that explain it; the first is where \"Read more\" goes, and the reader does not mark the word in their sections."
+        },
+        "audio": { "$ref": "#/definitions/MediaRef" }
+      }
+    },
+
+    "BuddyQuestion": {
+      "type": "object",
+      "required": ["id", "question", "answer", "blockIds"],
+      "additionalProperties": false,
+      "description": "A question learners are likely to ask, answered from the chapter (AGB-672).",
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$" },
+        "question": { "type": "string", "minLength": 1 },
+        "rephrasings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Other ways learners ask the same thing."
+        },
+        "answer": { "type": "string", "minLength": 1 },
+        "blockIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Where in the chapter the answer comes from (\"See this in the chapter\")."
+        },
+        "audio": { "$ref": "#/definitions/MediaRef" }
+      }
+    },
+
+    "BuddyBank": {
+      "type": "object",
+      "required": ["knowledgeId", "language", "terms", "questions"],
+      "additionalProperties": false,
+      "description": "The Curious Buddy's prepared content for one Knowledge in one language (AGB-672): its glossary and likely questions. Served only by the Buddy service, never shipped in the app (`buddy/{knowledgeId}/{lang}.json`).",
+      "properties": {
+        "knowledgeId": { "type": "string" },
+        "language": { "$ref": "#/definitions/LanguageCode" },
+        "version": { "type": "string" },
+        "terms": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/BuddyTerm" }
+        },
+        "questions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/BuddyQuestion" }
         }
       }
     }

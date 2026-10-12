@@ -12,6 +12,7 @@
 import type { Anchoring, ExplanationForm, ExplanationOrigin, LanguageCode, StyleId, VariantStatus, Visibility } from './primitives';
 import type { Author, MediaRef } from './media';
 import type { Block, Slide } from './content-blocks';
+import type { Availability, Knowledge } from './knowledge';
 
 /**
  * Entry in the Explanation picker (G7).
@@ -45,6 +46,14 @@ export interface ExplanationSummary {
    * The Circle's designated default, or the master when none is set (G19/D41).
    */
   isDefault?: boolean;
+  /**
+   * Overrides the Knowledge's `availability` for this explanation (AGB-672).
+   */
+  availability?: Availability;
+  /**
+   * Video explanations only (AGB-672): the section of the text explanation where this clip plays inline.
+   */
+  sectionId?: string;
 }
 /**
  * The readable content of one Explanation at one style and language.

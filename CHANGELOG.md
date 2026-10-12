@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-10-12
+
+### Added (AGB-672: the MVP demo modules; all optional, so all content valid before still is)
+- **Section extras.** `BlockType` gains `callout`, `qa` and `takeaways`.
+  - `callout`: `Block.variant` (`CalloutVariant`): `did-you-know`, `book-note` (the book's words kept, with what is more accurate), `mix-up`, `another-way`, `example`.
+  - `qa`: the question in `text` and the answer in `answer`. Optional fields:
+    - `kind` (`QaKind`): `check`, `explain-back`, `mcq`, `odd-one-out`, `fill-blank`, `true-false`, `short`, `long`, `activity`, `personal`. Absent means a practice question.
+    - `ref`: the book's question number.
+    - `options`: the choices.
+    - `answerKind`: `model` or `guidance`.
+    - `listenFor`: the teach-back checklist.
+    - `sectionRefs`: where the topic is taught.
+  - `takeaways`: key points as `items`.
+  - Text stays plain; the app shows each variant's label.
+- `Block.audience` (`Audience`): `parent` for the parent guide; absent means `learner`.
+- `Knowledge.catalogRefs: CatalogRef[]` (user-management BookChapter ids).
+- `Knowledge.availability` and `ExplanationSummary.availability` (`Availability`): the owner's allowed `languages` and `styles`; absent or empty means all.
+- `Knowledge.prerequisites: string[]`.
+- `ExplanationSummary.sectionId` (video explanations): where the clip plays inline.
+- `MediaRef.quality` (`RenditionQuality`): `phone`, `tablet` or `desktop`.
+- `BuddyBank`, `BuddyTerm`, `BuddyQuestion`: the Curious Buddy's glossary and prepared questions, served only by the Buddy service. A term's optional `bookNote` keeps the book's wording with what is more accurate.
+- `scripts/contract-samples.json`: real pilot-chapter snippets the schema must accept, and samples it must reject for a named field; checked by `npm test`.
+
 ## [2.1.0] - 2026-09-06
 
 ### Changed

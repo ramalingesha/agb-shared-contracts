@@ -1,0 +1,321 @@
+{
+  "_about": "Real snippets the knowledge contract must accept (valid) and reject (invalid), checked by validate-knowledge-api-schema.js. Taken from the pilot chapter It's All a Cycle (AGB-672).",
+  "valid": [
+    {
+      "definition": "Block",
+      "data": {
+        "id": "s2-n1",
+        "type": "callout",
+        "variant": "book-note",
+        "sectionId": "s2",
+        "text": "Your book says: \"Snakes coil around their eggs to keep them warm.\" More exactly: some snakes, such as pythons, coil around their eggs. Many other snakes lay their eggs and leave them. Use your book's words in class and tests. You can also show this note to your teacher."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "b-chk1",
+        "type": "qa",
+        "kind": "check",
+        "text": "Is a hen living or non-living? How do you know?",
+        "answer": "Living. A hen eats, breathes, grows, moves and has young ones. Not sure? Read the note on non-living things in \"The human life cycle\".",
+        "sectionRefs": [
+          "s7"
+        ]
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "x-qt1-1",
+        "type": "qa",
+        "kind": "mcq",
+        "ref": "QT-I.1",
+        "text": "Which of these animals gives birth to young ones?",
+        "options": [
+          "Hen",
+          "Cow",
+          "Frog",
+          "Butterfly"
+        ],
+        "answer": "Cow",
+        "sectionRefs": [
+          "s3"
+        ]
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "s5-tb1",
+        "type": "qa",
+        "kind": "explain-back",
+        "text": "Explain to someone at home how a tadpole becomes a frog.",
+        "answer": "Eggs in water hatch into tadpoles, which breathe with gills; they grow legs, lose their tails, and become frogs that breathe with lungs.",
+        "listenFor": [
+          "eggs in water",
+          "tadpole with gills",
+          "legs grow, tail goes",
+          "frog breathes with lungs"
+        ]
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "x-36",
+        "type": "qa",
+        "kind": "personal",
+        "ref": "3.6",
+        "answerKind": "guidance",
+        "text": "Imagine you are inside a chrysalis. What would you feel?",
+        "answer": "There is no single right answer. Think about the dark, the quiet and the change happening to your body."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "s1-kl1",
+        "type": "takeaways",
+        "items": [
+          {
+            "id": "s1-kl1-1",
+            "type": "listItem",
+            "text": "Reproduction is the process by which living things produce young ones of their own kind."
+          },
+          {
+            "id": "s1-kl1-2",
+            "type": "listItem",
+            "text": "The young one of an animal is its offspring."
+          }
+        ]
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "pg-p1",
+        "type": "paragraph",
+        "audience": "parent",
+        "sectionId": "parent-guide",
+        "text": "Ask your child to explain one life cycle to you at dinner, using the checklist under each Teach it back."
+      }
+    },
+    {
+      "definition": "Knowledge",
+      "data": {
+        "id": "c4-science-its-all-a-cycle",
+        "title": "It's All a Cycle",
+        "version": 1,
+        "sourceLanguage": "en",
+        "explanations": [
+          {
+            "id": "overview",
+            "title": "Overview",
+            "form": "text",
+            "origin": "master",
+            "author": {
+              "id": "gnanora",
+              "name": "Gnanora",
+              "kind": "platform"
+            },
+            "anchoring": "full",
+            "languages": [
+              "en"
+            ],
+            "styles": [
+              "simple",
+              "favorite-teacher",
+              "professional",
+              "friend"
+            ]
+          }
+        ],
+        "catalogRefs": [
+          {
+            "chapterId": "chrysalis-g4-science-ch3"
+          }
+        ],
+        "availability": {
+          "languages": [
+            "en",
+            "kn"
+          ],
+          "styles": [
+            "simple",
+            "favorite-teacher"
+          ]
+        },
+        "prerequisites": [
+          "Living and non-living things",
+          "Animal groups: birds, fish, insects, reptiles"
+        ]
+      }
+    },
+    {
+      "definition": "ExplanationSummary",
+      "data": {
+        "id": "clip-frog",
+        "title": "Kido and Miko meet a tadpole",
+        "form": "video",
+        "origin": "master",
+        "author": {
+          "id": "gnanora",
+          "name": "Gnanora",
+          "kind": "platform"
+        },
+        "anchoring": "sectioned",
+        "visibility": "public",
+        "languages": [
+          "en"
+        ],
+        "styles": [],
+        "sectionId": "s5",
+        "availability": {
+          "languages": [
+            "en"
+          ]
+        }
+      }
+    },
+    {
+      "definition": "MediaRef",
+      "data": {
+        "kind": "video",
+        "url": "media/clip-frog/phone.mp4",
+        "quality": "phone"
+      }
+    },
+    {
+      "definition": "BuddyBank",
+      "data": {
+        "knowledgeId": "c4-science-its-all-a-cycle",
+        "language": "en",
+        "terms": [
+          {
+            "term": "tadpole",
+            "forms": [
+              "tadpoles"
+            ],
+            "meaning": "The young one of a frog. It looks like a fish, with gills to breathe in water and a tail to swim.",
+            "example": "A tadpole hatches from a frog's egg in the water.",
+            "blockIds": [
+              "s5-l1",
+              "s5-l2"
+            ]
+          },
+          {
+            "term": "koala",
+            "meaning": "An Australian animal that carries its baby, a joey, in a pouch.",
+            "bookNote": "Your book says \"koala bears\". More exactly, a koala is a marsupial, not a bear. Use your book's words in class and tests.",
+            "blockIds": [
+              "s3-p6"
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "id": "q39",
+            "question": "Why does a tadpole have gills instead of lungs?",
+            "rephrasings": [
+              "why tadpole no lungs"
+            ],
+            "answer": "A tadpole lives in water, and gills take air from the water.",
+            "blockIds": [
+              "s5-l1-2"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "definition": "Block",
+      "why": "an unknown callout variant",
+      "field": "variant",
+      "data": {
+        "id": "x1",
+        "type": "callout",
+        "variant": "fun-fact",
+        "text": "..."
+      }
+    },
+    {
+      "definition": "Block",
+      "why": "an unknown question kind",
+      "field": "kind",
+      "data": {
+        "id": "x2",
+        "type": "qa",
+        "kind": "essay",
+        "text": "...",
+        "answer": "..."
+      }
+    },
+    {
+      "definition": "Knowledge",
+      "why": "a catalog link without a chapter id",
+      "field": "chapterId",
+      "data": {
+        "id": "c4-science-its-all-a-cycle",
+        "title": "It's All a Cycle",
+        "version": 1,
+        "sourceLanguage": "en",
+        "explanations": [
+          {
+            "id": "overview",
+            "title": "Overview",
+            "form": "text",
+            "origin": "master",
+            "author": {
+              "id": "gnanora",
+              "name": "Gnanora",
+              "kind": "platform"
+            },
+            "anchoring": "full",
+            "languages": [
+              "en"
+            ],
+            "styles": [
+              "simple",
+              "favorite-teacher",
+              "professional",
+              "friend"
+            ]
+          }
+        ],
+        "catalogRefs": [
+          {}
+        ]
+      }
+    },
+    {
+      "definition": "BuddyBank",
+      "why": "a question without the blocks its answer comes from",
+      "field": "blockIds",
+      "data": {
+        "knowledgeId": "k",
+        "language": "en",
+        "terms": [],
+        "questions": [
+          {
+            "id": "q1",
+            "question": "?",
+            "answer": "!"
+          }
+        ]
+      }
+    },
+    {
+      "definition": "MediaRef",
+      "why": "an unknown rendition quality",
+      "field": "quality",
+      "data": {
+        "kind": "video",
+        "url": "a.mp4",
+        "quality": "tv"
+      }
+    }
+  ]
+}

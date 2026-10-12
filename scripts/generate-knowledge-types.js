@@ -62,12 +62,26 @@ const GROUPS = {
     'VariantStatus',
     'Visibility',
     'BlockType',
+    'CalloutVariant',
+    'QaKind',
+    'Audience',
+    'RenditionQuality',
   ],
   media: ['MediaRef', 'Author', 'VoiceSummary'],
   'content-blocks': ['Block', 'Slide'],
   explanation: ['ExplanationSummary', 'ExplanationContent'],
-  knowledge: ['GnanoraKnowledgeAPIContract', 'Knowledge', 'KnowledgeSummary', 'CollectionSummary', 'DiscoverIndex'],
+  knowledge: [
+    'GnanoraKnowledgeAPIContract',
+    'Knowledge',
+    'KnowledgeSummary',
+    'CollectionSummary',
+    'DiscoverIndex',
+    'Availability',
+    'CatalogRef',
+  ],
   narration: ['Narration'],
+  // AGB-672: the Curious Buddy's prepared content, served only by the Buddy service.
+  buddy: ['BuddyBank', 'BuddyTerm', 'BuddyQuestion'],
 };
 const GROUP_ORDER = Object.keys(GROUPS);
 

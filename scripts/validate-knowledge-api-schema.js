@@ -28,6 +28,7 @@ const REQUIRED_DEFINITIONS = [
   'Slide',
   'Narration',
   'MediaRef',
+  'BuddyBank',
 ];
 
 const REQUIRED_VARIANT_STATUSES = ['ready', 'generating', 'unavailable'];
@@ -112,6 +113,32 @@ function validateAjvCompiles(schema) {
   logSuccess(`ajv compiled all ${Object.keys(definitions).length} definitions with no dangling $refs`);
 }
 
+/**
+ * AGB-672: real snippets from the pilot chapter that the contract must accept, and a few it must
+ * reject (`scripts/contract-samples.json`) — so a schema change that breaks real content, or quietly
+ * stops checking something, fails here rather than in a consumer.
+ */
+function validateSamples(schema, samples) {
+  const ajv = new Ajv({ strict: false, logger: false, allErrors: true });
+  ajv.addSchema(schema, 'knowledge-api');
+  const check = (entry) => ajv.validate(`knowledge-api#/definitions/${entry.definition}`, entry.data);
+  for (const entry of samples.valid) {
+    const label = `${entry.definition} ${entry.data.id ?? entry.data.knowledgeId ?? entry.data.url}`;
+    if (check(entry)) logSuccess(`accepts ${label}`);
+    else logError(`rejects valid sample ${label}: ${ajv.errorsText(ajv.errors)}`);
+  }
+  // Each invalid sample is otherwise valid, and must be rejected for its own field — not for some
+  // unrelated mistake in the sample, which would let a real regression through unnoticed.
+  const about = (error, field) =>
+    error.instancePath.split('/').includes(field) || error.params?.missingProperty === field;
+  for (const entry of samples.invalid) {
+    if (check(entry)) logError(`accepts invalid ${entry.definition} (${entry.why})`);
+    else if (!ajv.errors.some((e) => about(e, entry.field)))
+      logError(`rejects ${entry.definition} (${entry.why}) but not for "${entry.field}": ${ajv.errorsText(ajv.errors)}`);
+    else logSuccess(`rejects ${entry.definition} with ${entry.why}`);
+  }
+}
+
 function validatePackageFilesAllowlist(packageJson) {
   const files = packageJson.files || [];
   const required = ['knowledge-api.schema.json', 'types/knowledge-api'];
@@ -176,6 +203,7 @@ function validateKnowledgeApiSchema() {
   validateDefinitionsPresent(schema);
   validateVariantStatusEnum(schema);
   validateAjvCompiles(schema);
+  validateSamples(schema, loadJSON(path.join(__dirname, 'contract-samples.json')));
   validatePackageFilesAllowlist(packageJson);
   validateGeneratedTypesExist(typesPath);
 
