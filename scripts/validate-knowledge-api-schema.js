@@ -123,7 +123,8 @@ function validateSamples(schema, samples) {
   ajv.addSchema(schema, 'knowledge-api');
   const check = (entry) => ajv.validate(`knowledge-api#/definitions/${entry.definition}`, entry.data);
   for (const entry of samples.valid) {
-    const label = `${entry.definition} ${entry.data.id ?? entry.data.knowledgeId ?? entry.data.url}`;
+    const { id, knowledgeId, url, index } = entry.data;
+    const label = `${entry.definition} ${id ?? knowledgeId ?? url ?? `#${index}`}`;
     if (check(entry)) logSuccess(`accepts ${label}`);
     else logError(`rejects valid sample ${label}: ${ajv.errorsText(ajv.errors)}`);
   }

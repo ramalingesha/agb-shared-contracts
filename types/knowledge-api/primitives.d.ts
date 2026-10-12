@@ -75,14 +75,16 @@ export type BlockType =
   | 'example'
   | 'callout'
   | 'qa'
-  | 'takeaways';
+  | 'takeaways'
+  | 'code';
 /**
- * What a `callout` block is (AGB-672). `did-you-know`: a surprising fact. `book-note`: the source book's words kept as they are, with what is more accurate (never a silent fix). `mix-up`: a common misunderstanding and the correction. `another-way`: an everyday comparison for a hard idea. `example`: a worked example. The app shows the label for the variant; the text itself is plain.
+ * What a `callout` block is (AGB-672). `did-you-know`: a surprising fact. `book-note`: the source book's words kept as they are, with what is more accurate (never a silent fix). `mix-up`: a common misunderstanding and the correction. `another-way`: an everyday comparison for a hard idea. `example`: a worked example. The app shows the label for the variant; the text itself is plain. `summary` (AGB-720): a section's Quick-track "In one breath" summary. `pattern` (AGB-720): a pattern card (intent, use when, smell, avoid when, as text); its template code is the `code` block that follows.
  *
  * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
  * via the `definition` "CalloutVariant".
  */
-export type CalloutVariant = 'did-you-know' | 'book-note' | 'mix-up' | 'another-way' | 'example';
+export type CalloutVariant =
+  'did-you-know' | 'book-note' | 'mix-up' | 'another-way' | 'example' | 'summary' | 'pattern';
 /**
  * What a `qa` block asks for (AGB-672). `check`: a 'Before you start' question whose answer says where to read if unsure. `explain-back`: the learner explains it in their own words, with `listenFor` as the checklist. The rest follow the source book's question types. Absent: an in-section practice question.
  *
@@ -101,12 +103,19 @@ export type QaKind =
   | 'activity'
   | 'personal';
 /**
- * Who a block is for (AGB-672). `parent`: the parent guide, shown in the parent view. Absent means `learner`.
+ * Who a block is for (AGB-672). `parent`: the parent guide, shown in the parent view. `trainer` (AGB-720): lecturer-only notes, such as a slide's "Watch for" or a trainer guide. Both are hidden from learners. Absent means `learner`.
  *
  * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
  * via the `definition` "Audience".
  */
-export type Audience = 'learner' | 'parent';
+export type Audience = 'learner' | 'parent' | 'trainer';
+/**
+ * How far into a lesson a block goes (AGB-720). `deep`: shown only in the Deep-dive track. Absent means `core`, shown in every track.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "Depth".
+ */
+export type Depth = 'core' | 'deep';
 /**
  * Which device class a media rendition is made for (AGB-672), so a player can pick the right one.
  *

@@ -65,6 +65,7 @@ const GROUPS = {
     'CalloutVariant',
     'QaKind',
     'Audience',
+    'Depth',
     'RenditionQuality',
   ],
   media: ['MediaRef', 'Author', 'VoiceSummary'],

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-10-12
+
+### Added (AGB-720: technical lessons; all optional, so all content valid before still is)
+- **Code.** `BlockType` gains `code`: `text` is the code verbatim (whitespace and newlines kept), with optional `codeLanguage` (`ts`, `html`, `css`, `bash`, `diff`, …) and `caption` (e.g. a file path). Narration never reads a code block.
+- **Inline code (decision).** Inline code is a backtick span inside plain text (paragraph, listItem, callout, qa), e.g. `` `standalone: true` ``, shown in a monospace style. The alternative, inline marks, was not chosen: spans keep the text readable as it is and need no new structure. Everything else stays plain text (2.2.0).
+- **Slide points.** `Slide.points?: string[]` (one to five short lines). When present, the app draws `title` and `points` as text and `image` is the picture only. A slide without `points` behaves as before.
+- **Trainer notes.** `Audience` gains `trainer` for lecturer-only notes (a slide's "Watch for", a trainer guide), hidden from learners like `parent`.
+- **Depth.** `Block.depth` (`Depth`): `core` (default when absent) or `deep` (Deep-dive track only). `CalloutVariant` gains `summary` (a section's Quick-track "In one breath").
+- **Pattern cards.** `CalloutVariant` gains `pattern` (intent, use when, smell, avoid when, as text; its template code is the `code` block that follows).
+- **Tables.** `table` blocks gain `rows: string[][]` (the first row is the header).
+- **MCQ reasons.** `qa` gains `optionNotes: string[]`, one reason per option, in the order of `options`.
+- `scripts/contract-samples.json`: a valid sample per new field from the reference lesson How Angular Components Work, and an invalid sample per field.
+
 ## [2.2.0] - 2026-10-12
 
 ### Added (AGB-672: the MVP demo modules; all optional, so all content valid before still is)

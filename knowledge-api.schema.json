@@ -61,14 +61,15 @@
         "example",
         "callout",
         "qa",
-        "takeaways"
+        "takeaways",
+        "code"
       ]
     },
 
     "CalloutVariant": {
       "type": "string",
-      "enum": ["did-you-know", "book-note", "mix-up", "another-way", "example"],
-      "description": "What a `callout` block is (AGB-672). `did-you-know`: a surprising fact. `book-note`: the source book's words kept as they are, with what is more accurate (never a silent fix). `mix-up`: a common misunderstanding and the correction. `another-way`: an everyday comparison for a hard idea. `example`: a worked example. The app shows the label for the variant; the text itself is plain."
+      "enum": ["did-you-know", "book-note", "mix-up", "another-way", "example", "summary", "pattern"],
+      "description": "What a `callout` block is (AGB-672). `did-you-know`: a surprising fact. `book-note`: the source book's words kept as they are, with what is more accurate (never a silent fix). `mix-up`: a common misunderstanding and the correction. `another-way`: an everyday comparison for a hard idea. `example`: a worked example. The app shows the label for the variant; the text itself is plain. `summary` (AGB-720): a section's Quick-track \"In one breath\" summary. `pattern` (AGB-720): a pattern card (intent, use when, smell, avoid when, as text); its template code is the `code` block that follows."
     },
 
     "QaKind": {
@@ -90,8 +91,14 @@
 
     "Audience": {
       "type": "string",
-      "enum": ["learner", "parent"],
-      "description": "Who a block is for (AGB-672). `parent`: the parent guide, shown in the parent view. Absent means `learner`."
+      "enum": ["learner", "parent", "trainer"],
+      "description": "Who a block is for (AGB-672). `parent`: the parent guide, shown in the parent view. `trainer` (AGB-720): lecturer-only notes, such as a slide's \"Watch for\" or a trainer guide. Both are hidden from learners. Absent means `learner`."
+    },
+
+    "Depth": {
+      "type": "string",
+      "enum": ["core", "deep"],
+      "description": "How far into a lesson a block goes (AGB-720). `deep`: shown only in the Deep-dive track. Absent means `core`, shown in every track."
     },
 
     "RenditionQuality": {
@@ -146,7 +153,7 @@
         "type": { "$ref": "#/definitions/BlockType" },
         "text": {
           "type": "string",
-          "description": "Plain text content. Absent for divider and image blocks. For a `qa` block, the question."
+          "description": "Plain text content. Absent for divider and image blocks. For a `qa` block, the question. For a `code` block, the code verbatim, whitespace and newlines kept. In other text (paragraph, listItem, callout, qa) an API name may be marked as an inline code span with backticks, e.g. `standalone: true`, shown in a monospace style (AGB-720); everything else is plain."
         },
         "level": {
           "type": "integer",
@@ -212,7 +219,30 @@
           "items": { "type": "string" },
           "description": "`qa` blocks only: the sections that teach this, so a learner who is unsure knows where to read."
         },
-        "audience": { "$ref": "#/definitions/Audience" }
+        "audience": { "$ref": "#/definitions/Audience" },
+        "codeLanguage": {
+          "type": "string",
+          "pattern": "^[a-z0-9+#-]+$",
+          "description": "`code` blocks only (AGB-720): the language, for highlighting, e.g. `ts`, `html`, `css`, `bash`, `diff`."
+        },
+        "caption": {
+          "type": "string",
+          "description": "`code` blocks only (AGB-720): what the code is, e.g. its file path (`walkthrough/step-3-bug/tanker-dashboard.ts`)."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": "`table` blocks only (AGB-720): the cells, row by row; the first row is the header."
+        },
+        "optionNotes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "`qa` blocks only (AGB-720): one reason per option, right or wrong, in the same order as `options`."
+        },
+        "depth": { "allOf": [{ "$ref": "#/definitions/Depth" }] }
       }
     },
 
@@ -261,6 +291,14 @@
         "index": { "type": "integer", "minimum": 1 },
         "sectionId": { "type": "string" },
         "title": { "type": "string" },
+        "points": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": { "type": "string", "minLength": 1 },
+          "tsType": "string[]",
+          "description": "One to five short lines (AGB-720). When present, the app draws `title` and `points` as text, readable on any screen, and `image` is the picture only, full size. A slide without `points` behaves as before: everything is in the image."
+        },
         "image": { "$ref": "#/definitions/MediaRef" },
         "notesBlockIds": {
           "type": "array",
