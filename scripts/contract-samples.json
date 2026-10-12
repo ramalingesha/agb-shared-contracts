@@ -1,5 +1,5 @@
 {
-  "_about": "Real snippets the knowledge contract must accept (valid) and reject (invalid), checked by validate-knowledge-api-schema.js. Taken from the pilot chapter It's All a Cycle (AGB-672).",
+  "_about": "Real snippets the knowledge contract must accept (valid) and reject (invalid), checked by validate-knowledge-api-schema.js. From the pilot chapter It's All a Cycle (AGB-672) and the reference technical lesson How Angular Components Work (AGB-720).",
   "valid": [
     {
       "definition": "Block",
@@ -227,6 +227,126 @@
           }
         ]
       }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "code-walkthrough-code5",
+        "type": "code",
+        "codeLanguage": "ts",
+        "caption": "walkthrough/step-3-bug/tanker-dashboard.ts",
+        "sectionId": "code-walkthrough",
+        "text": "addVolume(litres: number) {\n  const list = this.tanks();\n  list[0].volume += litres;\n  this.tanks.set(list);\n}"
+      }
+    },
+    {
+      "definition": "Slide",
+      "data": {
+        "index": 14,
+        "sectionId": "how-it-works",
+        "title": "Four reasons to re-check",
+        "points": [
+          "A signal it reads changes",
+          "An input gets a new reference",
+          "An event fires in its own template",
+          "An async pipe it uses emits"
+        ],
+        "image": {
+          "kind": "slide",
+          "url": "media/slides/acp-01-01-how-angular-components-work/slides/slide-14.png",
+          "mimeType": "image/png",
+          "width": 1280,
+          "height": 720
+        },
+        "notesBlockIds": [
+          "s14-say",
+          "s14-ask"
+        ]
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "s05-watch",
+        "type": "paragraph",
+        "audience": "trainer",
+        "sectionId": "mental-model",
+        "text": "Sockets, Server-Sent Events, polling and timers: those are the places to check first."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "revise-q2",
+        "type": "qa",
+        "kind": "mcq",
+        "text": "Which change makes an OnPush TankerCard show the new volume?",
+        "options": [
+          "this.tank.volume += 500 in the parent",
+          "Adding changeDetection: OnPush",
+          "Passing a new object to the card",
+          "Calling set with the same array"
+        ],
+        "optionNotes": [
+          "Same object: the input reference does not change.",
+          "It is already the default.",
+          "A new object is a new input reference.",
+          "Same array: no notification."
+        ],
+        "answer": "Passing a new object to the card."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "how-it-works-deep1",
+        "type": "paragraph",
+        "depth": "deep",
+        "sectionId": "how-it-works",
+        "text": "Under the hood, `markForCheck()` marks the component and its ancestors dirty up to the root, so the next tick visits them."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "how-it-works-sum",
+        "type": "callout",
+        "variant": "summary",
+        "sectionId": "how-it-works",
+        "text": "In one breath: an OnPush component is checked only when an input reference, its own event, a signal it reads or an async pipe changes."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "patterns-p1",
+        "type": "callout",
+        "variant": "pattern",
+        "sectionId": "patterns",
+        "text": "Immutable update. Intent: give OnPush a new reference. Use when: changing a list or object held in a signal or input. Smell: mutating in place and calling set with the same object. Avoid when: the data is never shown by an OnPush component."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "compare-t1",
+        "type": "table",
+        "sectionId": "how-it-works",
+        "rows": [
+          [
+            "Strategy",
+            "Checks when"
+          ],
+          [
+            "Default",
+            "Every change detection tick"
+          ],
+          [
+            "OnPush",
+            "Input reference, own event, signal read, async pipe"
+          ]
+        ]
+      }
     }
   ],
   "invalid": [
@@ -315,6 +435,89 @@
         "kind": "video",
         "url": "a.mp4",
         "quality": "tv"
+      }
+    },
+    {
+      "definition": "Block",
+      "why": "a code language that isn't a short lower-case name",
+      "field": "codeLanguage",
+      "data": {
+        "id": "c1",
+        "type": "code",
+        "codeLanguage": "TypeScript!",
+        "text": "let a = 1;"
+      }
+    },
+    {
+      "definition": "Slide",
+      "why": "more than five points",
+      "field": "points",
+      "data": {
+        "index": 1,
+        "sectionId": "s1",
+        "points": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f"
+        ],
+        "image": {
+          "kind": "slide",
+          "url": "s1.png"
+        }
+      }
+    },
+    {
+      "definition": "Block",
+      "why": "an unknown audience",
+      "field": "audience",
+      "data": {
+        "id": "p1",
+        "type": "paragraph",
+        "audience": "student",
+        "text": "..."
+      }
+    },
+    {
+      "definition": "Block",
+      "why": "an unknown depth",
+      "field": "depth",
+      "data": {
+        "id": "p2",
+        "type": "paragraph",
+        "depth": "advanced",
+        "text": "..."
+      }
+    },
+    {
+      "definition": "Block",
+      "why": "table rows that aren't lists of cells",
+      "field": "rows",
+      "data": {
+        "id": "t1",
+        "type": "table",
+        "rows": [
+          "Strategy | Checks when"
+        ]
+      }
+    },
+    {
+      "definition": "Block",
+      "why": "option reasons that aren't a list",
+      "field": "optionNotes",
+      "data": {
+        "id": "q1",
+        "type": "qa",
+        "kind": "mcq",
+        "text": "?",
+        "options": [
+          "a",
+          "b"
+        ],
+        "optionNotes": "a is right",
+        "answer": "a"
       }
     }
   ]

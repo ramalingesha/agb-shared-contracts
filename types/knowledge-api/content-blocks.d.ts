@@ -9,7 +9,7 @@
  * index.d.ts barrel) rather than from an individual file.
  */
 
-import type { Audience, BlockType, CalloutVariant, LanguageCode, QaKind } from './primitives';
+import type { Audience, BlockType, CalloutVariant, Depth, LanguageCode, QaKind } from './primitives';
 import type { MediaRef } from './media';
 
 /**
@@ -25,7 +25,7 @@ export interface Block {
   id: string;
   type: BlockType;
   /**
-   * Plain text content. Absent for divider and image blocks. For a `qa` block, the question.
+   * Plain text content. Absent for divider and image blocks. For a `qa` block, the question. For a `code` block, the code verbatim, whitespace and newlines kept. In other text (paragraph, listItem, callout, qa) an API name may be marked as an inline code span with backticks, e.g. `standalone: true`, shown in a monospace style (AGB-720); everything else is plain.
    */
   text?: string;
   /**
@@ -86,6 +86,23 @@ export interface Block {
    */
   sectionRefs?: string[];
   audience?: Audience;
+  /**
+   * `code` blocks only (AGB-720): the language, for highlighting, e.g. `ts`, `html`, `css`, `bash`, `diff`.
+   */
+  codeLanguage?: string;
+  /**
+   * `code` blocks only (AGB-720): what the code is, e.g. its file path (`walkthrough/step-3-bug/tanker-dashboard.ts`).
+   */
+  caption?: string;
+  /**
+   * `table` blocks only (AGB-720): the cells, row by row; the first row is the header.
+   */
+  rows?: string[][];
+  /**
+   * `qa` blocks only (AGB-720): one reason per option, right or wrong, in the same order as `options`.
+   */
+  optionNotes?: string[];
+  depth?: Depth;
 }
 /**
  * A presentation slide. The speaker notes are the text spine (G19).
@@ -97,6 +114,13 @@ export interface Slide {
   index: number;
   sectionId: string;
   title?: string;
+  /**
+   * One to five short lines (AGB-720). When present, the app draws `title` and `points` as text, readable on any screen, and `image` is the picture only, full size. A slide without `points` behaves as before: everything is in the image.
+   *
+   * @minItems 1
+   * @maxItems 5
+   */
+  points?: string[];
   image: MediaRef;
   /**
    * Blocks of the spine that narrate this slide.
