@@ -35,6 +35,10 @@ export interface Narration {
     blockId: string;
     startSeconds: number;
     endSeconds?: number;
+    /**
+     * A second mark for the same `qa` block (AGB-691): where its answer is read, after the question and its think pause. The app reveals the answer on screen when narration reaches it. Absent: the mark is the block itself (for a `qa`, its question).
+     */
+    part?: 'answer';
   }[];
   retryAfterSeconds?: number;
 }

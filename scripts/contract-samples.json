@@ -347,6 +347,50 @@
           ]
         ]
       }
+    },
+    {
+      "definition": "VoiceSummary",
+      "data": {
+        "id": "seed-en-aman",
+        "name": "Aman",
+        "languages": [
+          "en"
+        ],
+        "description": "Indian English, measured pace",
+        "sample": {
+          "kind": "audio",
+          "url": "media/audio/voices/seed-en-aman.m4a",
+          "mimeType": "audio/mp4",
+          "durationSeconds": 5
+        }
+      }
+    },
+    {
+      "definition": "Narration",
+      "data": {
+        "knowledgeId": "c4-science-its-all-a-cycle",
+        "explanationId": "overview",
+        "language": "en",
+        "voiceId": "seed-en-aman",
+        "status": "ready",
+        "media": {
+          "kind": "audio",
+          "url": "media/audio/c4/overview/simple/en/seed-en-aman.m4a"
+        },
+        "marks": [
+          {
+            "blockId": "s6-qa1",
+            "startSeconds": 120.4,
+            "endSeconds": 123.1
+          },
+          {
+            "blockId": "s6-qa1",
+            "startSeconds": 126.1,
+            "endSeconds": 131.8,
+            "part": "answer"
+          }
+        ]
+      }
     }
   ],
   "invalid": [
@@ -518,6 +562,38 @@
         ],
         "optionNotes": "a is right",
         "answer": "a"
+      }
+    },
+    {
+      "definition": "VoiceSummary",
+      "why": "a sample that isn't a MediaRef",
+      "field": "sample",
+      "data": {
+        "id": "v",
+        "name": "V",
+        "languages": [
+          "en"
+        ],
+        "sample": "v.m4a"
+      }
+    },
+    {
+      "definition": "Narration",
+      "why": "a mark part other than answer",
+      "field": "part",
+      "data": {
+        "knowledgeId": "k",
+        "explanationId": "e",
+        "language": "en",
+        "voiceId": "v",
+        "status": "ready",
+        "marks": [
+          {
+            "blockId": "q",
+            "startSeconds": 1,
+            "part": "question"
+          }
+        ]
       }
     }
   ]
