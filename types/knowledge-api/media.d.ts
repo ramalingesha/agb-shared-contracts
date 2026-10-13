@@ -66,4 +66,8 @@ export interface VoiceSummary {
    * e.g. "calm, medium pace"
    */
   description?: string;
+  /**
+   * A few seconds of this voice (AGB-691), played in the voice picker before choosing. Absent: the picker shows no sample.
+   */
+  sample?: MediaRef;
 }

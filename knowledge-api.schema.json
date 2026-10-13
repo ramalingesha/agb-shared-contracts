@@ -334,7 +334,11 @@
           "type": "array",
           "items": { "$ref": "#/definitions/LanguageCode" }
         },
-        "description": { "type": "string", "description": "e.g. \"calm, medium pace\"" }
+        "description": { "type": "string", "description": "e.g. \"calm, medium pace\"" },
+        "sample": {
+          "allOf": [{ "$ref": "#/definitions/MediaRef" }],
+          "description": "A few seconds of this voice (AGB-691), played in the voice picker before choosing. Absent: the picker shows no sample."
+        }
       }
     },
 
@@ -530,7 +534,12 @@
             "properties": {
               "blockId": { "type": "string" },
               "startSeconds": { "type": "number", "minimum": 0 },
-              "endSeconds": { "type": "number", "minimum": 0 }
+              "endSeconds": { "type": "number", "minimum": 0 },
+              "part": {
+                "type": "string",
+                "enum": ["answer"],
+                "description": "A second mark for the same `qa` block (AGB-691): where its answer is read, after the question and its think pause. The app reveals the answer on screen when narration reaches it. Absent: the mark is the block itself (for a `qa`, its question)."
+              }
             }
           }
         },

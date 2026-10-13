@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-10-13
+
+### Added (AGB-691: listening; both optional, so all content valid before still is)
+- **Voice samples.** `VoiceSummary.sample` (`MediaRef`): a few seconds of the voice, played in the voice picker before choosing.
+- **Answer marks.** A narration mark may carry `part: "answer"`: a second mark for the same `qa` block, where its answer is read after the question and its think pause. The app reveals the answer on screen when narration reaches it. A mark without `part` is the block itself (for a `qa`, its question).
+- `scripts/contract-samples.json`: a valid and an invalid sample for each.
+
 ## [2.3.0] - 2026-10-12
 
 ### Added (AGB-720: technical lessons; all optional, so all content valid before still is)
