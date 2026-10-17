@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-10-17
+
+### Added (AGB-734: the Buddy reads every kind of content; optional, so all content valid before still is)
+- **Explanations.** `image` and `table` blocks gain `explanation`: a teacher's explanation of the picture, graph, diagram or table (what it shows, how to read it, what to notice), plain text. Authoring checks it against the object's facts (every fact mentioned, nothing added). The reader shows it in "Explain this picture"; the Buddy retrieves it.
+- **Captions.** `caption`, until now for `code` blocks only, also titles `image` and `table` blocks.
+- `scripts/contract-samples.json`: a valid and an invalid sample.
+
 ## [2.4.0] - 2026-10-13
 
 ### Added (AGB-691: listening; both optional, so all content valid before still is)
