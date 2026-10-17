@@ -391,6 +391,48 @@
           }
         ]
       }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "s7-t1",
+        "type": "table",
+        "sectionId": "s7",
+        "rows": [
+          [
+            "Stage",
+            "Age"
+          ],
+          [
+            "Baby",
+            "less than 1 year"
+          ],
+          [
+            "Adolescent",
+            "13–19 years"
+          ]
+        ],
+        "caption": "The stages of the human life cycle",
+        "explanation": "This table lists the stages of the human life cycle in order. Read across each row: a baby is less than 1 year old, and an adolescent is 13–19 years old."
+      }
+    },
+    {
+      "definition": "Block",
+      "data": {
+        "id": "s1-img2",
+        "type": "image",
+        "sectionId": "s1",
+        "alt": "Line graph of Meera's steps",
+        "media": {
+          "kind": "image",
+          "url": "media/images/c8/s1-img2.svg",
+          "mimeType": "image/svg+xml",
+          "width": 640,
+          "height": 400
+        },
+        "caption": "Meera's steps each day",
+        "explanation": "The graph shows how many steps Meera walked each day, Mon to Fri."
+      }
     }
   ],
   "invalid": [
@@ -594,6 +636,17 @@
             "part": "question"
           }
         ]
+      }
+    },
+    {
+      "definition": "Block",
+      "why": "an empty explanation",
+      "field": "explanation",
+      "data": {
+        "id": "x2",
+        "type": "image",
+        "alt": "A frog",
+        "explanation": ""
       }
     }
   ]

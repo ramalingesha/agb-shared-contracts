@@ -91,9 +91,13 @@ export interface Block {
    */
   codeLanguage?: string;
   /**
-   * `code` blocks only (AGB-720): what the code is, e.g. its file path (`walkthrough/step-3-bug/tanker-dashboard.ts`).
+   * `code` blocks (AGB-720): what the code is, e.g. its file path (`walkthrough/step-3-bug/tanker-dashboard.ts`). `image` and `table` blocks (AGB-734): a short title, e.g. `Meera's steps each day`.
    */
   caption?: string;
+  /**
+   * `image` and `table` blocks only (AGB-734): a teacher's explanation of the picture, graph, diagram or table, plain text: what it shows, how to read it, what to notice. Checked at authoring against the object's facts (complete, nothing added). Shown by the reader's "Explain this picture" and used by the Buddy; `alt` stays the short accessible description.
+   */
+  explanation?: string;
   /**
    * `table` blocks only (AGB-720): the cells, row by row; the first row is the header.
    */
