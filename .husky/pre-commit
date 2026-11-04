@@ -1,0 +1,18 @@
+HOOK=pre-commit
+# Local gate (AGB-837): same checks CI runs on merge to the default branch. Do not use --no-verify.
+# Offline: no network, no secrets. Fail-fast; names the gate that failed.
+gate() {
+  name="$1"; shift
+  printf "[%s] %s ... " "$HOOK" "$name"
+  start=$(date +%s)
+  if out=$("$@" 2>&1); then
+    echo "ok ($(( $(date +%s) - start ))s)"
+  else
+    echo "FAILED"; echo "$out" | tail -40
+    echo "[$HOOK] gate failed: $name. Fix it and retry; do not use --no-verify." >&2
+    exit 1
+  fi
+}
+gate "JSON syntax" sh -c 'for f in error-codes.json api-response-schema.json knowledge-api.schema.json package.json; do node -e "JSON.parse(require(\"fs\").readFileSync(\"$f\",\"utf8\"))" || exit 1; done'
+gate "contract validation (npm run validate)" npm run --silent validate
+gate "version consistency" node scripts/check-versions.js

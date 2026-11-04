@@ -281,3 +281,14 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Shared Libraries Confluence](https://jslipi.atlassian.net/wiki/spaces/UPDS/pages/7536890)
 - [User Management Shared Utils Strategy](https://github.com/ramalingesha/ai_gnan_bandar/blob/master/docs/architecture/user_management_shared_utils_strategy.md)
 
+## Local gates
+
+GitHub Actions runs only after a merge or push to `main` (never per pull request), so every gate runs
+on your machine first, through [husky](https://typicode.github.io/husky/) git hooks. `npm ci` / `npm install`
+installs them (the `prepare` script); `HUSKY=0` skips the install, which is what CI does.
+
+- `pre-commit` (fast, offline): JSON syntax, `npm run validate`, version consistency.
+- `pre-push` (the full set CI runs): JSON syntax, `npm run validate`, generated types up to date, version consistency, and (against the local `origin/main`) CHANGELOG updated and no error code removed.
+
+A failing gate stops the commit or push and prints which gate failed. Fix the cause. **Do not use
+`--no-verify`** (or `HUSKY=0`) to get around a hook; that is how broken code reaches `main`.

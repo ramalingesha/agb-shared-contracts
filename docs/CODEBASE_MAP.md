@@ -25,6 +25,6 @@ Where to look for what, in this repo. See `docs/ARCHITECTURE.md` for the "why."
    `"validate"` npm script.
 4. If TypeScript types are needed, add a generator script alongside
    `generate-knowledge-types.js` and commit its output under `types/`.
-5. Add the new files to `validate.yml`'s `pull_request.paths` trigger list — a file
-   outside that list gets zero CI runs on a PR that only touches it.
+5. Add the new files to `validate.yml`'s `push.paths` trigger list — a file
+   outside that list does not trigger CI on a push that only touches it.
 6. Document the new contract in `README.md`'s "Contents" section and in `CHANGELOG.md`.
