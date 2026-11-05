@@ -1,5 +1,5 @@
 {
-  "_about": "Real snippets the knowledge contract must accept (valid) and reject (invalid), checked by validate-knowledge-api-schema.js. From the pilot chapter It's All a Cycle (AGB-672) and the reference technical lesson How Angular Components Work (AGB-720).",
+  "_about": "Real snippets the knowledge contract must accept (valid) and reject (invalid), checked by validate-knowledge-api-schema.js. From the pilot chapter It's All a Cycle (AGB-672) and the reference technical lesson How Angular Components Work (AGB-720). AGB-855 (2.6.0): trimmed real sections s1 and s6 of the Study Jam for It's All a Cycle, one valid sample per activity type, and invalid samples for the rules the schema carries (exactly one correct option, friend only, speakers, ids, styleVariants).",
   "valid": [
     {
       "definition": "Block",
@@ -433,6 +433,1525 @@
         "caption": "Meera's steps each day",
         "explanation": "The graph shows how many steps Meera walked each day, Mon to Fri."
       }
+    },
+    {
+      "definition": "StudyJam",
+      "data": {
+        "schema": 1,
+        "chapter": {
+          "id": "c4-science-its-all-a-cycle",
+          "subject": "science",
+          "grade": 4
+        },
+        "nav": "tabs",
+        "speakers": [
+          {
+            "id": "tara",
+            "name": "Tara"
+          },
+          {
+            "id": "kavi",
+            "name": "Kavi"
+          }
+        ],
+        "sections": [
+          {
+            "id": "s1",
+            "title": "Where do young ones come from?",
+            "pictures": [
+              {
+                "id": "s1-img1",
+                "title": "Parents and their offspring",
+                "media": {
+                  "kind": "image",
+                  "url": "media/images/c4-science-its-all-a-cycle/s1-img1.svg",
+                  "mimeType": "image/svg+xml",
+                  "width": 1200,
+                  "height": 880
+                },
+                "viewBox": [
+                  0,
+                  0,
+                  1200,
+                  880
+                ],
+                "regions": {
+                  "swan": [
+                    28,
+                    28,
+                    365,
+                    400
+                  ],
+                  "rhino": [
+                    417,
+                    28,
+                    365,
+                    400
+                  ],
+                  "gorilla": [
+                    807,
+                    28,
+                    365,
+                    400
+                  ],
+                  "panda": [
+                    28,
+                    452,
+                    365,
+                    400
+                  ],
+                  "pig": [
+                    417,
+                    452,
+                    365,
+                    400
+                  ],
+                  "snail": [
+                    807,
+                    452,
+                    365,
+                    400
+                  ]
+                },
+                "regionLabels": {
+                  "swan": "Swan and cygnets",
+                  "rhino": "Rhinoceros and calf",
+                  "gorilla": "Gorilla and baby",
+                  "panda": "Panda and cub",
+                  "pig": "Pig and piglets",
+                  "snail": "Snail and young snail"
+                }
+              }
+            ],
+            "exchanges": [
+              {
+                "id": "s1-x3",
+                "src": [
+                  "s1-p3"
+                ],
+                "lines": [
+                  {
+                    "id": "s1-x3-l1",
+                    "speaker": "kavi",
+                    "text": "There are two words here I want in our notes."
+                  },
+                  {
+                    "id": "s1-x3-l2",
+                    "speaker": "tara",
+                    "text": "\"Offspring\" is just the young one. A calf is a cow's offspring."
+                  }
+                ],
+                "note": {
+                  "type": "terms",
+                  "items": [
+                    [
+                      "Reproduction",
+                      "the process by which living things produce young ones of their own kind."
+                    ],
+                    [
+                      "Offspring",
+                      "the young one of an animal."
+                    ]
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s1-p3",
+                    "text": "Reproduction is the process by which living things produce young ones of their own kind. The young one of an animal is also known as its offspring."
+                  }
+                ]
+              },
+              {
+                "id": "s1-x10",
+                "src": [
+                  "s1-kl1-1",
+                  "s1-kl1-2",
+                  "s1-kl1-3"
+                ],
+                "lines": [
+                  {
+                    "id": "s1-x10-l1",
+                    "speaker": "kavi",
+                    "text": "Tara wrote our summary. I think one line needs fixing. Can you find it?"
+                  }
+                ],
+                "act": {
+                  "type": "fix",
+                  "id": "s1-a4",
+                  "who": "kavi",
+                  "owner": "tara",
+                  "lines": [
+                    "Reproduction is the process by which living things produce young ones of their own kind.",
+                    "The young one of an animal is its offspring.",
+                    "Living things reproduce so that they can grow bigger."
+                  ],
+                  "wrong": 2,
+                  "findHint": "Look for the line that says why living things reproduce.",
+                  "fixAsk": "How should that line say it?",
+                  "fixes": [
+                    {
+                      "ok": true,
+                      "text": "Living things reproduce to continue their existence on Earth.",
+                      "fb": "Yes. That's the reason the book gives."
+                    },
+                    {
+                      "text": "Living things reproduce so that they can live longer.",
+                      "fb": "Reproducing doesn't make an animal live longer. It makes young ones, which keep their kind going on Earth."
+                    }
+                  ],
+                  "explain": [
+                    {
+                      "id": "s1-a4-e1",
+                      "speaker": "tara",
+                      "text": "I mixed up growing and reproducing. Growing makes one animal bigger. Reproducing makes new young ones."
+                    }
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s1-kl1-1",
+                    "text": "Reproduction is the process by which living things produce young ones of their own kind."
+                  },
+                  {
+                    "id": "s1-kl1-2",
+                    "text": "The young one of an animal is its offspring."
+                  },
+                  {
+                    "id": "s1-kl1-3",
+                    "text": "Living things reproduce to continue their existence on Earth."
+                  }
+                ]
+              }
+            ],
+            "summary": [
+              "Reproduction is the process by which living things produce young ones of their own kind.",
+              "The young one of an animal is its offspring.",
+              "Living things reproduce to continue their existence on Earth."
+            ],
+            "challenges": [
+              {
+                "id": "s1-c1",
+                "concept": {
+                  "id": "offspring",
+                  "text": "Young ones are the same kind of animal as their parents."
+                },
+                "demand": "apply",
+                "steps": 1,
+                "answerKind": "correct",
+                "given": "A duck lays eggs, just like a hen.",
+                "thinkAbout": "Never seen a duck up close? Think about ducks you've seen in pictures or on TV.",
+                "ask": "We learned that chicks hatch from a hen's eggs. What would you expect to hatch from a duck's egg?",
+                "options": [
+                  {
+                    "id": "a",
+                    "ok": true,
+                    "text": "A young duck",
+                    "fb": "Yes. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                  },
+                  {
+                    "id": "b",
+                    "text": "A chick",
+                    "fb": "A chick is a hen's young one. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                  },
+                  {
+                    "id": "c",
+                    "text": "It could be any kind of bird",
+                    "fb": "Living things always produce young ones of their own kind, so a duck's egg hatches into a young duck, not any other bird."
+                  }
+                ],
+                "hint": "Remember the cat and the chicks: what kind of young ones does an animal have?",
+                "idea": "Living things produce young ones of their own kind.",
+                "explain": [
+                  {
+                    "id": "s1-c1-e1",
+                    "speaker": "tara",
+                    "text": "A young duck is called a duckling. It's the same kind of animal as its parent."
+                  }
+                ],
+                "followUp": {
+                  "id": "s1-c1-f",
+                  "demand": "recognise",
+                  "steps": 2,
+                  "given": "A duckling is covered in soft, fluffy feathers that are often yellow or brown. Many grown ducks have smooth feathers of other colours.",
+                  "ask": "So a duckling doesn't look exactly like its parent. Is it still a duck?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "ok": true,
+                      "text": "Yes. It's a duck's offspring, so it's a duck, even if it looks different for now.",
+                      "fb": "Yes. Like the grey-brown cygnet and the white swan, offspring can look different from their parents at first and still be the same kind of animal."
+                    },
+                    {
+                      "id": "b",
+                      "text": "No. It looks different, so it must be a different animal.",
+                      "fb": "Looking different doesn't make it a different animal. The cygnet is grey-brown and the swan is white, but the cygnet is still a swan. In the same way, a duckling is still a duck."
+                    }
+                  ],
+                  "hint": "Remember the cygnet and the swan.",
+                  "idea": "Living things produce young ones of their own kind.",
+                  "answerKind": "correct",
+                  "explain": [
+                    {
+                      "id": "s1-c1-f-e1",
+                      "speaker": "kavi",
+                      "text": "Same as the cygnet: it can look different at first and still be the same kind of animal as its parent."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "s6",
+            "title": "The butterfly: a complete change",
+            "pictures": [
+              {
+                "id": "s6-img1",
+                "title": "Life cycle of a butterfly",
+                "media": {
+                  "kind": "image",
+                  "url": "media/images/c4-science-its-all-a-cycle/s6-img1.svg",
+                  "mimeType": "image/svg+xml",
+                  "width": 1200,
+                  "height": 964
+                },
+                "viewBox": [
+                  0,
+                  0,
+                  1200,
+                  964
+                ],
+                "regions": {
+                  "eggs": [
+                    152,
+                    34,
+                    330,
+                    330
+                  ],
+                  "caterpillar": [
+                    718,
+                    34,
+                    330,
+                    330
+                  ],
+                  "chrysalis": [
+                    718,
+                    600,
+                    330,
+                    330
+                  ],
+                  "butterfly": [
+                    152,
+                    600,
+                    330,
+                    330
+                  ]
+                },
+                "regionLabels": {
+                  "eggs": "Eggs",
+                  "caterpillar": "Caterpillar",
+                  "chrysalis": "Chrysalis",
+                  "butterfly": "Butterfly"
+                }
+              }
+            ],
+            "exchanges": [
+              {
+                "id": "s6-x1",
+                "src": [
+                  "s6-p1",
+                  "s6-kl1-2"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x1-l1",
+                    "speaker": "kavi",
+                    "text": "Is this caterpillar really the same animal as this butterfly? They look completely different.",
+                    "points": [
+                      "caterpillar",
+                      "butterfly"
+                    ],
+                    "look": true
+                  },
+                  {
+                    "id": "s6-x1-l2",
+                    "speaker": "tara",
+                    "text": "That's the question for this page. The butterfly is another animal whose young one doesn't look like the adult."
+                  }
+                ],
+                "book": [
+                  {
+                    "id": "s6-p1",
+                    "text": "Another animal whose life cycle includes stages in which the young one does not look like the adult is the butterfly."
+                  },
+                  {
+                    "id": "s6-kl1-2",
+                    "text": "The young caterpillar does not look like the adult butterfly."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x4",
+                "src": [
+                  "s6-l1-3"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x4-l1",
+                    "speaker": "tara",
+                    "text": "We've seen two stages. The next card is hidden."
+                  }
+                ],
+                "act": {
+                  "type": "choice",
+                  "id": "s6-a1",
+                  "kind": "predict",
+                  "who": "kavi",
+                  "ask": "The caterpillar has eaten enough. What do you think happens next?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "text": "It turns into a butterfly straight away.",
+                      "fb": "Not yet. There's one more stage before the butterfly: the caterpillar attaches itself under a leaf or twig and makes a hard covering. It becomes a pupa."
+                    },
+                    {
+                      "id": "b",
+                      "ok": true,
+                      "text": "It attaches itself under a leaf or twig and makes a hard covering.",
+                      "fb": "Yes. It attaches itself under a leaf or twig and makes a hard covering. Now it's called a pupa."
+                    },
+                    {
+                      "id": "c",
+                      "text": "It lays eggs.",
+                      "fb": "Laying eggs is what the adult butterfly does at the start of the cycle, and the caterpillar isn't an adult yet. Next, it attaches itself under a leaf or twig and makes a hard covering: it becomes a pupa."
+                    }
+                  ],
+                  "hint": "There are four cards in the circle, and we've only seen two.",
+                  "idea": "After eating enough, the caterpillar attaches itself under a leaf or twig and makes a hard covering, the chrysalis. It is now a pupa.",
+                  "explain": [
+                    {
+                      "id": "s6-a1-e1",
+                      "speaker": "tara",
+                      "text": "It attaches itself under a leaf or a twig. Now it's called a pupa.",
+                      "points": [
+                        "chrysalis"
+                      ]
+                    },
+                    {
+                      "id": "s6-a1-e2",
+                      "speaker": "kavi",
+                      "text": "And it makes a hard, smooth, shiny covering around itself, called the chrysalis.",
+                      "points": [
+                        "chrysalis"
+                      ]
+                    }
+                  ],
+                  "cover": "chrysalis"
+                },
+                "book": [
+                  {
+                    "id": "s6-l1-3",
+                    "text": "When the caterpillar has eaten enough, it attaches itself under a leaf or a twig. It is now called a pupa. It makes a hard, smooth, shiny covering around itself, called the chrysalis. Inside, it slowly changes to become an adult butterfly."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x11",
+                "src": [
+                  "s6-kl1-1",
+                  "s6-l1-1",
+                  "s6-l1-2",
+                  "s6-l1-3",
+                  "s6-l1-4"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x11-l1",
+                    "speaker": "tara",
+                    "text": "Let's see if we can rebuild the whole cycle without looking at the notes."
+                  }
+                ],
+                "act": {
+                  "type": "order",
+                  "id": "s6-a3",
+                  "who": "tara",
+                  "ask": "Put the four stages in order, starting from the eggs.",
+                  "pick": "Tap the stages in order.",
+                  "start": "Start from the eggs: the first card the arrows begin at.",
+                  "slot": "Stage",
+                  "items": [
+                    {
+                      "id": "eggs",
+                      "text": "Eggs on a leaf",
+                      "points": [
+                        "eggs"
+                      ]
+                    },
+                    {
+                      "id": "larva",
+                      "text": "Caterpillar (larva)",
+                      "points": [
+                        "caterpillar"
+                      ]
+                    },
+                    {
+                      "id": "pupa",
+                      "text": "Pupa inside a chrysalis",
+                      "points": [
+                        "chrysalis"
+                      ]
+                    },
+                    {
+                      "id": "adult",
+                      "text": "Adult butterfly",
+                      "points": [
+                        "butterfly"
+                      ]
+                    }
+                  ],
+                  "shuffle": [
+                    2,
+                    0,
+                    3,
+                    1
+                  ],
+                  "hint": "Follow the arrows around the circle.",
+                  "explain": [
+                    {
+                      "id": "s6-a3-e1",
+                      "speaker": "kavi",
+                      "text": "Eggs, caterpillar, pupa, adult butterfly. Then the adult lays eggs, and the cycle starts again.",
+                      "points": [
+                        "eggs",
+                        "caterpillar",
+                        "chrysalis",
+                        "butterfly"
+                      ],
+                      "save": true
+                    }
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s6-kl1-1",
+                    "text": "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x12",
+                "src": [
+                  "s6-qa1",
+                  "s6-qa2",
+                  "s6-qa3"
+                ],
+                "lines": [],
+                "act": {
+                  "type": "practice",
+                  "id": "s6-p",
+                  "items": [
+                    [
+                      "What is metamorphosis?",
+                      "The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                    ],
+                    [
+                      "What is the larva of a butterfly called?",
+                      "A caterpillar."
+                    ],
+                    [
+                      "What is the difference between a chrysalis and a cocoon?",
+                      "A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                    ]
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s6-qa1",
+                    "text": "What is metamorphosis? The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                  },
+                  {
+                    "id": "s6-qa2",
+                    "text": "What is the larva of a butterfly called? A caterpillar."
+                  },
+                  {
+                    "id": "s6-qa3",
+                    "text": "What is the difference between a chrysalis and a cocoon? A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x13",
+                "src": [
+                  "s6-tb1"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x13-l1",
+                    "speaker": "kavi",
+                    "text": "Now explain it to Tara, out loud. She wants to check her own notes against yours."
+                  }
+                ],
+                "act": {
+                  "type": "teach",
+                  "id": "s6-a4",
+                  "who": "kavi",
+                  "to": "tara",
+                  "ask": "Tell Tara the four stages of a butterfly's life cycle, in order, and what happens in each.",
+                  "checks": [
+                    "eggs laid on a leaf",
+                    "the caterpillar (larva) eats a lot and sheds its skin",
+                    "the pupa inside a hard chrysalis, changing inside",
+                    "the adult butterfly breaks out and flies away",
+                    "the word metamorphosis"
+                  ],
+                  "after": [
+                    {
+                      "id": "s6-a4-e1",
+                      "speaker": "tara",
+                      "text": "Let's both check our notes against the same list. Anything missing is worth another look."
+                    }
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s6-tb1",
+                    "text": "Teach it back. Tell your parent the four stages of a butterfly's life cycle, in order, and what happens in each."
+                  }
+                ]
+              }
+            ],
+            "summary": [
+              "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly.",
+              "The young caterpillar does not look like the adult butterfly.",
+              "Metamorphosis is the series of physical changes an animal goes through in its life cycle. Butterflies and frogs both go through it."
+            ],
+            "challenges": [
+              {
+                "id": "s6-c1",
+                "concept": {
+                  "id": "metamorphosis",
+                  "text": "Metamorphosis means big changes in body form as an animal grows."
+                },
+                "demand": "compare",
+                "steps": 1,
+                "answerKind": "correct",
+                "given": "A kitten looks like a small cat when it's born. A tadpole lives in water, has a tail and no legs at first, and grows into a frog.",
+                "thinkAbout": "Think about kittens and tadpoles you've seen, or picture them.",
+                "ask": "Which young one changes its body form a lot as it grows, like the caterpillar does?",
+                "options": [
+                  {
+                    "id": "a",
+                    "ok": true,
+                    "text": "The tadpole",
+                    "fb": "Yes. A tadpole looks very different from a frog and changes a lot as it grows. That's metamorphosis, like the caterpillar becoming a butterfly."
+                  },
+                  {
+                    "id": "b",
+                    "text": "The kitten",
+                    "fb": "A kitten already looks like a small cat; it mostly grows bigger. The tadpole is the one whose body form changes a lot, and that's metamorphosis."
+                  },
+                  {
+                    "id": "c",
+                    "text": "Both change in the same way",
+                    "fb": "They both grow, but differently. A kitten mostly grows bigger, while a tadpole's body form changes a lot. That big change is metamorphosis."
+                  }
+                ],
+                "hint": "Which young one looks least like its parent?",
+                "idea": "Some animals, like butterflies and frogs, go through big changes in body form as they grow. That is metamorphosis.",
+                "explain": [
+                  {
+                    "id": "s6-c1-e1",
+                    "speaker": "tara",
+                    "text": "The frog goes through metamorphosis too, just like the butterfly. The kitten simply grows."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": "ExplanationContent",
+      "data": {
+        "knowledgeId": "c4-science-its-all-a-cycle",
+        "explanationId": "overview",
+        "language": "en",
+        "version": 1,
+        "status": "ready",
+        "form": "text",
+        "anchoring": "full",
+        "style": "friend",
+        "blocks": [
+          {
+            "id": "s1-title",
+            "type": "heading",
+            "level": 2,
+            "text": "Where do young ones come from?",
+            "sectionId": "s1"
+          }
+        ],
+        "studyJam": {
+          "schema": 1,
+          "chapter": {
+            "id": "c4-science-its-all-a-cycle",
+            "subject": "science",
+            "grade": 4
+          },
+          "nav": "tabs",
+          "speakers": [
+            {
+              "id": "tara",
+              "name": "Tara"
+            },
+            {
+              "id": "kavi",
+              "name": "Kavi"
+            }
+          ],
+          "sections": [
+            {
+              "id": "s1",
+              "title": "Where do young ones come from?",
+              "pictures": [
+                {
+                  "id": "s1-img1",
+                  "title": "Parents and their offspring",
+                  "media": {
+                    "kind": "image",
+                    "url": "media/images/c4-science-its-all-a-cycle/s1-img1.svg",
+                    "mimeType": "image/svg+xml",
+                    "width": 1200,
+                    "height": 880
+                  },
+                  "viewBox": [
+                    0,
+                    0,
+                    1200,
+                    880
+                  ],
+                  "regions": {
+                    "swan": [
+                      28,
+                      28,
+                      365,
+                      400
+                    ],
+                    "rhino": [
+                      417,
+                      28,
+                      365,
+                      400
+                    ],
+                    "gorilla": [
+                      807,
+                      28,
+                      365,
+                      400
+                    ],
+                    "panda": [
+                      28,
+                      452,
+                      365,
+                      400
+                    ],
+                    "pig": [
+                      417,
+                      452,
+                      365,
+                      400
+                    ],
+                    "snail": [
+                      807,
+                      452,
+                      365,
+                      400
+                    ]
+                  },
+                  "regionLabels": {
+                    "swan": "Swan and cygnets",
+                    "rhino": "Rhinoceros and calf",
+                    "gorilla": "Gorilla and baby",
+                    "panda": "Panda and cub",
+                    "pig": "Pig and piglets",
+                    "snail": "Snail and young snail"
+                  }
+                }
+              ],
+              "exchanges": [
+                {
+                  "id": "s1-x3",
+                  "src": [
+                    "s1-p3"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s1-x3-l1",
+                      "speaker": "kavi",
+                      "text": "There are two words here I want in our notes."
+                    },
+                    {
+                      "id": "s1-x3-l2",
+                      "speaker": "tara",
+                      "text": "\"Offspring\" is just the young one. A calf is a cow's offspring."
+                    }
+                  ],
+                  "note": {
+                    "type": "terms",
+                    "items": [
+                      [
+                        "Reproduction",
+                        "the process by which living things produce young ones of their own kind."
+                      ],
+                      [
+                        "Offspring",
+                        "the young one of an animal."
+                      ]
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s1-p3",
+                      "text": "Reproduction is the process by which living things produce young ones of their own kind. The young one of an animal is also known as its offspring."
+                    }
+                  ]
+                },
+                {
+                  "id": "s1-x10",
+                  "src": [
+                    "s1-kl1-1",
+                    "s1-kl1-2",
+                    "s1-kl1-3"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s1-x10-l1",
+                      "speaker": "kavi",
+                      "text": "Tara wrote our summary. I think one line needs fixing. Can you find it?"
+                    }
+                  ],
+                  "act": {
+                    "type": "fix",
+                    "id": "s1-a4",
+                    "who": "kavi",
+                    "owner": "tara",
+                    "lines": [
+                      "Reproduction is the process by which living things produce young ones of their own kind.",
+                      "The young one of an animal is its offspring.",
+                      "Living things reproduce so that they can grow bigger."
+                    ],
+                    "wrong": 2,
+                    "findHint": "Look for the line that says why living things reproduce.",
+                    "fixAsk": "How should that line say it?",
+                    "fixes": [
+                      {
+                        "ok": true,
+                        "text": "Living things reproduce to continue their existence on Earth.",
+                        "fb": "Yes. That's the reason the book gives."
+                      },
+                      {
+                        "text": "Living things reproduce so that they can live longer.",
+                        "fb": "Reproducing doesn't make an animal live longer. It makes young ones, which keep their kind going on Earth."
+                      }
+                    ],
+                    "explain": [
+                      {
+                        "id": "s1-a4-e1",
+                        "speaker": "tara",
+                        "text": "I mixed up growing and reproducing. Growing makes one animal bigger. Reproducing makes new young ones."
+                      }
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s1-kl1-1",
+                      "text": "Reproduction is the process by which living things produce young ones of their own kind."
+                    },
+                    {
+                      "id": "s1-kl1-2",
+                      "text": "The young one of an animal is its offspring."
+                    },
+                    {
+                      "id": "s1-kl1-3",
+                      "text": "Living things reproduce to continue their existence on Earth."
+                    }
+                  ]
+                }
+              ],
+              "summary": [
+                "Reproduction is the process by which living things produce young ones of their own kind.",
+                "The young one of an animal is its offspring.",
+                "Living things reproduce to continue their existence on Earth."
+              ],
+              "challenges": [
+                {
+                  "id": "s1-c1",
+                  "concept": {
+                    "id": "offspring",
+                    "text": "Young ones are the same kind of animal as their parents."
+                  },
+                  "demand": "apply",
+                  "steps": 1,
+                  "answerKind": "correct",
+                  "given": "A duck lays eggs, just like a hen.",
+                  "thinkAbout": "Never seen a duck up close? Think about ducks you've seen in pictures or on TV.",
+                  "ask": "We learned that chicks hatch from a hen's eggs. What would you expect to hatch from a duck's egg?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "ok": true,
+                      "text": "A young duck",
+                      "fb": "Yes. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                    },
+                    {
+                      "id": "b",
+                      "text": "A chick",
+                      "fb": "A chick is a hen's young one. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                    },
+                    {
+                      "id": "c",
+                      "text": "It could be any kind of bird",
+                      "fb": "Living things always produce young ones of their own kind, so a duck's egg hatches into a young duck, not any other bird."
+                    }
+                  ],
+                  "hint": "Remember the cat and the chicks: what kind of young ones does an animal have?",
+                  "idea": "Living things produce young ones of their own kind.",
+                  "explain": [
+                    {
+                      "id": "s1-c1-e1",
+                      "speaker": "tara",
+                      "text": "A young duck is called a duckling. It's the same kind of animal as its parent."
+                    }
+                  ],
+                  "followUp": {
+                    "id": "s1-c1-f",
+                    "demand": "recognise",
+                    "steps": 2,
+                    "given": "A duckling is covered in soft, fluffy feathers that are often yellow or brown. Many grown ducks have smooth feathers of other colours.",
+                    "ask": "So a duckling doesn't look exactly like its parent. Is it still a duck?",
+                    "options": [
+                      {
+                        "id": "a",
+                        "ok": true,
+                        "text": "Yes. It's a duck's offspring, so it's a duck, even if it looks different for now.",
+                        "fb": "Yes. Like the grey-brown cygnet and the white swan, offspring can look different from their parents at first and still be the same kind of animal."
+                      },
+                      {
+                        "id": "b",
+                        "text": "No. It looks different, so it must be a different animal.",
+                        "fb": "Looking different doesn't make it a different animal. The cygnet is grey-brown and the swan is white, but the cygnet is still a swan. In the same way, a duckling is still a duck."
+                      }
+                    ],
+                    "hint": "Remember the cygnet and the swan.",
+                    "idea": "Living things produce young ones of their own kind.",
+                    "answerKind": "correct",
+                    "explain": [
+                      {
+                        "id": "s1-c1-f-e1",
+                        "speaker": "kavi",
+                        "text": "Same as the cygnet: it can look different at first and still be the same kind of animal as its parent."
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "s6",
+              "title": "The butterfly: a complete change",
+              "pictures": [
+                {
+                  "id": "s6-img1",
+                  "title": "Life cycle of a butterfly",
+                  "media": {
+                    "kind": "image",
+                    "url": "media/images/c4-science-its-all-a-cycle/s6-img1.svg",
+                    "mimeType": "image/svg+xml",
+                    "width": 1200,
+                    "height": 964
+                  },
+                  "viewBox": [
+                    0,
+                    0,
+                    1200,
+                    964
+                  ],
+                  "regions": {
+                    "eggs": [
+                      152,
+                      34,
+                      330,
+                      330
+                    ],
+                    "caterpillar": [
+                      718,
+                      34,
+                      330,
+                      330
+                    ],
+                    "chrysalis": [
+                      718,
+                      600,
+                      330,
+                      330
+                    ],
+                    "butterfly": [
+                      152,
+                      600,
+                      330,
+                      330
+                    ]
+                  },
+                  "regionLabels": {
+                    "eggs": "Eggs",
+                    "caterpillar": "Caterpillar",
+                    "chrysalis": "Chrysalis",
+                    "butterfly": "Butterfly"
+                  }
+                }
+              ],
+              "exchanges": [
+                {
+                  "id": "s6-x1",
+                  "src": [
+                    "s6-p1",
+                    "s6-kl1-2"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x1-l1",
+                      "speaker": "kavi",
+                      "text": "Is this caterpillar really the same animal as this butterfly? They look completely different.",
+                      "points": [
+                        "caterpillar",
+                        "butterfly"
+                      ],
+                      "look": true
+                    },
+                    {
+                      "id": "s6-x1-l2",
+                      "speaker": "tara",
+                      "text": "That's the question for this page. The butterfly is another animal whose young one doesn't look like the adult."
+                    }
+                  ],
+                  "book": [
+                    {
+                      "id": "s6-p1",
+                      "text": "Another animal whose life cycle includes stages in which the young one does not look like the adult is the butterfly."
+                    },
+                    {
+                      "id": "s6-kl1-2",
+                      "text": "The young caterpillar does not look like the adult butterfly."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x4",
+                  "src": [
+                    "s6-l1-3"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x4-l1",
+                      "speaker": "tara",
+                      "text": "We've seen two stages. The next card is hidden."
+                    }
+                  ],
+                  "act": {
+                    "type": "choice",
+                    "id": "s6-a1",
+                    "kind": "predict",
+                    "who": "kavi",
+                    "ask": "The caterpillar has eaten enough. What do you think happens next?",
+                    "options": [
+                      {
+                        "id": "a",
+                        "text": "It turns into a butterfly straight away.",
+                        "fb": "Not yet. There's one more stage before the butterfly: the caterpillar attaches itself under a leaf or twig and makes a hard covering. It becomes a pupa."
+                      },
+                      {
+                        "id": "b",
+                        "ok": true,
+                        "text": "It attaches itself under a leaf or twig and makes a hard covering.",
+                        "fb": "Yes. It attaches itself under a leaf or twig and makes a hard covering. Now it's called a pupa."
+                      },
+                      {
+                        "id": "c",
+                        "text": "It lays eggs.",
+                        "fb": "Laying eggs is what the adult butterfly does at the start of the cycle, and the caterpillar isn't an adult yet. Next, it attaches itself under a leaf or twig and makes a hard covering: it becomes a pupa."
+                      }
+                    ],
+                    "hint": "There are four cards in the circle, and we've only seen two.",
+                    "idea": "After eating enough, the caterpillar attaches itself under a leaf or twig and makes a hard covering, the chrysalis. It is now a pupa.",
+                    "explain": [
+                      {
+                        "id": "s6-a1-e1",
+                        "speaker": "tara",
+                        "text": "It attaches itself under a leaf or a twig. Now it's called a pupa.",
+                        "points": [
+                          "chrysalis"
+                        ]
+                      },
+                      {
+                        "id": "s6-a1-e2",
+                        "speaker": "kavi",
+                        "text": "And it makes a hard, smooth, shiny covering around itself, called the chrysalis.",
+                        "points": [
+                          "chrysalis"
+                        ]
+                      }
+                    ],
+                    "cover": "chrysalis"
+                  },
+                  "book": [
+                    {
+                      "id": "s6-l1-3",
+                      "text": "When the caterpillar has eaten enough, it attaches itself under a leaf or a twig. It is now called a pupa. It makes a hard, smooth, shiny covering around itself, called the chrysalis. Inside, it slowly changes to become an adult butterfly."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x11",
+                  "src": [
+                    "s6-kl1-1",
+                    "s6-l1-1",
+                    "s6-l1-2",
+                    "s6-l1-3",
+                    "s6-l1-4"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x11-l1",
+                      "speaker": "tara",
+                      "text": "Let's see if we can rebuild the whole cycle without looking at the notes."
+                    }
+                  ],
+                  "act": {
+                    "type": "order",
+                    "id": "s6-a3",
+                    "who": "tara",
+                    "ask": "Put the four stages in order, starting from the eggs.",
+                    "pick": "Tap the stages in order.",
+                    "start": "Start from the eggs: the first card the arrows begin at.",
+                    "slot": "Stage",
+                    "items": [
+                      {
+                        "id": "eggs",
+                        "text": "Eggs on a leaf",
+                        "points": [
+                          "eggs"
+                        ]
+                      },
+                      {
+                        "id": "larva",
+                        "text": "Caterpillar (larva)",
+                        "points": [
+                          "caterpillar"
+                        ]
+                      },
+                      {
+                        "id": "pupa",
+                        "text": "Pupa inside a chrysalis",
+                        "points": [
+                          "chrysalis"
+                        ]
+                      },
+                      {
+                        "id": "adult",
+                        "text": "Adult butterfly",
+                        "points": [
+                          "butterfly"
+                        ]
+                      }
+                    ],
+                    "shuffle": [
+                      2,
+                      0,
+                      3,
+                      1
+                    ],
+                    "hint": "Follow the arrows around the circle.",
+                    "explain": [
+                      {
+                        "id": "s6-a3-e1",
+                        "speaker": "kavi",
+                        "text": "Eggs, caterpillar, pupa, adult butterfly. Then the adult lays eggs, and the cycle starts again.",
+                        "points": [
+                          "eggs",
+                          "caterpillar",
+                          "chrysalis",
+                          "butterfly"
+                        ],
+                        "save": true
+                      }
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s6-kl1-1",
+                      "text": "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x12",
+                  "src": [
+                    "s6-qa1",
+                    "s6-qa2",
+                    "s6-qa3"
+                  ],
+                  "lines": [],
+                  "act": {
+                    "type": "practice",
+                    "id": "s6-p",
+                    "items": [
+                      [
+                        "What is metamorphosis?",
+                        "The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                      ],
+                      [
+                        "What is the larva of a butterfly called?",
+                        "A caterpillar."
+                      ],
+                      [
+                        "What is the difference between a chrysalis and a cocoon?",
+                        "A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                      ]
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s6-qa1",
+                      "text": "What is metamorphosis? The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                    },
+                    {
+                      "id": "s6-qa2",
+                      "text": "What is the larva of a butterfly called? A caterpillar."
+                    },
+                    {
+                      "id": "s6-qa3",
+                      "text": "What is the difference between a chrysalis and a cocoon? A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x13",
+                  "src": [
+                    "s6-tb1"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x13-l1",
+                      "speaker": "kavi",
+                      "text": "Now explain it to Tara, out loud. She wants to check her own notes against yours."
+                    }
+                  ],
+                  "act": {
+                    "type": "teach",
+                    "id": "s6-a4",
+                    "who": "kavi",
+                    "to": "tara",
+                    "ask": "Tell Tara the four stages of a butterfly's life cycle, in order, and what happens in each.",
+                    "checks": [
+                      "eggs laid on a leaf",
+                      "the caterpillar (larva) eats a lot and sheds its skin",
+                      "the pupa inside a hard chrysalis, changing inside",
+                      "the adult butterfly breaks out and flies away",
+                      "the word metamorphosis"
+                    ],
+                    "after": [
+                      {
+                        "id": "s6-a4-e1",
+                        "speaker": "tara",
+                        "text": "Let's both check our notes against the same list. Anything missing is worth another look."
+                      }
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s6-tb1",
+                      "text": "Teach it back. Tell your parent the four stages of a butterfly's life cycle, in order, and what happens in each."
+                    }
+                  ]
+                }
+              ],
+              "summary": [
+                "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly.",
+                "The young caterpillar does not look like the adult butterfly.",
+                "Metamorphosis is the series of physical changes an animal goes through in its life cycle. Butterflies and frogs both go through it."
+              ],
+              "challenges": [
+                {
+                  "id": "s6-c1",
+                  "concept": {
+                    "id": "metamorphosis",
+                    "text": "Metamorphosis means big changes in body form as an animal grows."
+                  },
+                  "demand": "compare",
+                  "steps": 1,
+                  "answerKind": "correct",
+                  "given": "A kitten looks like a small cat when it's born. A tadpole lives in water, has a tail and no legs at first, and grows into a frog.",
+                  "thinkAbout": "Think about kittens and tadpoles you've seen, or picture them.",
+                  "ask": "Which young one changes its body form a lot as it grows, like the caterpillar does?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "ok": true,
+                      "text": "The tadpole",
+                      "fb": "Yes. A tadpole looks very different from a frog and changes a lot as it grows. That's metamorphosis, like the caterpillar becoming a butterfly."
+                    },
+                    {
+                      "id": "b",
+                      "text": "The kitten",
+                      "fb": "A kitten already looks like a small cat; it mostly grows bigger. The tadpole is the one whose body form changes a lot, and that's metamorphosis."
+                    },
+                    {
+                      "id": "c",
+                      "text": "Both change in the same way",
+                      "fb": "They both grow, but differently. A kitten mostly grows bigger, while a tadpole's body form changes a lot. That big change is metamorphosis."
+                    }
+                  ],
+                  "hint": "Which young one looks least like its parent?",
+                  "idea": "Some animals, like butterflies and frogs, go through big changes in body form as they grow. That is metamorphosis.",
+                  "explain": [
+                    {
+                      "id": "s6-c1-e1",
+                      "speaker": "tara",
+                      "text": "The frog goes through metamorphosis too, just like the butterfly. The kitten simply grows."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "definition": "ExplanationSummary",
+      "data": {
+        "id": "overview",
+        "title": "Overview",
+        "form": "text",
+        "origin": "master",
+        "author": {
+          "id": "gnanora-team",
+          "name": "Gnanora Team",
+          "kind": "platform"
+        },
+        "anchoring": "full",
+        "visibility": "public",
+        "languages": [
+          "en",
+          "kn"
+        ],
+        "styles": [
+          "simple",
+          "favorite-teacher",
+          "professional",
+          "friend"
+        ],
+        "styleVariants": {
+          "friend": {
+            "languages": [
+              "en"
+            ],
+            "presentation": "study-jam"
+          }
+        }
+      }
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "choice",
+        "id": "s6-a1",
+        "kind": "predict",
+        "who": "kavi",
+        "ask": "The caterpillar has eaten enough. What do you think happens next?",
+        "options": [
+          {
+            "id": "a",
+            "text": "It turns into a butterfly straight away.",
+            "fb": "Not yet. There's one more stage before the butterfly: the caterpillar attaches itself under a leaf or twig and makes a hard covering. It becomes a pupa."
+          },
+          {
+            "id": "b",
+            "ok": true,
+            "text": "It attaches itself under a leaf or twig and makes a hard covering.",
+            "fb": "Yes. It attaches itself under a leaf or twig and makes a hard covering. Now it's called a pupa."
+          },
+          {
+            "id": "c",
+            "text": "It lays eggs.",
+            "fb": "Laying eggs is what the adult butterfly does at the start of the cycle, and the caterpillar isn't an adult yet. Next, it attaches itself under a leaf or twig and makes a hard covering: it becomes a pupa."
+          }
+        ],
+        "hint": "There are four cards in the circle, and we've only seen two.",
+        "idea": "After eating enough, the caterpillar attaches itself under a leaf or twig and makes a hard covering, the chrysalis. It is now a pupa.",
+        "explain": [
+          {
+            "id": "s6-a1-e1",
+            "speaker": "tara",
+            "text": "It attaches itself under a leaf or a twig. Now it's called a pupa.",
+            "points": [
+              "chrysalis"
+            ]
+          },
+          {
+            "id": "s6-a1-e2",
+            "speaker": "kavi",
+            "text": "And it makes a hard, smooth, shiny covering around itself, called the chrysalis.",
+            "points": [
+              "chrysalis"
+            ]
+          }
+        ],
+        "cover": "chrysalis"
+      }
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "order",
+        "id": "s6-a3",
+        "who": "tara",
+        "ask": "Put the four stages in order, starting from the eggs.",
+        "pick": "Tap the stages in order.",
+        "start": "Start from the eggs: the first card the arrows begin at.",
+        "slot": "Stage",
+        "items": [
+          {
+            "id": "eggs",
+            "text": "Eggs on a leaf",
+            "points": [
+              "eggs"
+            ]
+          },
+          {
+            "id": "larva",
+            "text": "Caterpillar (larva)",
+            "points": [
+              "caterpillar"
+            ]
+          },
+          {
+            "id": "pupa",
+            "text": "Pupa inside a chrysalis",
+            "points": [
+              "chrysalis"
+            ]
+          },
+          {
+            "id": "adult",
+            "text": "Adult butterfly",
+            "points": [
+              "butterfly"
+            ]
+          }
+        ],
+        "shuffle": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "hint": "Follow the arrows around the circle.",
+        "explain": [
+          {
+            "id": "s6-a3-e1",
+            "speaker": "kavi",
+            "text": "Eggs, caterpillar, pupa, adult butterfly. Then the adult lays eggs, and the cycle starts again.",
+            "points": [
+              "eggs",
+              "caterpillar",
+              "chrysalis",
+              "butterfly"
+            ],
+            "save": true
+          }
+        ]
+      }
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "fix",
+        "id": "s1-a4",
+        "who": "kavi",
+        "owner": "tara",
+        "lines": [
+          "Reproduction is the process by which living things produce young ones of their own kind.",
+          "The young one of an animal is its offspring.",
+          "Living things reproduce so that they can grow bigger."
+        ],
+        "wrong": 2,
+        "findHint": "Look for the line that says why living things reproduce.",
+        "fixAsk": "How should that line say it?",
+        "fixes": [
+          {
+            "ok": true,
+            "text": "Living things reproduce to continue their existence on Earth.",
+            "fb": "Yes. That's the reason the book gives."
+          },
+          {
+            "text": "Living things reproduce so that they can live longer.",
+            "fb": "Reproducing doesn't make an animal live longer. It makes young ones, which keep their kind going on Earth."
+          }
+        ],
+        "explain": [
+          {
+            "id": "s1-a4-e1",
+            "speaker": "tara",
+            "text": "I mixed up growing and reproducing. Growing makes one animal bigger. Reproducing makes new young ones."
+          }
+        ]
+      }
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "teach",
+        "id": "s6-a4",
+        "who": "kavi",
+        "to": "tara",
+        "ask": "Tell Tara the four stages of a butterfly's life cycle, in order, and what happens in each.",
+        "checks": [
+          "eggs laid on a leaf",
+          "the caterpillar (larva) eats a lot and sheds its skin",
+          "the pupa inside a hard chrysalis, changing inside",
+          "the adult butterfly breaks out and flies away",
+          "the word metamorphosis"
+        ],
+        "after": [
+          {
+            "id": "s6-a4-e1",
+            "speaker": "tara",
+            "text": "Let's both check our notes against the same list. Anything missing is worth another look."
+          }
+        ]
+      }
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "practice",
+        "id": "s6-p",
+        "items": [
+          [
+            "What is metamorphosis?",
+            "The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+          ],
+          [
+            "What is the larva of a butterfly called?",
+            "A caterpillar."
+          ],
+          [
+            "What is the difference between a chrysalis and a cocoon?",
+            "A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+          ]
+        ]
+      }
     }
   ],
   "invalid": [
@@ -648,6 +2167,1496 @@
         "alt": "A frog",
         "explanation": ""
       }
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "choice",
+        "id": "s6-a1",
+        "kind": "predict",
+        "who": "kavi",
+        "ask": "The caterpillar has eaten enough. What do you think happens next?",
+        "options": [
+          {
+            "id": "a",
+            "text": "It turns into a butterfly straight away.",
+            "fb": "Not yet. There's one more stage before the butterfly: the caterpillar attaches itself under a leaf or twig and makes a hard covering. It becomes a pupa.",
+            "ok": true
+          },
+          {
+            "id": "b",
+            "ok": true,
+            "text": "It attaches itself under a leaf or twig and makes a hard covering.",
+            "fb": "Yes. It attaches itself under a leaf or twig and makes a hard covering. Now it's called a pupa."
+          },
+          {
+            "id": "c",
+            "text": "It lays eggs.",
+            "fb": "Laying eggs is what the adult butterfly does at the start of the cycle, and the caterpillar isn't an adult yet. Next, it attaches itself under a leaf or twig and makes a hard covering: it becomes a pupa.",
+            "ok": true
+          }
+        ],
+        "hint": "There are four cards in the circle, and we've only seen two.",
+        "idea": "After eating enough, the caterpillar attaches itself under a leaf or twig and makes a hard covering, the chrysalis. It is now a pupa.",
+        "explain": [
+          {
+            "id": "s6-a1-e1",
+            "speaker": "tara",
+            "text": "It attaches itself under a leaf or a twig. Now it's called a pupa.",
+            "points": [
+              "chrysalis"
+            ]
+          },
+          {
+            "id": "s6-a1-e2",
+            "speaker": "kavi",
+            "text": "And it makes a hard, smooth, shiny covering around itself, called the chrysalis.",
+            "points": [
+              "chrysalis"
+            ]
+          }
+        ],
+        "cover": "chrysalis"
+      },
+      "why": "two correct options in a choice",
+      "field": "options"
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "choice",
+        "id": "s6-a1",
+        "kind": "predict",
+        "who": "kavi",
+        "ask": "The caterpillar has eaten enough. What do you think happens next?",
+        "options": [
+          {
+            "id": "a",
+            "text": "It turns into a butterfly straight away.",
+            "fb": "Not yet. There's one more stage before the butterfly: the caterpillar attaches itself under a leaf or twig and makes a hard covering. It becomes a pupa."
+          },
+          {
+            "id": "b",
+            "text": "It attaches itself under a leaf or twig and makes a hard covering.",
+            "fb": "Yes. It attaches itself under a leaf or twig and makes a hard covering. Now it's called a pupa."
+          },
+          {
+            "id": "c",
+            "text": "It lays eggs.",
+            "fb": "Laying eggs is what the adult butterfly does at the start of the cycle, and the caterpillar isn't an adult yet. Next, it attaches itself under a leaf or twig and makes a hard covering: it becomes a pupa."
+          }
+        ],
+        "hint": "There are four cards in the circle, and we've only seen two.",
+        "idea": "After eating enough, the caterpillar attaches itself under a leaf or twig and makes a hard covering, the chrysalis. It is now a pupa.",
+        "explain": [
+          {
+            "id": "s6-a1-e1",
+            "speaker": "tara",
+            "text": "It attaches itself under a leaf or a twig. Now it's called a pupa.",
+            "points": [
+              "chrysalis"
+            ]
+          },
+          {
+            "id": "s6-a1-e2",
+            "speaker": "kavi",
+            "text": "And it makes a hard, smooth, shiny covering around itself, called the chrysalis.",
+            "points": [
+              "chrysalis"
+            ]
+          }
+        ],
+        "cover": "chrysalis"
+      },
+      "why": "a choice with no correct option",
+      "field": "options"
+    },
+    {
+      "definition": "StudyJamActivity",
+      "data": {
+        "type": "fix",
+        "id": "s1-a4",
+        "who": "kavi",
+        "owner": "tara",
+        "lines": [
+          "Reproduction is the process by which living things produce young ones of their own kind.",
+          "The young one of an animal is its offspring.",
+          "Living things reproduce so that they can grow bigger."
+        ],
+        "wrong": 2,
+        "findHint": "Look for the line that says why living things reproduce.",
+        "fixAsk": "How should that line say it?",
+        "fixes": [
+          {
+            "ok": true,
+            "text": "Living things reproduce to continue their existence on Earth.",
+            "fb": "Yes. That's the reason the book gives."
+          },
+          {
+            "text": "Living things reproduce so that they can live longer.",
+            "fb": "Reproducing doesn't make an animal live longer. It makes young ones, which keep their kind going on Earth.",
+            "ok": true
+          }
+        ],
+        "explain": [
+          {
+            "id": "s1-a4-e1",
+            "speaker": "tara",
+            "text": "I mixed up growing and reproducing. Growing makes one animal bigger. Reproducing makes new young ones."
+          }
+        ]
+      },
+      "why": "two correct fixes in a find-and-fix",
+      "field": "fixes"
+    },
+    {
+      "definition": "ExplanationContent",
+      "data": {
+        "knowledgeId": "c4-science-its-all-a-cycle",
+        "explanationId": "overview",
+        "language": "en",
+        "version": 1,
+        "status": "ready",
+        "form": "text",
+        "anchoring": "full",
+        "style": "simple",
+        "blocks": [
+          {
+            "id": "s1-title",
+            "type": "heading",
+            "level": 2,
+            "text": "Where do young ones come from?",
+            "sectionId": "s1"
+          }
+        ],
+        "studyJam": {
+          "schema": 1,
+          "chapter": {
+            "id": "c4-science-its-all-a-cycle",
+            "subject": "science",
+            "grade": 4
+          },
+          "nav": "tabs",
+          "speakers": [
+            {
+              "id": "tara",
+              "name": "Tara"
+            },
+            {
+              "id": "kavi",
+              "name": "Kavi"
+            }
+          ],
+          "sections": [
+            {
+              "id": "s1",
+              "title": "Where do young ones come from?",
+              "pictures": [
+                {
+                  "id": "s1-img1",
+                  "title": "Parents and their offspring",
+                  "media": {
+                    "kind": "image",
+                    "url": "media/images/c4-science-its-all-a-cycle/s1-img1.svg",
+                    "mimeType": "image/svg+xml",
+                    "width": 1200,
+                    "height": 880
+                  },
+                  "viewBox": [
+                    0,
+                    0,
+                    1200,
+                    880
+                  ],
+                  "regions": {
+                    "swan": [
+                      28,
+                      28,
+                      365,
+                      400
+                    ],
+                    "rhino": [
+                      417,
+                      28,
+                      365,
+                      400
+                    ],
+                    "gorilla": [
+                      807,
+                      28,
+                      365,
+                      400
+                    ],
+                    "panda": [
+                      28,
+                      452,
+                      365,
+                      400
+                    ],
+                    "pig": [
+                      417,
+                      452,
+                      365,
+                      400
+                    ],
+                    "snail": [
+                      807,
+                      452,
+                      365,
+                      400
+                    ]
+                  },
+                  "regionLabels": {
+                    "swan": "Swan and cygnets",
+                    "rhino": "Rhinoceros and calf",
+                    "gorilla": "Gorilla and baby",
+                    "panda": "Panda and cub",
+                    "pig": "Pig and piglets",
+                    "snail": "Snail and young snail"
+                  }
+                }
+              ],
+              "exchanges": [
+                {
+                  "id": "s1-x3",
+                  "src": [
+                    "s1-p3"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s1-x3-l1",
+                      "speaker": "kavi",
+                      "text": "There are two words here I want in our notes."
+                    },
+                    {
+                      "id": "s1-x3-l2",
+                      "speaker": "tara",
+                      "text": "\"Offspring\" is just the young one. A calf is a cow's offspring."
+                    }
+                  ],
+                  "note": {
+                    "type": "terms",
+                    "items": [
+                      [
+                        "Reproduction",
+                        "the process by which living things produce young ones of their own kind."
+                      ],
+                      [
+                        "Offspring",
+                        "the young one of an animal."
+                      ]
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s1-p3",
+                      "text": "Reproduction is the process by which living things produce young ones of their own kind. The young one of an animal is also known as its offspring."
+                    }
+                  ]
+                },
+                {
+                  "id": "s1-x10",
+                  "src": [
+                    "s1-kl1-1",
+                    "s1-kl1-2",
+                    "s1-kl1-3"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s1-x10-l1",
+                      "speaker": "kavi",
+                      "text": "Tara wrote our summary. I think one line needs fixing. Can you find it?"
+                    }
+                  ],
+                  "act": {
+                    "type": "fix",
+                    "id": "s1-a4",
+                    "who": "kavi",
+                    "owner": "tara",
+                    "lines": [
+                      "Reproduction is the process by which living things produce young ones of their own kind.",
+                      "The young one of an animal is its offspring.",
+                      "Living things reproduce so that they can grow bigger."
+                    ],
+                    "wrong": 2,
+                    "findHint": "Look for the line that says why living things reproduce.",
+                    "fixAsk": "How should that line say it?",
+                    "fixes": [
+                      {
+                        "ok": true,
+                        "text": "Living things reproduce to continue their existence on Earth.",
+                        "fb": "Yes. That's the reason the book gives."
+                      },
+                      {
+                        "text": "Living things reproduce so that they can live longer.",
+                        "fb": "Reproducing doesn't make an animal live longer. It makes young ones, which keep their kind going on Earth."
+                      }
+                    ],
+                    "explain": [
+                      {
+                        "id": "s1-a4-e1",
+                        "speaker": "tara",
+                        "text": "I mixed up growing and reproducing. Growing makes one animal bigger. Reproducing makes new young ones."
+                      }
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s1-kl1-1",
+                      "text": "Reproduction is the process by which living things produce young ones of their own kind."
+                    },
+                    {
+                      "id": "s1-kl1-2",
+                      "text": "The young one of an animal is its offspring."
+                    },
+                    {
+                      "id": "s1-kl1-3",
+                      "text": "Living things reproduce to continue their existence on Earth."
+                    }
+                  ]
+                }
+              ],
+              "summary": [
+                "Reproduction is the process by which living things produce young ones of their own kind.",
+                "The young one of an animal is its offspring.",
+                "Living things reproduce to continue their existence on Earth."
+              ],
+              "challenges": [
+                {
+                  "id": "s1-c1",
+                  "concept": {
+                    "id": "offspring",
+                    "text": "Young ones are the same kind of animal as their parents."
+                  },
+                  "demand": "apply",
+                  "steps": 1,
+                  "answerKind": "correct",
+                  "given": "A duck lays eggs, just like a hen.",
+                  "thinkAbout": "Never seen a duck up close? Think about ducks you've seen in pictures or on TV.",
+                  "ask": "We learned that chicks hatch from a hen's eggs. What would you expect to hatch from a duck's egg?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "ok": true,
+                      "text": "A young duck",
+                      "fb": "Yes. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                    },
+                    {
+                      "id": "b",
+                      "text": "A chick",
+                      "fb": "A chick is a hen's young one. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                    },
+                    {
+                      "id": "c",
+                      "text": "It could be any kind of bird",
+                      "fb": "Living things always produce young ones of their own kind, so a duck's egg hatches into a young duck, not any other bird."
+                    }
+                  ],
+                  "hint": "Remember the cat and the chicks: what kind of young ones does an animal have?",
+                  "idea": "Living things produce young ones of their own kind.",
+                  "explain": [
+                    {
+                      "id": "s1-c1-e1",
+                      "speaker": "tara",
+                      "text": "A young duck is called a duckling. It's the same kind of animal as its parent."
+                    }
+                  ],
+                  "followUp": {
+                    "id": "s1-c1-f",
+                    "demand": "recognise",
+                    "steps": 2,
+                    "given": "A duckling is covered in soft, fluffy feathers that are often yellow or brown. Many grown ducks have smooth feathers of other colours.",
+                    "ask": "So a duckling doesn't look exactly like its parent. Is it still a duck?",
+                    "options": [
+                      {
+                        "id": "a",
+                        "ok": true,
+                        "text": "Yes. It's a duck's offspring, so it's a duck, even if it looks different for now.",
+                        "fb": "Yes. Like the grey-brown cygnet and the white swan, offspring can look different from their parents at first and still be the same kind of animal."
+                      },
+                      {
+                        "id": "b",
+                        "text": "No. It looks different, so it must be a different animal.",
+                        "fb": "Looking different doesn't make it a different animal. The cygnet is grey-brown and the swan is white, but the cygnet is still a swan. In the same way, a duckling is still a duck."
+                      }
+                    ],
+                    "hint": "Remember the cygnet and the swan.",
+                    "idea": "Living things produce young ones of their own kind.",
+                    "answerKind": "correct",
+                    "explain": [
+                      {
+                        "id": "s1-c1-f-e1",
+                        "speaker": "kavi",
+                        "text": "Same as the cygnet: it can look different at first and still be the same kind of animal as its parent."
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "s6",
+              "title": "The butterfly: a complete change",
+              "pictures": [
+                {
+                  "id": "s6-img1",
+                  "title": "Life cycle of a butterfly",
+                  "media": {
+                    "kind": "image",
+                    "url": "media/images/c4-science-its-all-a-cycle/s6-img1.svg",
+                    "mimeType": "image/svg+xml",
+                    "width": 1200,
+                    "height": 964
+                  },
+                  "viewBox": [
+                    0,
+                    0,
+                    1200,
+                    964
+                  ],
+                  "regions": {
+                    "eggs": [
+                      152,
+                      34,
+                      330,
+                      330
+                    ],
+                    "caterpillar": [
+                      718,
+                      34,
+                      330,
+                      330
+                    ],
+                    "chrysalis": [
+                      718,
+                      600,
+                      330,
+                      330
+                    ],
+                    "butterfly": [
+                      152,
+                      600,
+                      330,
+                      330
+                    ]
+                  },
+                  "regionLabels": {
+                    "eggs": "Eggs",
+                    "caterpillar": "Caterpillar",
+                    "chrysalis": "Chrysalis",
+                    "butterfly": "Butterfly"
+                  }
+                }
+              ],
+              "exchanges": [
+                {
+                  "id": "s6-x1",
+                  "src": [
+                    "s6-p1",
+                    "s6-kl1-2"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x1-l1",
+                      "speaker": "kavi",
+                      "text": "Is this caterpillar really the same animal as this butterfly? They look completely different.",
+                      "points": [
+                        "caterpillar",
+                        "butterfly"
+                      ],
+                      "look": true
+                    },
+                    {
+                      "id": "s6-x1-l2",
+                      "speaker": "tara",
+                      "text": "That's the question for this page. The butterfly is another animal whose young one doesn't look like the adult."
+                    }
+                  ],
+                  "book": [
+                    {
+                      "id": "s6-p1",
+                      "text": "Another animal whose life cycle includes stages in which the young one does not look like the adult is the butterfly."
+                    },
+                    {
+                      "id": "s6-kl1-2",
+                      "text": "The young caterpillar does not look like the adult butterfly."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x4",
+                  "src": [
+                    "s6-l1-3"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x4-l1",
+                      "speaker": "tara",
+                      "text": "We've seen two stages. The next card is hidden."
+                    }
+                  ],
+                  "act": {
+                    "type": "choice",
+                    "id": "s6-a1",
+                    "kind": "predict",
+                    "who": "kavi",
+                    "ask": "The caterpillar has eaten enough. What do you think happens next?",
+                    "options": [
+                      {
+                        "id": "a",
+                        "text": "It turns into a butterfly straight away.",
+                        "fb": "Not yet. There's one more stage before the butterfly: the caterpillar attaches itself under a leaf or twig and makes a hard covering. It becomes a pupa."
+                      },
+                      {
+                        "id": "b",
+                        "ok": true,
+                        "text": "It attaches itself under a leaf or twig and makes a hard covering.",
+                        "fb": "Yes. It attaches itself under a leaf or twig and makes a hard covering. Now it's called a pupa."
+                      },
+                      {
+                        "id": "c",
+                        "text": "It lays eggs.",
+                        "fb": "Laying eggs is what the adult butterfly does at the start of the cycle, and the caterpillar isn't an adult yet. Next, it attaches itself under a leaf or twig and makes a hard covering: it becomes a pupa."
+                      }
+                    ],
+                    "hint": "There are four cards in the circle, and we've only seen two.",
+                    "idea": "After eating enough, the caterpillar attaches itself under a leaf or twig and makes a hard covering, the chrysalis. It is now a pupa.",
+                    "explain": [
+                      {
+                        "id": "s6-a1-e1",
+                        "speaker": "tara",
+                        "text": "It attaches itself under a leaf or a twig. Now it's called a pupa.",
+                        "points": [
+                          "chrysalis"
+                        ]
+                      },
+                      {
+                        "id": "s6-a1-e2",
+                        "speaker": "kavi",
+                        "text": "And it makes a hard, smooth, shiny covering around itself, called the chrysalis.",
+                        "points": [
+                          "chrysalis"
+                        ]
+                      }
+                    ],
+                    "cover": "chrysalis"
+                  },
+                  "book": [
+                    {
+                      "id": "s6-l1-3",
+                      "text": "When the caterpillar has eaten enough, it attaches itself under a leaf or a twig. It is now called a pupa. It makes a hard, smooth, shiny covering around itself, called the chrysalis. Inside, it slowly changes to become an adult butterfly."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x11",
+                  "src": [
+                    "s6-kl1-1",
+                    "s6-l1-1",
+                    "s6-l1-2",
+                    "s6-l1-3",
+                    "s6-l1-4"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x11-l1",
+                      "speaker": "tara",
+                      "text": "Let's see if we can rebuild the whole cycle without looking at the notes."
+                    }
+                  ],
+                  "act": {
+                    "type": "order",
+                    "id": "s6-a3",
+                    "who": "tara",
+                    "ask": "Put the four stages in order, starting from the eggs.",
+                    "pick": "Tap the stages in order.",
+                    "start": "Start from the eggs: the first card the arrows begin at.",
+                    "slot": "Stage",
+                    "items": [
+                      {
+                        "id": "eggs",
+                        "text": "Eggs on a leaf",
+                        "points": [
+                          "eggs"
+                        ]
+                      },
+                      {
+                        "id": "larva",
+                        "text": "Caterpillar (larva)",
+                        "points": [
+                          "caterpillar"
+                        ]
+                      },
+                      {
+                        "id": "pupa",
+                        "text": "Pupa inside a chrysalis",
+                        "points": [
+                          "chrysalis"
+                        ]
+                      },
+                      {
+                        "id": "adult",
+                        "text": "Adult butterfly",
+                        "points": [
+                          "butterfly"
+                        ]
+                      }
+                    ],
+                    "shuffle": [
+                      2,
+                      0,
+                      3,
+                      1
+                    ],
+                    "hint": "Follow the arrows around the circle.",
+                    "explain": [
+                      {
+                        "id": "s6-a3-e1",
+                        "speaker": "kavi",
+                        "text": "Eggs, caterpillar, pupa, adult butterfly. Then the adult lays eggs, and the cycle starts again.",
+                        "points": [
+                          "eggs",
+                          "caterpillar",
+                          "chrysalis",
+                          "butterfly"
+                        ],
+                        "save": true
+                      }
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s6-kl1-1",
+                      "text": "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x12",
+                  "src": [
+                    "s6-qa1",
+                    "s6-qa2",
+                    "s6-qa3"
+                  ],
+                  "lines": [],
+                  "act": {
+                    "type": "practice",
+                    "id": "s6-p",
+                    "items": [
+                      [
+                        "What is metamorphosis?",
+                        "The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                      ],
+                      [
+                        "What is the larva of a butterfly called?",
+                        "A caterpillar."
+                      ],
+                      [
+                        "What is the difference between a chrysalis and a cocoon?",
+                        "A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                      ]
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s6-qa1",
+                      "text": "What is metamorphosis? The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                    },
+                    {
+                      "id": "s6-qa2",
+                      "text": "What is the larva of a butterfly called? A caterpillar."
+                    },
+                    {
+                      "id": "s6-qa3",
+                      "text": "What is the difference between a chrysalis and a cocoon? A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                    }
+                  ]
+                },
+                {
+                  "id": "s6-x13",
+                  "src": [
+                    "s6-tb1"
+                  ],
+                  "lines": [
+                    {
+                      "id": "s6-x13-l1",
+                      "speaker": "kavi",
+                      "text": "Now explain it to Tara, out loud. She wants to check her own notes against yours."
+                    }
+                  ],
+                  "act": {
+                    "type": "teach",
+                    "id": "s6-a4",
+                    "who": "kavi",
+                    "to": "tara",
+                    "ask": "Tell Tara the four stages of a butterfly's life cycle, in order, and what happens in each.",
+                    "checks": [
+                      "eggs laid on a leaf",
+                      "the caterpillar (larva) eats a lot and sheds its skin",
+                      "the pupa inside a hard chrysalis, changing inside",
+                      "the adult butterfly breaks out and flies away",
+                      "the word metamorphosis"
+                    ],
+                    "after": [
+                      {
+                        "id": "s6-a4-e1",
+                        "speaker": "tara",
+                        "text": "Let's both check our notes against the same list. Anything missing is worth another look."
+                      }
+                    ]
+                  },
+                  "book": [
+                    {
+                      "id": "s6-tb1",
+                      "text": "Teach it back. Tell your parent the four stages of a butterfly's life cycle, in order, and what happens in each."
+                    }
+                  ]
+                }
+              ],
+              "summary": [
+                "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly.",
+                "The young caterpillar does not look like the adult butterfly.",
+                "Metamorphosis is the series of physical changes an animal goes through in its life cycle. Butterflies and frogs both go through it."
+              ],
+              "challenges": [
+                {
+                  "id": "s6-c1",
+                  "concept": {
+                    "id": "metamorphosis",
+                    "text": "Metamorphosis means big changes in body form as an animal grows."
+                  },
+                  "demand": "compare",
+                  "steps": 1,
+                  "answerKind": "correct",
+                  "given": "A kitten looks like a small cat when it's born. A tadpole lives in water, has a tail and no legs at first, and grows into a frog.",
+                  "thinkAbout": "Think about kittens and tadpoles you've seen, or picture them.",
+                  "ask": "Which young one changes its body form a lot as it grows, like the caterpillar does?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "ok": true,
+                      "text": "The tadpole",
+                      "fb": "Yes. A tadpole looks very different from a frog and changes a lot as it grows. That's metamorphosis, like the caterpillar becoming a butterfly."
+                    },
+                    {
+                      "id": "b",
+                      "text": "The kitten",
+                      "fb": "A kitten already looks like a small cat; it mostly grows bigger. The tadpole is the one whose body form changes a lot, and that's metamorphosis."
+                    },
+                    {
+                      "id": "c",
+                      "text": "Both change in the same way",
+                      "fb": "They both grow, but differently. A kitten mostly grows bigger, while a tadpole's body form changes a lot. That big change is metamorphosis."
+                    }
+                  ],
+                  "hint": "Which young one looks least like its parent?",
+                  "idea": "Some animals, like butterflies and frogs, go through big changes in body form as they grow. That is metamorphosis.",
+                  "explain": [
+                    {
+                      "id": "s6-c1-e1",
+                      "speaker": "tara",
+                      "text": "The frog goes through metamorphosis too, just like the butterfly. The kitten simply grows."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "a Study Jam payload on a style other than friend",
+      "field": "style"
+    },
+    {
+      "definition": "StudyJamLine",
+      "data": {
+        "id": "x-l1",
+        "speaker": "sam",
+        "text": "Hello."
+      },
+      "why": "a speaker other than tara or kavi",
+      "field": "speaker"
+    },
+    {
+      "definition": "StudyJamLine",
+      "data": {
+        "id": "Bad Id",
+        "speaker": "tara",
+        "text": "Hello."
+      },
+      "why": "an id that is not lowercase letters, digits and hyphens",
+      "field": "id"
+    },
+    {
+      "definition": "ExplanationSummary",
+      "data": {
+        "id": "overview",
+        "title": "Overview",
+        "form": "text",
+        "origin": "master",
+        "author": {
+          "id": "gnanora-team",
+          "name": "Gnanora Team",
+          "kind": "platform"
+        },
+        "anchoring": "full",
+        "visibility": "public",
+        "languages": [
+          "en",
+          "kn"
+        ],
+        "styles": [
+          "simple",
+          "favorite-teacher",
+          "professional",
+          "friend"
+        ],
+        "styleVariants": {
+          "friend": {
+            "languages": [
+              "en"
+            ],
+            "presentation": "study-jam"
+          },
+          "zen": {
+            "languages": [
+              "en"
+            ],
+            "presentation": "study-jam"
+          }
+        }
+      },
+      "why": "a styleVariants key that is not a style",
+      "field": "styleVariants"
+    },
+    {
+      "definition": "StudyJam",
+      "data": {
+        "schema": 1,
+        "chapter": {
+          "id": "c4-science-its-all-a-cycle",
+          "subject": "science",
+          "grade": 4
+        },
+        "nav": "tabs",
+        "sections": [
+          {
+            "id": "s1",
+            "title": "Where do young ones come from?",
+            "pictures": [
+              {
+                "id": "s1-img1",
+                "title": "Parents and their offspring",
+                "media": {
+                  "kind": "image",
+                  "url": "media/images/c4-science-its-all-a-cycle/s1-img1.svg",
+                  "mimeType": "image/svg+xml",
+                  "width": 1200,
+                  "height": 880
+                },
+                "viewBox": [
+                  0,
+                  0,
+                  1200,
+                  880
+                ],
+                "regions": {
+                  "swan": [
+                    28,
+                    28,
+                    365,
+                    400
+                  ],
+                  "rhino": [
+                    417,
+                    28,
+                    365,
+                    400
+                  ],
+                  "gorilla": [
+                    807,
+                    28,
+                    365,
+                    400
+                  ],
+                  "panda": [
+                    28,
+                    452,
+                    365,
+                    400
+                  ],
+                  "pig": [
+                    417,
+                    452,
+                    365,
+                    400
+                  ],
+                  "snail": [
+                    807,
+                    452,
+                    365,
+                    400
+                  ]
+                },
+                "regionLabels": {
+                  "swan": "Swan and cygnets",
+                  "rhino": "Rhinoceros and calf",
+                  "gorilla": "Gorilla and baby",
+                  "panda": "Panda and cub",
+                  "pig": "Pig and piglets",
+                  "snail": "Snail and young snail"
+                }
+              }
+            ],
+            "exchanges": [
+              {
+                "id": "s1-x3",
+                "src": [
+                  "s1-p3"
+                ],
+                "lines": [
+                  {
+                    "id": "s1-x3-l1",
+                    "speaker": "kavi",
+                    "text": "There are two words here I want in our notes."
+                  },
+                  {
+                    "id": "s1-x3-l2",
+                    "speaker": "tara",
+                    "text": "\"Offspring\" is just the young one. A calf is a cow's offspring."
+                  }
+                ],
+                "note": {
+                  "type": "terms",
+                  "items": [
+                    [
+                      "Reproduction",
+                      "the process by which living things produce young ones of their own kind."
+                    ],
+                    [
+                      "Offspring",
+                      "the young one of an animal."
+                    ]
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s1-p3",
+                    "text": "Reproduction is the process by which living things produce young ones of their own kind. The young one of an animal is also known as its offspring."
+                  }
+                ]
+              },
+              {
+                "id": "s1-x10",
+                "src": [
+                  "s1-kl1-1",
+                  "s1-kl1-2",
+                  "s1-kl1-3"
+                ],
+                "lines": [
+                  {
+                    "id": "s1-x10-l1",
+                    "speaker": "kavi",
+                    "text": "Tara wrote our summary. I think one line needs fixing. Can you find it?"
+                  }
+                ],
+                "act": {
+                  "type": "fix",
+                  "id": "s1-a4",
+                  "who": "kavi",
+                  "owner": "tara",
+                  "lines": [
+                    "Reproduction is the process by which living things produce young ones of their own kind.",
+                    "The young one of an animal is its offspring.",
+                    "Living things reproduce so that they can grow bigger."
+                  ],
+                  "wrong": 2,
+                  "findHint": "Look for the line that says why living things reproduce.",
+                  "fixAsk": "How should that line say it?",
+                  "fixes": [
+                    {
+                      "ok": true,
+                      "text": "Living things reproduce to continue their existence on Earth.",
+                      "fb": "Yes. That's the reason the book gives."
+                    },
+                    {
+                      "text": "Living things reproduce so that they can live longer.",
+                      "fb": "Reproducing doesn't make an animal live longer. It makes young ones, which keep their kind going on Earth."
+                    }
+                  ],
+                  "explain": [
+                    {
+                      "id": "s1-a4-e1",
+                      "speaker": "tara",
+                      "text": "I mixed up growing and reproducing. Growing makes one animal bigger. Reproducing makes new young ones."
+                    }
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s1-kl1-1",
+                    "text": "Reproduction is the process by which living things produce young ones of their own kind."
+                  },
+                  {
+                    "id": "s1-kl1-2",
+                    "text": "The young one of an animal is its offspring."
+                  },
+                  {
+                    "id": "s1-kl1-3",
+                    "text": "Living things reproduce to continue their existence on Earth."
+                  }
+                ]
+              }
+            ],
+            "summary": [
+              "Reproduction is the process by which living things produce young ones of their own kind.",
+              "The young one of an animal is its offspring.",
+              "Living things reproduce to continue their existence on Earth."
+            ],
+            "challenges": [
+              {
+                "id": "s1-c1",
+                "concept": {
+                  "id": "offspring",
+                  "text": "Young ones are the same kind of animal as their parents."
+                },
+                "demand": "apply",
+                "steps": 1,
+                "answerKind": "correct",
+                "given": "A duck lays eggs, just like a hen.",
+                "thinkAbout": "Never seen a duck up close? Think about ducks you've seen in pictures or on TV.",
+                "ask": "We learned that chicks hatch from a hen's eggs. What would you expect to hatch from a duck's egg?",
+                "options": [
+                  {
+                    "id": "a",
+                    "ok": true,
+                    "text": "A young duck",
+                    "fb": "Yes. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                  },
+                  {
+                    "id": "b",
+                    "text": "A chick",
+                    "fb": "A chick is a hen's young one. Living things produce young ones of their own kind, so a duck's egg hatches into a young duck."
+                  },
+                  {
+                    "id": "c",
+                    "text": "It could be any kind of bird",
+                    "fb": "Living things always produce young ones of their own kind, so a duck's egg hatches into a young duck, not any other bird."
+                  }
+                ],
+                "hint": "Remember the cat and the chicks: what kind of young ones does an animal have?",
+                "idea": "Living things produce young ones of their own kind.",
+                "explain": [
+                  {
+                    "id": "s1-c1-e1",
+                    "speaker": "tara",
+                    "text": "A young duck is called a duckling. It's the same kind of animal as its parent."
+                  }
+                ],
+                "followUp": {
+                  "id": "s1-c1-f",
+                  "demand": "recognise",
+                  "steps": 2,
+                  "given": "A duckling is covered in soft, fluffy feathers that are often yellow or brown. Many grown ducks have smooth feathers of other colours.",
+                  "ask": "So a duckling doesn't look exactly like its parent. Is it still a duck?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "ok": true,
+                      "text": "Yes. It's a duck's offspring, so it's a duck, even if it looks different for now.",
+                      "fb": "Yes. Like the grey-brown cygnet and the white swan, offspring can look different from their parents at first and still be the same kind of animal."
+                    },
+                    {
+                      "id": "b",
+                      "text": "No. It looks different, so it must be a different animal.",
+                      "fb": "Looking different doesn't make it a different animal. The cygnet is grey-brown and the swan is white, but the cygnet is still a swan. In the same way, a duckling is still a duck."
+                    }
+                  ],
+                  "hint": "Remember the cygnet and the swan.",
+                  "idea": "Living things produce young ones of their own kind.",
+                  "answerKind": "correct",
+                  "explain": [
+                    {
+                      "id": "s1-c1-f-e1",
+                      "speaker": "kavi",
+                      "text": "Same as the cygnet: it can look different at first and still be the same kind of animal as its parent."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "s6",
+            "title": "The butterfly: a complete change",
+            "pictures": [
+              {
+                "id": "s6-img1",
+                "title": "Life cycle of a butterfly",
+                "media": {
+                  "kind": "image",
+                  "url": "media/images/c4-science-its-all-a-cycle/s6-img1.svg",
+                  "mimeType": "image/svg+xml",
+                  "width": 1200,
+                  "height": 964
+                },
+                "viewBox": [
+                  0,
+                  0,
+                  1200,
+                  964
+                ],
+                "regions": {
+                  "eggs": [
+                    152,
+                    34,
+                    330,
+                    330
+                  ],
+                  "caterpillar": [
+                    718,
+                    34,
+                    330,
+                    330
+                  ],
+                  "chrysalis": [
+                    718,
+                    600,
+                    330,
+                    330
+                  ],
+                  "butterfly": [
+                    152,
+                    600,
+                    330,
+                    330
+                  ]
+                },
+                "regionLabels": {
+                  "eggs": "Eggs",
+                  "caterpillar": "Caterpillar",
+                  "chrysalis": "Chrysalis",
+                  "butterfly": "Butterfly"
+                }
+              }
+            ],
+            "exchanges": [
+              {
+                "id": "s6-x1",
+                "src": [
+                  "s6-p1",
+                  "s6-kl1-2"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x1-l1",
+                    "speaker": "kavi",
+                    "text": "Is this caterpillar really the same animal as this butterfly? They look completely different.",
+                    "points": [
+                      "caterpillar",
+                      "butterfly"
+                    ],
+                    "look": true
+                  },
+                  {
+                    "id": "s6-x1-l2",
+                    "speaker": "tara",
+                    "text": "That's the question for this page. The butterfly is another animal whose young one doesn't look like the adult."
+                  }
+                ],
+                "book": [
+                  {
+                    "id": "s6-p1",
+                    "text": "Another animal whose life cycle includes stages in which the young one does not look like the adult is the butterfly."
+                  },
+                  {
+                    "id": "s6-kl1-2",
+                    "text": "The young caterpillar does not look like the adult butterfly."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x4",
+                "src": [
+                  "s6-l1-3"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x4-l1",
+                    "speaker": "tara",
+                    "text": "We've seen two stages. The next card is hidden."
+                  }
+                ],
+                "act": {
+                  "type": "choice",
+                  "id": "s6-a1",
+                  "kind": "predict",
+                  "who": "kavi",
+                  "ask": "The caterpillar has eaten enough. What do you think happens next?",
+                  "options": [
+                    {
+                      "id": "a",
+                      "text": "It turns into a butterfly straight away.",
+                      "fb": "Not yet. There's one more stage before the butterfly: the caterpillar attaches itself under a leaf or twig and makes a hard covering. It becomes a pupa."
+                    },
+                    {
+                      "id": "b",
+                      "ok": true,
+                      "text": "It attaches itself under a leaf or twig and makes a hard covering.",
+                      "fb": "Yes. It attaches itself under a leaf or twig and makes a hard covering. Now it's called a pupa."
+                    },
+                    {
+                      "id": "c",
+                      "text": "It lays eggs.",
+                      "fb": "Laying eggs is what the adult butterfly does at the start of the cycle, and the caterpillar isn't an adult yet. Next, it attaches itself under a leaf or twig and makes a hard covering: it becomes a pupa."
+                    }
+                  ],
+                  "hint": "There are four cards in the circle, and we've only seen two.",
+                  "idea": "After eating enough, the caterpillar attaches itself under a leaf or twig and makes a hard covering, the chrysalis. It is now a pupa.",
+                  "explain": [
+                    {
+                      "id": "s6-a1-e1",
+                      "speaker": "tara",
+                      "text": "It attaches itself under a leaf or a twig. Now it's called a pupa.",
+                      "points": [
+                        "chrysalis"
+                      ]
+                    },
+                    {
+                      "id": "s6-a1-e2",
+                      "speaker": "kavi",
+                      "text": "And it makes a hard, smooth, shiny covering around itself, called the chrysalis.",
+                      "points": [
+                        "chrysalis"
+                      ]
+                    }
+                  ],
+                  "cover": "chrysalis"
+                },
+                "book": [
+                  {
+                    "id": "s6-l1-3",
+                    "text": "When the caterpillar has eaten enough, it attaches itself under a leaf or a twig. It is now called a pupa. It makes a hard, smooth, shiny covering around itself, called the chrysalis. Inside, it slowly changes to become an adult butterfly."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x11",
+                "src": [
+                  "s6-kl1-1",
+                  "s6-l1-1",
+                  "s6-l1-2",
+                  "s6-l1-3",
+                  "s6-l1-4"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x11-l1",
+                    "speaker": "tara",
+                    "text": "Let's see if we can rebuild the whole cycle without looking at the notes."
+                  }
+                ],
+                "act": {
+                  "type": "order",
+                  "id": "s6-a3",
+                  "who": "tara",
+                  "ask": "Put the four stages in order, starting from the eggs.",
+                  "pick": "Tap the stages in order.",
+                  "start": "Start from the eggs: the first card the arrows begin at.",
+                  "slot": "Stage",
+                  "items": [
+                    {
+                      "id": "eggs",
+                      "text": "Eggs on a leaf",
+                      "points": [
+                        "eggs"
+                      ]
+                    },
+                    {
+                      "id": "larva",
+                      "text": "Caterpillar (larva)",
+                      "points": [
+                        "caterpillar"
+                      ]
+                    },
+                    {
+                      "id": "pupa",
+                      "text": "Pupa inside a chrysalis",
+                      "points": [
+                        "chrysalis"
+                      ]
+                    },
+                    {
+                      "id": "adult",
+                      "text": "Adult butterfly",
+                      "points": [
+                        "butterfly"
+                      ]
+                    }
+                  ],
+                  "shuffle": [
+                    2,
+                    0,
+                    3,
+                    1
+                  ],
+                  "hint": "Follow the arrows around the circle.",
+                  "explain": [
+                    {
+                      "id": "s6-a3-e1",
+                      "speaker": "kavi",
+                      "text": "Eggs, caterpillar, pupa, adult butterfly. Then the adult lays eggs, and the cycle starts again.",
+                      "points": [
+                        "eggs",
+                        "caterpillar",
+                        "chrysalis",
+                        "butterfly"
+                      ],
+                      "save": true
+                    }
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s6-kl1-1",
+                    "text": "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x12",
+                "src": [
+                  "s6-qa1",
+                  "s6-qa2",
+                  "s6-qa3"
+                ],
+                "lines": [],
+                "act": {
+                  "type": "practice",
+                  "id": "s6-p",
+                  "items": [
+                    [
+                      "What is metamorphosis?",
+                      "The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                    ],
+                    [
+                      "What is the larva of a butterfly called?",
+                      "A caterpillar."
+                    ],
+                    [
+                      "What is the difference between a chrysalis and a cocoon?",
+                      "A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                    ]
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s6-qa1",
+                    "text": "What is metamorphosis? The series of physical changes that an animal goes through in the different stages of its life cycle, like a caterpillar becoming a butterfly."
+                  },
+                  {
+                    "id": "s6-qa2",
+                    "text": "What is the larva of a butterfly called? A caterpillar."
+                  },
+                  {
+                    "id": "s6-qa3",
+                    "text": "What is the difference between a chrysalis and a cocoon? A chrysalis is the hard covering of a butterfly's pupa. A cocoon is the soft silk case that a moth's caterpillar spins around itself."
+                  }
+                ]
+              },
+              {
+                "id": "s6-x13",
+                "src": [
+                  "s6-tb1"
+                ],
+                "lines": [
+                  {
+                    "id": "s6-x13-l1",
+                    "speaker": "kavi",
+                    "text": "Now explain it to Tara, out loud. She wants to check her own notes against yours."
+                  }
+                ],
+                "act": {
+                  "type": "teach",
+                  "id": "s6-a4",
+                  "who": "kavi",
+                  "to": "tara",
+                  "ask": "Tell Tara the four stages of a butterfly's life cycle, in order, and what happens in each.",
+                  "checks": [
+                    "eggs laid on a leaf",
+                    "the caterpillar (larva) eats a lot and sheds its skin",
+                    "the pupa inside a hard chrysalis, changing inside",
+                    "the adult butterfly breaks out and flies away",
+                    "the word metamorphosis"
+                  ],
+                  "after": [
+                    {
+                      "id": "s6-a4-e1",
+                      "speaker": "tara",
+                      "text": "Let's both check our notes against the same list. Anything missing is worth another look."
+                    }
+                  ]
+                },
+                "book": [
+                  {
+                    "id": "s6-tb1",
+                    "text": "Teach it back. Tell your parent the four stages of a butterfly's life cycle, in order, and what happens in each."
+                  }
+                ]
+              }
+            ],
+            "summary": [
+              "Butterfly: eggs → larva (caterpillar) → pupa (chrysalis) → adult butterfly.",
+              "The young caterpillar does not look like the adult butterfly.",
+              "Metamorphosis is the series of physical changes an animal goes through in its life cycle. Butterflies and frogs both go through it."
+            ],
+            "challenges": [
+              {
+                "id": "s6-c1",
+                "concept": {
+                  "id": "metamorphosis",
+                  "text": "Metamorphosis means big changes in body form as an animal grows."
+                },
+                "demand": "compare",
+                "steps": 1,
+                "answerKind": "correct",
+                "given": "A kitten looks like a small cat when it's born. A tadpole lives in water, has a tail and no legs at first, and grows into a frog.",
+                "thinkAbout": "Think about kittens and tadpoles you've seen, or picture them.",
+                "ask": "Which young one changes its body form a lot as it grows, like the caterpillar does?",
+                "options": [
+                  {
+                    "id": "a",
+                    "ok": true,
+                    "text": "The tadpole",
+                    "fb": "Yes. A tadpole looks very different from a frog and changes a lot as it grows. That's metamorphosis, like the caterpillar becoming a butterfly."
+                  },
+                  {
+                    "id": "b",
+                    "text": "The kitten",
+                    "fb": "A kitten already looks like a small cat; it mostly grows bigger. The tadpole is the one whose body form changes a lot, and that's metamorphosis."
+                  },
+                  {
+                    "id": "c",
+                    "text": "Both change in the same way",
+                    "fb": "They both grow, but differently. A kitten mostly grows bigger, while a tadpole's body form changes a lot. That big change is metamorphosis."
+                  }
+                ],
+                "hint": "Which young one looks least like its parent?",
+                "idea": "Some animals, like butterflies and frogs, go through big changes in body form as they grow. That is metamorphosis.",
+                "explain": [
+                  {
+                    "id": "s6-c1-e1",
+                    "speaker": "tara",
+                    "text": "The frog goes through metamorphosis too, just like the butterfly. The kitten simply grows."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "why": "a Study Jam without its two speakers",
+      "field": "speakers"
     }
   ]
 }

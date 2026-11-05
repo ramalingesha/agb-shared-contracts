@@ -8,6 +8,7 @@ Where to look for what, in this repo. See `docs/ARCHITECTURE.md` for the "why."
 | Standard API response envelope | `api-response-schema.json` |
 | Knowledge Platform read-surface contract (K3) | `knowledge-api.schema.json` |
 | Generated TypeScript types for the Knowledge contract | `types/knowledge-api/*.d.ts` — topic-grouped split + `index.d.ts` barrel (generated — do not hand-edit) |
+| Study Jam payload (2.6.0, AGB-855): `StudyJam*` definitions, `ExplanationContent.studyJam`, `ExplanationSummary.styleVariants` | `knowledge-api.schema.json`; types in `types/knowledge-api/study-jam.d.ts`; samples in `scripts/contract-samples.json` |
 | Type generator | `scripts/generate-knowledge-types.js` (`npm run generate:types`) |
 | Error-codes validation | `scripts/validate-error-codes.js` |
 | Knowledge-schema validation | `scripts/validate-knowledge-api-schema.js` |
