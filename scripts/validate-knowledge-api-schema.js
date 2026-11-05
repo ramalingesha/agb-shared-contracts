@@ -140,6 +140,22 @@ function validateSamples(schema, samples) {
   }
 }
 
+/**
+ * AGB-855 AC2: nothing in the Study Jam contract implies Kannada (or any other language). The language of
+ * a payload is `ExplanationContent.language`; the only place a language is listed is `styleVariants`.
+ */
+function validateStudyJamIsLanguageNeutral(schema) {
+  const definitions = schema.definitions || {};
+  const names = Object.keys(definitions).filter((n) => n.startsWith('StudyJam'));
+  if (names.length === 0) {
+    logError('No StudyJam definitions found (AGB-855)');
+    return;
+  }
+  const offenders = names.filter((n) => /\b(kn|kannada|ta|te|hi)\b|"language"/i.test(JSON.stringify(definitions[n])));
+  if (offenders.length) logError(`StudyJam definitions mention a language: ${offenders.join(', ')}`);
+  else logSuccess(`${names.length} StudyJam definitions mention no language`);
+}
+
 function validatePackageFilesAllowlist(packageJson) {
   const files = packageJson.files || [];
   const required = ['knowledge-api.schema.json', 'types/knowledge-api'];
@@ -205,6 +221,7 @@ function validateKnowledgeApiSchema() {
   validateVariantStatusEnum(schema);
   validateAjvCompiles(schema);
   validateSamples(schema, loadJSON(path.join(__dirname, 'contract-samples.json')));
+  validateStudyJamIsLanguageNeutral(schema);
   validatePackageFilesAllowlist(packageJson);
   validateGeneratedTypesExist(typesPath);
 

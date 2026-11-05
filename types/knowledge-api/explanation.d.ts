@@ -13,6 +13,7 @@ import type { Anchoring, ExplanationForm, ExplanationOrigin, LanguageCode, Style
 import type { Author, MediaRef } from './media';
 import type { Block, Slide } from './content-blocks';
 import type { Availability, Knowledge } from './knowledge';
+import type { StudyJam } from './study-jam';
 
 /**
  * Entry in the Explanation picker (G7).
@@ -36,6 +37,39 @@ export interface ExplanationSummary {
    * Derived styles available. Master content only — empty for contributed (G4 Part 3).
    */
   styles?: StyleId[];
+  /**
+   * Styles that are offered only in some languages, and how they are presented (2.6.0, AGB-855). A style listed here is openable only in the listed languages; keys must be a subset of `styles`. A style absent here is offered in every language of `languages`.
+   */
+  styleVariants?: {
+    simple?: {
+      /**
+       * @minItems 1
+       */
+      languages: [LanguageCode, ...LanguageCode[]];
+      presentation: 'study-jam';
+    };
+    'favorite-teacher'?: {
+      /**
+       * @minItems 1
+       */
+      languages: [LanguageCode, ...LanguageCode[]];
+      presentation: 'study-jam';
+    };
+    professional?: {
+      /**
+       * @minItems 1
+       */
+      languages: [LanguageCode, ...LanguageCode[]];
+      presentation: 'study-jam';
+    };
+    friend?: {
+      /**
+       * @minItems 1
+       */
+      languages: [LanguageCode, ...LanguageCode[]];
+      presentation: 'study-jam';
+    };
+  };
   /**
    * Voice ids with narration available or generatable.
    */
@@ -74,6 +108,10 @@ export interface ExplanationContent {
    * Present when status is `ready`. Block ids match the master for full-anchored variants.
    */
   blocks?: Block[];
+  /**
+   * Study Jam presentation of this Friend variant (2.6.0, AGB-855). Only with `style: friend`. `blocks` stay present: contents, Buddy and older apps use them.
+   */
+  studyJam?: StudyJam;
   /**
    * Presentation form only.
    */

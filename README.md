@@ -173,7 +173,7 @@ envelope above (the schema's definitions describe the `data` payload only). Sour
 truth: Confluence UPDS → Knowledge Platform → K3.
 
 **Covers:** `DiscoverIndex`, `Knowledge`, `ExplanationSummary`, `ExplanationContent`,
-`Block`, `Slide`, `Narration`, `MediaRef`, and their supporting types
+`Block`, `Slide`, `Narration`, `MediaRef`, `StudyJam` (2.6.0, the Friend style as a two-friend conversation: optional `ExplanationContent.studyJam`, optional `ExplanationSummary.styleVariants`), and their supporting types
 (`LanguageCode`, `StyleId`, `ExplanationForm`, `VariantStatus`, etc.).
 
 **Variant status** (`VariantStatus`) is part of the contract, not an implementation
@@ -197,7 +197,7 @@ import type { Knowledge, ExplanationContent, DiscoverIndex } from '@ramalingesha
 The types are generated from the schema via `npm run generate:types`
 (`json-schema-to-typescript`) and committed under `types/knowledge-api/` — a
 topic-grouped split (`primitives.d.ts`, `media.d.ts`, `content-blocks.d.ts`,
-`explanation.d.ts`, `knowledge.d.ts`, `narration.d.ts`), each kept well under
+`explanation.d.ts`, `knowledge.d.ts`, `narration.d.ts`, `study-jam.d.ts`), each kept well under
 ~200 lines, plus a barrel `index.d.ts` that re-exports all of them. The import path
 above is unchanged — TypeScript resolves `.../types/knowledge-api` to
 `types/knowledge-api/index.d.ts` the same way it would resolve to a single file — so

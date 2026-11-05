@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-11-05
+
+### Added (AGB-855: Study Jam, the Friend style as a two-friend conversation; all optional, so all content valid before still is)
+- **`ExplanationContent.studyJam`** (`StudyJam`): present only with `style: "friend"` (schema `if/then`). `blocks` stay present so contents, the Buddy and older apps keep working. `StudyJam` holds `schema` (payload format, 1), `chapter`, `nav` (`tabs` or compact), optional English `labels`, two `speakers` (`tara`, `kavi`) and `sections`.
+- **Sections** carry `pictures` (a `MediaRef`, `viewBox` and regions already resolved to rectangles in viewBox units), `exchanges` (lines, an optional note and activity, and the book text first cited there), `summary` ("Key ideas") and `challenges` ("Try it around you", each with an optional harder follow-up).
+- **Activities**: `choice`, `order`, `fix`, `teach`, `practice`. Exactly one `ok` option per choice, challenge and find-and-fix (`StudyJamAtMostOneOk`, checked for the first six options, plus `contains`).
+- **Stable ids**: every line has an explicit id and a speaker, so two-speaker narration can attach later. Ids match `^[a-z0-9][a-z0-9-]*$`; uniqueness within a payload is checked by the content build (JSON Schema cannot).
+- **`ExplanationSummary.styleVariants`**: a style listed here is openable only in the listed languages and is labelled by `presentation` (`study-jam`). Keys must be styles listed in `styles` (not expressible in JSON Schema; the content build sets both).
+- No `StudyJam` field names a language; the language of a payload is `ExplanationContent.language`. `validate` checks this.
+- `look` lines may omit `points` (the picture has no regions): the inline link then opens the whole picture.
+- `scripts/contract-samples.json`: trimmed real sections of the c4 Study Jam, a valid sample for each activity type, and 8 invalid samples.
+
 ## [2.5.0] - 2026-10-17
 
 ### Added (AGB-734: the Buddy reads every kind of content; optional, so all content valid before still is)

@@ -370,6 +370,93 @@
           "items": { "$ref": "#/definitions/StyleId" },
           "description": "Derived styles available. Master content only — empty for contributed (G4 Part 3)."
         },
+        "styleVariants": {
+          "type": "object",
+          "description": "Styles that are offered only in some languages, and how they are presented (2.6.0, AGB-855). A style listed here is openable only in the listed languages; keys must be a subset of `styles`. A style absent here is offered in every language of `languages`.",
+          "additionalProperties": false,
+          "properties": {
+            "simple": {
+              "type": "object",
+              "required": [
+                "languages",
+                "presentation"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/LanguageCode"
+                  },
+                  "minItems": 1
+                },
+                "presentation": {
+                  "const": "study-jam"
+                }
+              }
+            },
+            "favorite-teacher": {
+              "type": "object",
+              "required": [
+                "languages",
+                "presentation"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/LanguageCode"
+                  },
+                  "minItems": 1
+                },
+                "presentation": {
+                  "const": "study-jam"
+                }
+              }
+            },
+            "professional": {
+              "type": "object",
+              "required": [
+                "languages",
+                "presentation"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/LanguageCode"
+                  },
+                  "minItems": 1
+                },
+                "presentation": {
+                  "const": "study-jam"
+                }
+              }
+            },
+            "friend": {
+              "type": "object",
+              "required": [
+                "languages",
+                "presentation"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/LanguageCode"
+                  },
+                  "minItems": 1
+                },
+                "presentation": {
+                  "const": "study-jam"
+                }
+              }
+            }
+          }
+        },
         "voices": {
           "type": "array",
           "items": { "type": "string" },
@@ -475,6 +562,8 @@
       "description": "The readable content of one Explanation at one style and language.",
       "required": ["knowledgeId", "explanationId", "language", "status"],
       "additionalProperties": false,
+      "if": { "required": ["studyJam"] },
+      "then": { "required": ["style"], "properties": { "style": { "const": "friend" } } },
       "properties": {
         "knowledgeId": { "type": "string" },
         "explanationId": { "type": "string" },
@@ -488,6 +577,10 @@
           "type": "array",
           "items": { "$ref": "#/definitions/Block" },
           "description": "Present when status is `ready`. Block ids match the master for full-anchored variants."
+        },
+        "studyJam": {
+          "allOf": [{ "$ref": "#/definitions/StudyJam" }],
+          "description": "Study Jam presentation of this Friend variant (2.6.0, AGB-855). Only with `style: friend`. `blocks` stay present: contents, Buddy and older apps use them."
         },
         "slides": {
           "type": "array",
@@ -511,6 +604,1300 @@
             "style": { "$ref": "#/definitions/StyleId" },
             "explanationId": { "type": "string" }
           }
+        }
+      }
+    },
+
+    "StudyJamId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Lowercase id, unique within one StudyJam payload (checked by the content build, not by the schema)."
+    },
+    "StudyJamSpeakerId": {
+      "type": "string",
+      "enum": [
+        "tara",
+        "kavi"
+      ]
+    },
+    "StudyJamSpeaker": {
+      "type": "object",
+      "description": "A conversation partner. Ids are stable so two-speaker narration can attach later.",
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamSpeakerId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "StudyJamLine": {
+      "type": "object",
+      "description": "One spoken line. The id is explicit and stable: exchange lines `<exchange>-l<n>`, activity explanations `<activity>-e<n>`.",
+      "required": [
+        "id",
+        "speaker",
+        "text"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "speaker": {
+          "$ref": "#/definitions/StudyJamSpeakerId"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "Diagram regions this line talks about."
+        },
+        "save": {
+          "const": true,
+          "description": "A key explanation the learner can save."
+        },
+        "fact": {
+          "const": true,
+          "description": "A \"Did you know?\" line."
+        },
+        "look": {
+          "const": true,
+          "description": "The line asks the learner to look at the diagram (an inline \"View diagram\" on phones). With `points` it opens at those regions; without, at the whole picture."
+        }
+      }
+    },
+    "StudyJamOption": {
+      "type": "object",
+      "required": [
+        "id",
+        "text",
+        "fb"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "ok": {
+          "const": true
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fb": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Feedback; always states the correct idea."
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "Diagram regions shown for this option."
+        }
+      }
+    },
+    "StudyJamAtMostOneOk": {
+      "description": "An array in which no two items are marked `ok` (checked for the first six positions).",
+      "not": {
+        "anyOf": [
+          {
+            "minItems": 2,
+            "items": [
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 3,
+            "items": [
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 4,
+            "items": [
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 5,
+            "items": [
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 6,
+            "items": [
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              true,
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 3,
+            "items": [
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 4,
+            "items": [
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 5,
+            "items": [
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 6,
+            "items": [
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 4,
+            "items": [
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 5,
+            "items": [
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 6,
+            "items": [
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 5,
+            "items": [
+              true,
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 6,
+            "items": [
+              true,
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          },
+          {
+            "minItems": 6,
+            "items": [
+              true,
+              true,
+              true,
+              true,
+              {
+                "required": [
+                  "ok"
+                ]
+              },
+              {
+                "required": [
+                  "ok"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "StudyJamOptions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/StudyJamOption"
+      },
+      "contains": {
+        "required": [
+          "ok"
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/StudyJamAtMostOneOk"
+        }
+      ],
+      "description": "Options, exactly one marked `ok`."
+    },
+    "StudyJamFixOption": {
+      "type": "object",
+      "required": [
+        "text",
+        "fb"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fb": {
+          "type": "string",
+          "minLength": 1
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "StudyJamFixOptions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/StudyJamFixOption"
+      },
+      "contains": {
+        "required": [
+          "ok"
+        ]
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/StudyJamAtMostOneOk"
+        }
+      ],
+      "description": "Replacement lines, exactly one marked `ok`."
+    },
+    "StudyJamPicture": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "media",
+        "viewBox"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "media": {
+          "$ref": "#/definitions/MediaRef"
+        },
+        "viewBox": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number"
+          },
+          "description": "min-x, min-y, width, height of the SVG."
+        },
+        "regions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+              "type": "number"
+            }
+          },
+          "description": "Region name to x, y, width, height in viewBox units, resolved at build time."
+        },
+        "regionLabels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Region name to the label shown as \"Looking at: ...\"."
+        }
+      }
+    },
+    "StudyJamNote": {
+      "description": "A note shown after an exchange's lines.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "items"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "terms"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "quote",
+            "exact"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "book"
+            },
+            "quote": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tell": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "rows"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "table"
+            },
+            "caption": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "items"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "steps"
+            },
+            "caption": {
+              "type": "string",
+              "minLength": 1
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "lang",
+            "code"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "code"
+            },
+            "lang": {
+              "type": "string",
+              "minLength": 1
+            },
+            "caption": {
+              "type": "string",
+              "minLength": 1
+            },
+            "code": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "StudyJamChoiceActivity": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "kind",
+        "who",
+        "ask",
+        "options",
+        "hint",
+        "idea",
+        "explain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "choice"
+        },
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "predict",
+            "evidence",
+            "why",
+            "connect"
+          ]
+        },
+        "who": {
+          "$ref": "#/definitions/StudyJamSpeakerId"
+        },
+        "ask": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "$ref": "#/definitions/StudyJamOptions"
+        },
+        "hint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "idea": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamLine"
+          },
+          "minItems": 1
+        },
+        "cover": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Region hidden on the diagram until answered."
+        },
+        "answerKind": {
+          "type": "string",
+          "enum": [
+            "correct",
+            "possible"
+          ]
+        }
+      }
+    },
+    "StudyJamOrderActivity": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "who",
+        "ask",
+        "pick",
+        "start",
+        "slot",
+        "items",
+        "shuffle",
+        "hint",
+        "explain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "order"
+        },
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "who": {
+          "$ref": "#/definitions/StudyJamSpeakerId"
+        },
+        "ask": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pick": {
+          "type": "string",
+          "minLength": 1
+        },
+        "start": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/StudyJamId"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              }
+            }
+          },
+          "minItems": 2
+        },
+        "shuffle": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "description": "Display order, as indices into `items`."
+        },
+        "hint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamLine"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "StudyJamFixActivity": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "who",
+        "owner",
+        "lines",
+        "wrong",
+        "findHint",
+        "fixAsk",
+        "fixes",
+        "explain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "fix"
+        },
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "who": {
+          "$ref": "#/definitions/StudyJamSpeakerId"
+        },
+        "owner": {
+          "$ref": "#/definitions/StudyJamSpeakerId"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 2
+        },
+        "wrong": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Index into `lines` of the line to fix."
+        },
+        "findHint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixAsk": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixes": {
+          "$ref": "#/definitions/StudyJamFixOptions"
+        },
+        "explain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamLine"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "StudyJamTeachActivity": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "who",
+        "to",
+        "ask",
+        "checks",
+        "after"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "teach"
+        },
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "who": {
+          "$ref": "#/definitions/StudyJamSpeakerId"
+        },
+        "to": {
+          "type": "string",
+          "enum": [
+            "tara",
+            "kavi",
+            "both"
+          ]
+        },
+        "ask": {
+          "type": "string",
+          "minLength": 1
+        },
+        "say": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "after": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamLine"
+          },
+          "minItems": 1,
+          "description": "Neutral lines; they never confirm the learner's explanation."
+        }
+      }
+    },
+    "StudyJamPracticeActivity": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "items"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "practice"
+        },
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minItems": 1,
+          "description": "[question, answer] pairs from the source. Never blocks."
+        }
+      }
+    },
+    "StudyJamActivity": {
+      "description": "An activity placed right after its exchange. Everything except `practice` blocks Study until answered or skipped.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/StudyJamChoiceActivity"
+        },
+        {
+          "$ref": "#/definitions/StudyJamOrderActivity"
+        },
+        {
+          "$ref": "#/definitions/StudyJamFixActivity"
+        },
+        {
+          "$ref": "#/definitions/StudyJamTeachActivity"
+        },
+        {
+          "$ref": "#/definitions/StudyJamPracticeActivity"
+        }
+      ]
+    },
+    "StudyJamExchange": {
+      "type": "object",
+      "required": [
+        "id",
+        "src",
+        "lines"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "src": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Source ids this exchange is based on."
+        },
+        "pic": {
+          "$ref": "#/definitions/StudyJamId",
+          "description": "Picture id this exchange is about."
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamLine"
+          }
+        },
+        "note": {
+          "$ref": "#/definitions/StudyJamNote"
+        },
+        "act": {
+          "$ref": "#/definitions/StudyJamActivity"
+        },
+        "book": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "description": "\"Show the book\": source text first cited here, resolved at build time."
+        }
+      }
+    },
+    "StudyJamFollowUp": {
+      "type": "object",
+      "required": [
+        "id",
+        "demand",
+        "steps",
+        "ask",
+        "options",
+        "hint",
+        "idea",
+        "answerKind",
+        "explain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "demand": {
+          "type": "string",
+          "minLength": 1
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "given": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ask": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "$ref": "#/definitions/StudyJamOptions"
+        },
+        "hint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "idea": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answerKind": {
+          "type": "string",
+          "enum": [
+            "correct",
+            "possible"
+          ]
+        },
+        "explain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamLine"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "StudyJamChallenge": {
+      "type": "object",
+      "description": "\"Try it around you\": practice, not book questions. Never blocks Study.",
+      "required": [
+        "id",
+        "concept",
+        "demand",
+        "steps",
+        "answerKind",
+        "given",
+        "ask",
+        "options",
+        "hint",
+        "idea",
+        "explain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "concept": {
+          "type": "object",
+          "required": [
+            "id",
+            "text"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "demand": {
+          "type": "string",
+          "minLength": 1
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "answerKind": {
+          "type": "string",
+          "enum": [
+            "correct",
+            "possible"
+          ]
+        },
+        "given": {
+          "type": "string",
+          "minLength": 1
+        },
+        "thinkAbout": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ask": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "$ref": "#/definitions/StudyJamOptions"
+        },
+        "hint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "idea": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamLine"
+          },
+          "minItems": 1
+        },
+        "followUp": {
+          "$ref": "#/definitions/StudyJamFollowUp"
+        }
+      }
+    },
+    "StudyJamSection": {
+      "type": "object",
+      "description": "One section. Its id equals a `sectionId` of the retained legacy blocks.",
+      "required": [
+        "id",
+        "title",
+        "pictures",
+        "exchanges",
+        "summary",
+        "challenges"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/StudyJamId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pictures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamPicture"
+          },
+          "description": "The first is the default; a section may have none."
+        },
+        "exchanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamExchange"
+          },
+          "minItems": 1
+        },
+        "summary": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "\"Key ideas\"."
+        },
+        "challenges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamChallenge"
+          }
+        }
+      }
+    },
+    "StudyJam": {
+      "type": "object",
+      "description": "Study Jam (2.6.0, AGB-855): the Friend style as a two-friend conversation with activities. Present only on `style: friend` content. The language is `ExplanationContent.language`; nothing here names a language.",
+      "required": [
+        "schema",
+        "chapter",
+        "nav",
+        "speakers",
+        "sections"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": 1,
+          "description": "Payload format version, not the contract version."
+        },
+        "chapter": {
+          "type": "object",
+          "required": [
+            "id",
+            "subject"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "subject": {
+              "type": "string",
+              "minLength": 1
+            },
+            "grade": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "audience": {
+              "const": "professional"
+            }
+          }
+        },
+        "nav": {
+          "type": "string",
+          "enum": [
+            "tabs",
+            "compact"
+          ],
+          "description": "Build hint: compact phone navigation for chapters with more than four sections."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Optional per-chapter UI string overrides. English only."
+        },
+        "speakers": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/definitions/StudyJamSpeaker"
+          }
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudyJamSection"
+          },
+          "minItems": 1
         }
       }
     },
