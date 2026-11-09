@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Providers and roles are configuration, not enums**: `api:<name>`, `voice:<name>`, `parse:<name>` producer kinds; review roles come from `studio-config`. Tests add a `fake` provider and a `circle-teacher` role with no schema change.
 - **Templates**: one `template` schema with a `kind`; a published `id@version` is immutable, a changed pattern is a new version.
 - `npm run generate:studio-types`, `scripts/validate-studio-schemas.js` (wired into `npm run validate`); `STUDIO_TEMPLATES_DIR=<folder>` also validates a templates folder.
+- Producer kind `fake` (plain, for tests) and optional `runner-settings.contentRepoUrl` (the content repo the Runner clones).
 - `package.json` `files` ships `schemas/studio`, `examples/studio` and `types/studio`.
 
 ## [2.6.0] - 2026-11-05

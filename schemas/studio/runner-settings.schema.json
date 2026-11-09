@@ -60,6 +60,11 @@
     },
     "machine": {
       "type": "string"
+    },
+    "contentRepoUrl": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Git remote the Runner clones for job worktrees (the content repo). Any git URL or a local path."
     }
   }
 }

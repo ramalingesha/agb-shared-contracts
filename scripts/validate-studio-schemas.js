@@ -187,7 +187,7 @@ test("config-only: adding 'circle-teacher' to the role list needs no schema chan
 
 // ---- producers and provider profiles
 test('producer kinds: built-ins and api:/voice:/parse: patterns; junk rejected', () => {
-  for (const kind of ['manual', 'claude-session', 'rules', 'api:translation-service', 'voice:shruto', 'parse:tesseract']) {
+  for (const kind of ['manual', 'claude-session', 'rules', 'fake', 'api:translation-service', 'voice:shruto', 'parse:tesseract']) {
     const p = example('producer'); p.kind = kind; expectValid('producer', p);
   }
   for (const kind of ['', 'api:', 'api:Bad Name', 'magic', 'voice']) {

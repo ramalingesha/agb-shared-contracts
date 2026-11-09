@@ -93,8 +93,8 @@
     "ProducerKind": {
       "title": "ProducerKind",
       "type": "string",
-      "pattern": "^(manual|claude-session|rules|(api|voice|parse):[a-z0-9][a-z0-9-]*)$",
-      "description": "manual, claude-session, rules, or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema."
+      "pattern": "^(manual|claude-session|rules|fake|(api|voice|parse):[a-z0-9][a-z0-9-]*)$",
+      "description": "manual, claude-session, rules, fake (tests), or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema."
     },
     "ReviewState": {
       "title": "ReviewState",

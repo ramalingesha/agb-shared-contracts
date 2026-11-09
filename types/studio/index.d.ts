@@ -18,7 +18,7 @@ export type StudioMediaStoreConfig = {
   [k: string]: unknown;
 };
 /**
- * manual, claude-session, rules, or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema.
+ * manual, claude-session, rules, fake (tests), or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema.
  */
 export type ProducerKind = string;
 export type Timestamp = string;
@@ -153,6 +153,10 @@ export interface StudioRunnerSettings {
   };
   person?: string;
   machine?: string;
+  /**
+   * Git remote the Runner clones for job worktrees (the content repo). Any git URL or a local path.
+   */
+  contentRepoUrl?: string;
 }
 /**
  * Configuration held outside the schemas (Worker env or a data file). Enabling a Circle teacher is adding a role here.
