@@ -82,6 +82,31 @@ test('job: bad inputs fail for the right reason', () => {
   expectInvalid('job', tpl, 'minimum', '/template/version');
 });
 
+test('job: optional catalog reference (2.8.0)', () => {
+  const ok = example('job'); assert.ok(ok.catalog);
+  const none = example('job'); delete none.catalog; expectValid('job', none);
+  const partial = example('job'); delete partial.catalog.bookId;
+  expectInvalid('job', partial, 'required', 'bookId');
+});
+
+test('stage: checks list and previousCommit (2.8.0)', () => {
+  const s = example('stage');
+  s.status = 'failed'; s.checks = [{ id: 'recap', message: 'Section s3 has no recap line' }]; s.previousCommit = 'abc1234';
+  expectValid('stage', s);
+  const bad = example('stage'); bad.checks = [{ id: 'x' }];
+  expectInvalid('stage', bad, 'required', 'message');
+  const sha = example('stage'); sha.previousCommit = 'not a sha';
+  expectInvalid('stage', sha, 'pattern', '/previousCommit');
+});
+
+test('page-map: pages are positive integers (2.8.0)', () => {
+  expectValid('page-map', example('page-map'));
+  const zero = example('page-map'); zero.blocks['s1-p1'] = [0];
+  expectInvalid('page-map', zero, 'minimum', '/blocks/s1-p1/0');
+  const empty = example('page-map'); empty.blocks['s1-p1'] = [];
+  expectInvalid('page-map', empty, 'minItems', '/blocks/s1-p1');
+});
+
 test('job: as-is can be set per source item', () => {
   const job = example('job'); job.sources[0].rebuildMode = 'as-is';
   expectValid('job', job);

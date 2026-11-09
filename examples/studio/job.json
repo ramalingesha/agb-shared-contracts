@@ -21,5 +21,11 @@
     "kn"
   ],
   "notes": "Keep the book's wording.",
-  "state": "draft"
+  "state": "draft",
+  "catalog": {
+    "boardId": "karnataka",
+    "classId": "class-4",
+    "subjectId": "english",
+    "bookId": "marigold"
+  }
 }

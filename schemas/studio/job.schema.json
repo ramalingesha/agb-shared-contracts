@@ -95,6 +95,35 @@
     "item": {
       "type": "string",
       "description": "Block or output id an item-level job is about."
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boardId",
+        "classId",
+        "subjectId",
+        "bookId"
+      ],
+      "description": "Optional reference into the app catalog; class, subject and book stay human names.",
+      "properties": {
+        "boardId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subjectId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bookId": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 }

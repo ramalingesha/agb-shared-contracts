@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-11-09
+
+### Added (AGB-894/895/896: Studio review screens; all optional or new files, so everything valid before still is)
+- **`job.catalog`** (`boardId`, `classId`, `subjectId`, `bookId`), an optional reference into the app catalog.
+- **`stage.checks`** (`[{id, message}]`, plain-words failed checks) and **`stage.previousCommit`** (the branch commit before a regeneration, for the before/after view).
+- **`page-map`** schema and example: `studio-jobs/<job>/page-map.json`, the book pages each block came from.
+
 ## [2.7.0] - 2026-11-09
 
 ### Added (AGB-889: Content Studio contracts; new files only, so nothing valid before changes)

@@ -47,6 +47,33 @@
     },
     "provenance": {
       "$ref": "common.schema.json#/definitions/Provenance"
+    },
+    "checks": {
+      "type": "array",
+      "description": "Failed checks in plain words, set when a stage fails its checks.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "previousCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "The branch commit before this stage regenerated its output (before/after view)."
     }
   },
   "allOf": [
