@@ -1,0 +1,14 @@
+{
+  "job": "c4-science-its-all-a-cycle",
+  "blockId": "c4-s1-p1",
+  "scope": {
+    "kind": "global"
+  },
+  "reviewer": {
+    "userId": "u-1",
+    "role": "content-team"
+  },
+  "kind": "comment",
+  "comment": "Say this in simpler words.",
+  "at": "2026-11-09T10:00:00Z"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "c4-science-its-all-a-cycle",
+  "sources": [
+    {
+      "key": "sources/c4-science/book.pdf",
+      "label": "Class 4 Science book",
+      "rebuildMode": "rebuild"
+    }
+  ],
+  "circle": "class-4-science",
+  "class": "Class 4",
+  "subject": "Science",
+  "book": "It's all a cycle",
+  "template": {
+    "id": "science-default",
+    "version": 1
+  },
+  "rebuildMode": "rebuild",
+  "languages": [
+    "en",
+    "kn"
+  ],
+  "notes": "Keep the book's wording.",
+  "state": "draft"
+}

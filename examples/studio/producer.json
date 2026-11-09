@@ -1,0 +1,24 @@
+{
+  "kind": "claude-session",
+  "input": {
+    "template": {
+      "id": "science-default",
+      "version": 1
+    },
+    "stageInstructions": "jobs/c4/stage-instructions/generate.md",
+    "upstreamArtifacts": [
+      "jobs/c4/master.json"
+    ],
+    "notes": "Keep the book's wording."
+  },
+  "output": {
+    "artifact": "jobs/c4/lesson.json",
+    "provenance": {
+      "producer": "claude-session",
+      "version": "1",
+      "machine": "mac-studio-1",
+      "person": "content-lead",
+      "at": "2026-11-09T10:00:00Z"
+    }
+  }
+}

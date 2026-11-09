@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioJob",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "sources",
+    "circle",
+    "class",
+    "subject",
+    "book",
+    "template",
+    "rebuildMode",
+    "languages"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key"
+        ],
+        "properties": {
+          "key": {
+            "$ref": "common.schema.json#/definitions/StoreKey"
+          },
+          "label": {
+            "type": "string"
+          },
+          "rebuildMode": {
+            "type": "string",
+            "enum": [
+              "rebuild",
+              "as-is"
+            ]
+          }
+        }
+      }
+    },
+    "circle": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "book": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template": {
+      "$ref": "common.schema.json#/definitions/TemplateRef"
+    },
+    "rebuildMode": {
+      "type": "string",
+      "enum": [
+        "rebuild",
+        "as-is"
+      ],
+      "default": "rebuild"
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/definitions/LanguageTag"
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "state": {
+      "$ref": "common.schema.json#/definitions/ReviewState"
+    },
+    "parentJob": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/definitions/StudioId"
+        }
+      ],
+      "description": "Set on an item-level job created by a request-change on one item."
+    },
+    "item": {
+      "type": "string",
+      "description": "Block or output id an item-level job is about."
+    }
+  }
+}

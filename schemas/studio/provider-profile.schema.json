@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioProviderProfile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tier",
+    "stages"
+  ],
+  "properties": {
+    "tier": {
+      "$ref": "common.schema.json#/definitions/Tier"
+    },
+    "stages": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "common.schema.json#/definitions/StageId"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "producer"
+        ],
+        "properties": {
+          "producer": {
+            "$ref": "common.schema.json#/definitions/ProducerKind"
+          },
+          "settings": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

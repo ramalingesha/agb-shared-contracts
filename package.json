@@ -1,22 +1,26 @@
 {
   "name": "@ramalingesha/shared-contracts",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "Shared contracts and types for AGB microservices ecosystem - language-agnostic data structures",
   "main": "error-codes.json",
   "files": [
     "error-codes.json",
     "api-response-schema.json",
     "knowledge-api.schema.json",
+    "schemas/studio",
+    "examples/studio",
     "types/knowledge-api",
+    "types/studio",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "generate:types": "node scripts/generate-knowledge-types.js",
-    "validate": "node scripts/validate-error-codes.js && node scripts/validate-knowledge-api-schema.js",
+    "validate": "node scripts/validate-error-codes.js && node scripts/validate-knowledge-api-schema.js && node scripts/validate-studio-schemas.js",
     "test": "npm run validate",
     "build": "echo \"agb-shared-contracts: nothing to build (error-codes.json, api-response-schema.json, knowledge-api.schema.json, and types/knowledge-api are committed source, not build output)\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate:studio-types": "node scripts/generate-studio-types.js"
   },
   "devDependencies": {
     "ajv": "^8.20.0",

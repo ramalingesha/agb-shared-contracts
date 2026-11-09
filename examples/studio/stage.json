@@ -1,0 +1,12 @@
+{
+  "job": "c4-science-its-all-a-cycle",
+  "stage": "generate",
+  "status": "queued",
+  "item": "lesson",
+  "producer": "claude-session",
+  "attempt": 0,
+  "inputs": [
+    "jobs/c4-science-its-all-a-cycle/master.json"
+  ],
+  "outputs": []
+}

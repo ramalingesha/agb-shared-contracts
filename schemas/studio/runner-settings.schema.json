@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioRunnerSettings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "workerUrl",
+    "workFolder",
+    "allowedStages",
+    "maxParallelJobs",
+    "mediaStore",
+    "producers"
+  ],
+  "properties": {
+    "workerUrl": {
+      "type": "string",
+      "pattern": "^https?://"
+    },
+    "workFolder": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Folder for job worktrees. A relative value is resolved by the Runner against the person's home folder (os.homedir()); never a hard-coded drive."
+    },
+    "allowedStages": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/definitions/StageId"
+      }
+    },
+    "maxParallelJobs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16
+    },
+    "mediaStore": {
+      "$ref": "media-store.schema.json"
+    },
+    "mediaPort": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 65535
+    },
+    "studioOrigin": {
+      "type": "string",
+      "pattern": "^https?://",
+      "description": "The one origin the local media server answers with CORS."
+    },
+    "producers": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "common.schema.json#/definitions/StageId"
+      },
+      "additionalProperties": {
+        "$ref": "common.schema.json#/definitions/ProducerKind"
+      }
+    },
+    "person": {
+      "type": "string"
+    },
+    "machine": {
+      "type": "string"
+    }
+  }
+}

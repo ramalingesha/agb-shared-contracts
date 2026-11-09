@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioStage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job",
+    "stage",
+    "status",
+    "attempt"
+  ],
+  "properties": {
+    "job": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "stage": {
+      "$ref": "common.schema.json#/definitions/StageId"
+    },
+    "status": {
+      "$ref": "common.schema.json#/definitions/StageStatus"
+    },
+    "producer": {
+      "$ref": "common.schema.json#/definitions/ProducerKind"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "item": {
+      "type": "string",
+      "description": "For the generate stage: one stage item per output type, e.g. lesson, study-jam, buddy-bank."
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/definitions/StoreKey"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/definitions/StoreKey"
+      }
+    },
+    "error": {
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "common.schema.json#/definitions/Provenance"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "generate"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "required": [
+          "item"
+        ]
+      }
+    }
+  ]
+}

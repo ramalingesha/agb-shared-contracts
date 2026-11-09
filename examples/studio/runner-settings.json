@@ -1,0 +1,21 @@
+{
+  "workerUrl": "https://studio.example.invalid",
+  "workFolder": "studio-work",
+  "allowedStages": [
+    "generate",
+    "slides"
+  ],
+  "maxParallelJobs": 2,
+  "mediaStore": {
+    "kind": "local-disk",
+    "root": "studio-media"
+  },
+  "mediaPort": 4580,
+  "studioOrigin": "https://app.example.invalid",
+  "producers": {
+    "generate": "claude-session",
+    "slides": "rules"
+  },
+  "person": "content-lead",
+  "machine": "mac-studio-1"
+}

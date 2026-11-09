@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioReview",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "state"
+  ],
+  "description": "Review status of a job or output. Legal moves are the data in review-transitions.json; 'locked' is terminal.",
+  "properties": {
+    "state": {
+      "$ref": "common.schema.json#/definitions/ReviewState"
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to",
+          "by",
+          "at"
+        ],
+        "properties": {
+          "from": {
+            "$ref": "common.schema.json#/definitions/ReviewState"
+          },
+          "to": {
+            "$ref": "common.schema.json#/definitions/ReviewState"
+          },
+          "by": {
+            "type": "string"
+          },
+          "at": {
+            "$ref": "common.schema.json#/definitions/Timestamp"
+          }
+        }
+      }
+    }
+  }
+}

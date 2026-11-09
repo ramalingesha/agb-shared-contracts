@@ -13,6 +13,10 @@ on:
       - "scripts/validate-knowledge-api-schema.js"
       - "scripts/generate-knowledge-types.js"
       - "types/knowledge-api/**"
+      - "schemas/studio/**"
+      - "examples/studio/**"
+      - "types/studio/**"
+      - "scripts/*studio*.js"
       - ".github/workflows/validate.yml"
   workflow_dispatch:
 
@@ -50,11 +54,12 @@ jobs:
       - name: Validate generated TypeScript types are up to date
         run: |
           npm run generate:types
-          if ! git diff --exit-code -- types/knowledge-api/; then
+          npm run generate:studio-types
+          if ! git diff --exit-code -- types/knowledge-api/ types/studio/; then
             echo "❌ types/knowledge-api/ is stale — run 'npm run generate:types' and commit the result"
             exit 1
           fi
-          if [ -n "$(git status --porcelain -- types/knowledge-api/)" ]; then
+          if [ -n "$(git status --porcelain -- types/knowledge-api/ types/studio/)" ]; then
             echo "❌ types/knowledge-api/ has untracked files after regeneration — commit the result"
             exit 1
           fi

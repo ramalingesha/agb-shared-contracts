@@ -11,6 +11,8 @@ Where to look for what, in this repo. See `docs/ARCHITECTURE.md` for the "why."
 | Study Jam payload (2.6.0, AGB-855): `StudyJam*` definitions, `ExplanationContent.studyJam`, `ExplanationSummary.styleVariants` | `knowledge-api.schema.json`; types in `types/knowledge-api/study-jam.d.ts`; samples in `scripts/contract-samples.json` |
 | Type generator | `scripts/generate-knowledge-types.js` (`npm run generate:types`) |
 | Error-codes validation | `scripts/validate-error-codes.js` |
+| Content Studio contracts (2.7.0, AGB-889) | `schemas/studio/*.schema.json` (source), `schemas/studio/review-transitions.json`, `schemas/studio/stage-io.json`, `examples/studio/*.json`, generated `types/studio/index.d.ts` (`npm run generate:studio-types`) |
+| Studio contract tests | `scripts/validate-studio-schemas.js` |
 | Knowledge-schema validation | `scripts/validate-knowledge-api-schema.js` |
 | PR/push validation CI | `.github/workflows/validate.yml` |
 | Tag-triggered publish CI | `.github/workflows/publish.yml` |
