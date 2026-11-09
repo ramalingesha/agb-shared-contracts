@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioProducer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "input",
+    "output"
+  ],
+  "properties": {
+    "kind": {
+      "$ref": "common.schema.json#/definitions/ProducerKind"
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template",
+        "stageInstructions",
+        "upstreamArtifacts"
+      ],
+      "properties": {
+        "template": {
+          "$ref": "common.schema.json#/definitions/TemplateRef"
+        },
+        "stageInstructions": {
+          "$ref": "common.schema.json#/definitions/StoreKey"
+        },
+        "upstreamArtifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/StoreKey"
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "reviewComments": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/StoreKey"
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact",
+        "provenance"
+      ],
+      "properties": {
+        "artifact": {
+          "$ref": "common.schema.json#/definitions/StoreKey"
+        },
+        "provenance": {
+          "$ref": "common.schema.json#/definitions/Provenance"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "tier": "Free",
+  "stages": {
+    "inventory": {
+      "producer": "parse:tesseract"
+    },
+    "master": {
+      "producer": "claude-session"
+    },
+    "generate": {
+      "producer": "claude-session"
+    },
+    "slides": {
+      "producer": "rules"
+    },
+    "narration-script": {
+      "producer": "claude-session"
+    },
+    "audio": {
+      "producer": "voice:shruto",
+      "settings": {
+        "voice": "teacher"
+      }
+    },
+    "translation": {
+      "producer": "api:translation-service"
+    },
+    "publish": {
+      "producer": "rules"
+    }
+  }
+}

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-11-09
+
+### Added (AGB-889: Content Studio contracts; new files only, so nothing valid before changes)
+- **`schemas/studio/`** (JSON Schema draft-07, source of truth) with generated `types/studio/index.d.ts` and one `examples/studio/<name>.json` per contract: `job`, `stage`, `review`, `review-record`, `producer`, `provider-profile`, `template`, `media-store`, `runner-settings`, `studio-config`, plus `common` building blocks.
+- **Data tables**: `review-transitions.json` (legal review moves; `locked` is terminal) and `stage-io.json` (input and output artifacts per stage).
+- **Store keys** are relative, forward-slash and checked by pattern; no schema holds an OS, drive letter or absolute path.
+- **Providers and roles are configuration, not enums**: `api:<name>`, `voice:<name>`, `parse:<name>` producer kinds; review roles come from `studio-config`. Tests add a `fake` provider and a `circle-teacher` role with no schema change.
+- **Templates**: one `template` schema with a `kind`; a published `id@version` is immutable, a changed pattern is a new version.
+- `npm run generate:studio-types`, `scripts/validate-studio-schemas.js` (wired into `npm run validate`); `STUDIO_TEMPLATES_DIR=<folder>` also validates a templates folder.
+- Producer kind `fake` (plain, for tests) and optional `runner-settings.contentRepoUrl` (the content repo the Runner clones).
+- `package.json` `files` ships `schemas/studio`, `examples/studio` and `types/studio`.
+
 ## [2.6.0] - 2026-11-05
 
 ### Added (AGB-855: Study Jam, the Friend style as a two-friend conversation; all optional, so all content valid before still is)

@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioMediaStoreConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind"
+  ],
+  "description": "Describes a media store. The interface every store implements: put(key, bytes), get(key), exists(key), url(key). Keys are StoreKeys. Only local-disk exists now.",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "local-disk"
+      ]
+    },
+    "root": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Folder for the local-disk store. A relative value is resolved against the home folder by the implementation. Never stored in a job or an artifact."
+    },
+    "baseUrl": {
+      "type": "string",
+      "description": "Where url(key) points, e.g. http://127.0.0.1:4580/media/"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "local-disk"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "root"
+        ]
+      }
+    }
+  ]
+}

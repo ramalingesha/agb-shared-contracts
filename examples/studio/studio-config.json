@@ -1,0 +1,15 @@
+{
+  "reviewRoles": [
+    "owner",
+    "content-team"
+  ],
+  "permissions": {
+    "studio:review": [
+      "owner",
+      "content-team"
+    ],
+    "studio:admin": [
+      "owner"
+    ]
+  }
+}

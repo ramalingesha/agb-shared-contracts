@@ -1,0 +1,18 @@
+{
+  "id": "science-default",
+  "version": 1,
+  "kind": "lesson",
+  "description": "Default Science lesson pattern.",
+  "derivedFrom": [
+    "c4 build-spine.js"
+  ],
+  "body": {
+    "sections": [
+      "before-you-start",
+      "teaching",
+      "recap",
+      "book-exercises",
+      "parent-guide"
+    ]
+  }
+}

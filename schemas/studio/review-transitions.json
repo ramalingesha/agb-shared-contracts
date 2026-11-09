@@ -1,0 +1,27 @@
+{
+  "description": "Legal review state moves, as data (AGB-889). Anything not listed is illegal. 'locked' has no exit.",
+  "states": [
+    "draft",
+    "in-review",
+    "changes-requested",
+    "approved",
+    "locked"
+  ],
+  "transitions": {
+    "draft": [
+      "in-review"
+    ],
+    "in-review": [
+      "changes-requested",
+      "approved"
+    ],
+    "changes-requested": [
+      "in-review"
+    ],
+    "approved": [
+      "locked",
+      "changes-requested"
+    ],
+    "locked": []
+  }
+}

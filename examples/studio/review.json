@@ -1,0 +1,11 @@
+{
+  "state": "in-review",
+  "history": [
+    {
+      "from": "draft",
+      "to": "in-review",
+      "by": "content-lead",
+      "at": "2026-11-09T10:00:00Z"
+    }
+  ]
+}

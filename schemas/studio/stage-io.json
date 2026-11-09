@@ -1,0 +1,90 @@
+{
+  "description": "Input and output artifact kinds per stage (AGB-889). Artifacts are StoreKeys under jobs/<job>/. The generate stage runs once per output type (an item).",
+  "stages": {
+    "inventory": {
+      "inputs": [
+        "source"
+      ],
+      "outputs": [
+        "inventory"
+      ]
+    },
+    "master": {
+      "inputs": [
+        "inventory",
+        "template:lesson"
+      ],
+      "outputs": [
+        "master"
+      ]
+    },
+    "generate": {
+      "inputs": [
+        "master",
+        "template:lesson"
+      ],
+      "outputs": [
+        "output"
+      ],
+      "perItem": true,
+      "items": [
+        "lesson",
+        "study-jam",
+        "buddy-bank",
+        "glossary",
+        "objects",
+        "pictures"
+      ]
+    },
+    "slides": {
+      "inputs": [
+        "master",
+        "template:slide"
+      ],
+      "outputs": [
+        "slides"
+      ]
+    },
+    "narration-script": {
+      "inputs": [
+        "output",
+        "template:narration-style"
+      ],
+      "outputs": [
+        "narration-script"
+      ]
+    },
+    "audio": {
+      "inputs": [
+        "narration-script",
+        "template:voice-emotion"
+      ],
+      "outputs": [
+        "audio",
+        "marks"
+      ]
+    },
+    "translation": {
+      "inputs": [
+        "output",
+        "slides",
+        "narration-script"
+      ],
+      "outputs": [
+        "translated"
+      ]
+    },
+    "publish": {
+      "inputs": [
+        "output",
+        "slides",
+        "audio",
+        "marks",
+        "translated"
+      ],
+      "outputs": [
+        "published"
+      ]
+    }
+  }
+}

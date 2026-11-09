@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioReviewRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job",
+    "blockId",
+    "scope",
+    "reviewer",
+    "kind",
+    "at"
+  ],
+  "properties": {
+    "job": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "blockId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "global",
+            "circle"
+          ]
+        },
+        "circleId": {
+          "$ref": "common.schema.json#/definitions/StudioId"
+        }
+      },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "circle"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "circleId"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "circleId"
+          ]
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "userId",
+        "role"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free string, checked against the configured role list (studio-config.schema.json), never a schema enum."
+        }
+      }
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "comment",
+        "approve",
+        "request-change"
+      ]
+    },
+    "comment": {
+      "type": "string"
+    },
+    "at": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "comment",
+              "request-change"
+            ]
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "comment"
+        ]
+      }
+    }
+  ]
+}
