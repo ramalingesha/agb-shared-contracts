@@ -59,4 +59,4 @@ holds the shared coding-standards files.
 The parent repo `ramalingesha/ai_gnan_bandar` holds the Confluence-derived design in `docs/` and
 the decision log in `docs/DECISIONS-AND-STATE.md` (see ARCHITECTURE.md "Related").
 
-Last verified against main 567eabf on 2026-11-10
+Last verified against main 967de20 on 2026-11-10

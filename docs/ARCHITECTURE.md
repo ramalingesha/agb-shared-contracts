@@ -96,7 +96,7 @@ Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) and 2.9.0 (AGB-
   version with the package version" as D67. It is not covered by the equality check.
 - Every schema change needs a `CHANGELOG.md` entry (checked in the pre-push hook), and no error code may
   be removed.
-- Release history: 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
+- Release history: 2.9.0 Studio upload to Gate 1, 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
   table explanations, 2.4.0 voice samples and answer marks, 2.3.0 technical lessons, 2.2.0 MVP modules,
   2.1.0 `uri-reference`, 2.0.0 StyleId, 1.2.0 Knowledge schema, 1.1.0 CI pipeline, 1.0.0 error registry.
 
@@ -125,4 +125,4 @@ Parent repo `ramalingesha/ai_gnan_bandar`: Confluence-derived design in `docs/`,
 Friend leading to Study Jam), D67 (align the schema version with the package version), D61 (two content
 modes: pre-generated library and Studio), and section 5 (Content Studio, epic AGB-888).
 
-Last verified against main 567eabf on 2026-11-10
+Last verified against main 967de20 on 2026-11-10
