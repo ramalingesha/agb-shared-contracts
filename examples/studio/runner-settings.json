@@ -27,5 +27,6 @@
   },
   "ocr": {
     "engine": "wasm"
-  }
+  },
+  "sessionTimeoutMinutes": 30
 }
