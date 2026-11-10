@@ -1,33 +1,62 @@
 # Codebase Map — agb-shared-contracts
 
-Where to look for what, in this repo. See `docs/ARCHITECTURE.md` for the "why."
+**Purpose:** "where do I look for X?" for `@ramalingesha/shared-contracts` (package version 2.8.0).
+Read [ARCHITECTURE.md](ARCHITECTURE.md) for what the contracts mean. This repo has no runtime
+code: it is JSON Schema, JSON data tables, generated `.d.ts` files, examples and validator scripts.
+Default branch is `main`. There is no `CLAUDE.md` or `AGENTS.md` on `main`; `.github/instructions/shared/`
+holds the shared coding-standards files.
 
-| Concept | File(s) |
-|---|---|
-| Error code registry | `error-codes.json` |
-| Standard API response envelope | `api-response-schema.json` |
-| Knowledge Platform read-surface contract (K3) | `knowledge-api.schema.json` |
-| Generated TypeScript types for the Knowledge contract | `types/knowledge-api/*.d.ts` — topic-grouped split + `index.d.ts` barrel (generated — do not hand-edit) |
-| Study Jam payload (2.6.0, AGB-855): `StudyJam*` definitions, `ExplanationContent.studyJam`, `ExplanationSummary.styleVariants` | `knowledge-api.schema.json`; types in `types/knowledge-api/study-jam.d.ts`; samples in `scripts/contract-samples.json` |
-| Type generator | `scripts/generate-knowledge-types.js` (`npm run generate:types`) |
-| Error-codes validation | `scripts/validate-error-codes.js` |
-| Content Studio contracts (2.8.0, AGB-889/894-896) | `schemas/studio/*.schema.json` (source), `schemas/studio/review-transitions.json`, `schemas/studio/stage-io.json`, `examples/studio/*.json`, generated `types/studio/index.d.ts` (`npm run generate:studio-types`) |
-| Studio contract tests | `scripts/validate-studio-schemas.js` |
-| Knowledge-schema validation | `scripts/validate-knowledge-api-schema.js` |
-| PR/push validation CI | `.github/workflows/validate.yml` |
-| Tag-triggered publish CI | `.github/workflows/publish.yml` |
-| Release history | `CHANGELOG.md` |
+| If you are working on... | Start here | Also look at | Notes |
+|---|---|---|---|
+| Error codes (22 codes: AUTH, VAL, DB, SYS, BIZ) | `error-codes.json` | `scripts/validate-error-codes.js` | `version` must equal the package version |
+| Standard API response envelope | `api-response-schema.json` | `scripts/validate-error-codes.js` | `version` must equal the package version |
+| Knowledge Platform read surface (Knowledge, Explanation, Block, MediaRef, Narration, Buddy, Study Jam) | `knowledge-api.schema.json` | `types/knowledge-api/*.d.ts` | Own `version` field, currently `0.1.0` (known gap, AGB-902) |
+| Generated Knowledge types | `types/knowledge-api/index.d.ts` (barrel) | `primitives`, `media`, `content-blocks`, `explanation`, `knowledge`, `narration`, `buddy`, `study-jam` `.d.ts` | Generated, never hand-edit |
+| Knowledge type generator | `scripts/generate-knowledge-types.js` | `npm run generate:types` | Compiles the schema, then splits by topic |
+| Knowledge schema validation and samples | `scripts/validate-knowledge-api-schema.js` | `scripts/contract-samples.json` | Samples: real snippets that must pass, and invalid ones that must fail for a named field |
+| Content Studio contracts (job, stage, review, producer, template, config) | `schemas/studio/*.schema.json` | `schemas/studio/common.schema.json` | JSON Schema draft-07, source of truth |
+| Legal review state moves | `schemas/studio/review-transitions.json` | `schemas/studio/review.schema.json` | `locked` has no exit |
+| Stage inputs and outputs | `schemas/studio/stage-io.json` | `schemas/studio/stage.schema.json` | Artifacts are store keys under `jobs/<job>/` |
+| Studio examples (one per contract) | `examples/studio/*.json` | `scripts/validate-studio-schemas.js` | Checked against the schemas |
+| Generated Studio types | `types/studio/index.d.ts` | `scripts/generate-studio-types.js` | `npm run generate:studio-types` |
+| Studio contract tests | `scripts/validate-studio-schemas.js` | `STUDIO_TEMPLATES_DIR=<folder>` | Also validates a folder of template files (used by gnanora-content, per README) |
+| Version consistency (package, error codes, API envelope) | `scripts/check-versions.js` | `.husky/pre-commit` | Knowledge schema version is not in this check |
+| "CHANGELOG updated" and "no error code removed" | `scripts/check-changes-vs-base.js` | `.husky/pre-push` | Runs against local `origin/main` |
+| "Generated types are fresh" | `scripts/check-types-fresh.sh` | `.husky/pre-push`, `.github/workflows/validate.yml` | Regenerates both type folders and fails on any diff |
+| CI on merge | `.github/workflows/validate.yml` | `.github/workflows/publish.yml` | Validate runs on push to `main` (path filtered) |
+| Publishing | `.github/workflows/publish.yml` | `package.json` `files`, `.npmrc` | Triggered by a `v*.*.*` tag, publishes to GitHub Packages |
+| What ships in the package | `package.json` `files` | | Allowlist; a missing entry is a silent packaging bug |
+| Release history | `CHANGELOG.md` | | Keep a Changelog format |
+| Consumer usage snippets | `README.md` | | Node `require`, Python raw JSON, TypeScript `import type` |
+
+## Commands
+
+- `npm run validate` (also `npm test`): runs the three validators (error codes, knowledge schema, studio schemas).
+- `npm run generate:types` and `npm run generate:studio-types`: regenerate the committed `.d.ts` folders.
+- `npm run build` only prints a notice; there is nothing to build.
+- Local gates are in `.husky/pre-commit` (JSON syntax, validate, version consistency) and
+  `.husky/pre-push` (adds types freshness and the changelog/error-code check).
+
+## How consumers use it
+
+- Node: `require('@ramalingesha/shared-contracts/knowledge-api.schema.json')` for runtime ajv checks;
+  `import type { Knowledge } from '@ramalingesha/shared-contracts/types/knowledge-api'`;
+  Studio: `.../schemas/studio/job.schema.json` and `.../types/studio` (README examples).
+- Python: fetch the raw JSON over HTTPS (ARCHITECTURE.md).
+- Fixtures and content builds validate against the schema; mocks must be able to return every `VariantStatus`.
 
 ## Adding a new contract file
 
-1. Add the JSON Schema file at the repo root.
-2. Add it to `package.json`'s `"files"` allowlist (a missing entry here is a silent
-   packaging bug — verified the hard way in AGB-586, see `CHANGELOG.md` 1.2.0).
-3. Write a `scripts/validate-<name>.js` following the existing scripts' style
-   (`✅`/`❌` console output, `process.exit(1)` on failure); wire it into the
-   `"validate"` npm script.
-4. If TypeScript types are needed, add a generator script alongside
-   `generate-knowledge-types.js` and commit its output under `types/`.
-5. Add the new files to `validate.yml`'s `push.paths` trigger list — a file
-   outside that list does not trigger CI on a push that only touches it.
-6. Document the new contract in `README.md`'s "Contents" section and in `CHANGELOG.md`.
+1. Add the schema (root file, or under `schemas/<area>/`).
+2. Add it to the `package.json` `files` allowlist.
+3. Add a `scripts/validate-<name>.js` and wire it into the `validate` script.
+4. If types are needed, add a generator and commit the output under `types/`.
+5. Add its paths to `validate.yml` `push.paths`.
+6. Document it in `README.md` and `CHANGELOG.md`, and bump the package version.
+
+## Related
+
+The parent repo `ramalingesha/ai_gnan_bandar` holds the Confluence-derived design in `docs/` and
+the decision log in `docs/DECISIONS-AND-STATE.md` (see ARCHITECTURE.md "Related").
+
+Last verified against master 567eabf on 2026-11-10 (the default branch is named `main`)
