@@ -107,6 +107,54 @@ test('page-map: pages are positive integers (2.8.0)', () => {
   expectInvalid('page-map', empty, 'minItems', '/blocks/s1-p1');
 });
 
+test('job: scan layout, source language and as-is items (2.9.0)', () => {
+  const ok = example('job'); ok.sources[0].layout = 'spread'; ok.sourceLanguage = 'kn'; ok.asIsItems = ['Q-01', 'D-02'];
+  expectValid('job', ok);
+  const bad = example('job'); bad.sources[0].layout = 'diagonal';
+  expectInvalid('job', bad, 'enum', '/sources/0/layout');
+  const badItem = example('job'); badItem.asIsItems = ['question 1'];
+  expectInvalid('job', badItem, 'pattern', '/asIsItems/0');
+});
+
+test('inventory: item ids, kinds and page references (2.9.0)', () => {
+  const badId = example('inventory'); badId.items[0].id = 'X-1';
+  expectInvalid('inventory', badId, 'pattern', '/items/0/id');
+  const badPage = example('inventory'); badPage.items[0].pages = ['p12'];
+  expectInvalid('inventory', badPage, 'pattern', '/items/0/pages/0');
+  const noText = example('inventory'); noText.items[0].text = '';
+  expectInvalid('inventory', noText, 'minLength', '/items/0/text');
+  const status = example('inventory'); status.pages[0].status = 'maybe';
+  expectInvalid('inventory', status, 'enum', '/pages/0/status');
+});
+
+test('pages, coverage-report, gate-index and picture-requests: bad inputs fail (2.9.0)', () => {
+  const pg = example('pages'); pg.pages[0].id = 'page-1';
+  expectInvalid('pages', pg, 'pattern', '/pages/0/id');
+  const side = example('pages'); side.pages[0].side = 'top';
+  expectInvalid('pages', side, 'enum', '/pages/0/side');
+  const cov = example('coverage-report'); delete cov.summary;
+  expectInvalid('coverage-report', cov, 'required', 'summary');
+  const gate = example('gate-index'); gate.gates[0].gate = 'final';
+  expectInvalid('gate-index', gate, 'enum', '/gates/0/gate');
+  const pic = example('picture-requests'); pic.requests[0].slug = 'Bad Slug';
+  expectInvalid('picture-requests', pic, 'pattern', '/requests/0/slug');
+});
+
+test('runner-settings: intake and ocr adapters are names, not operating systems (2.9.0)', () => {
+  const ok = example('runner-settings'); ok.intake = { renderer: 'api:acme', dpi: 150 }; ok.ocr = { engine: 'api:acme' };
+  expectValid('runner-settings', ok);
+  const bad = example('runner-settings'); bad.ocr = { engine: 'Windows OCR' };
+  expectInvalid('runner-settings', bad, 'pattern', '/ocr/engine');
+  const dpi = example('runner-settings'); dpi.intake = { dpi: 10 };
+  expectInvalid('runner-settings', dpi, 'minimum', '/intake/dpi');
+});
+
+test('stage-io: inventory and master list their Phase 3 artifacts (2.9.0)', () => {
+  const io = readJson(path.join(SCHEMA_DIR, 'stage-io.json')).stages;
+  assert.deepEqual(io.inventory.outputs, ['inventory', 'pages', 'source-text']);
+  assert.deepEqual(io.master.outputs, ['master', 'coverage', 'picture-requests', 'page-map', 'gate-index']);
+});
+
 test('job: as-is can be set per source item', () => {
   const job = example('job'); job.sources[0].rebuildMode = 'as-is';
   expectValid('job', job);

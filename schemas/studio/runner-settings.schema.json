@@ -65,6 +65,67 @@
       "type": "string",
       "minLength": 1,
       "description": "Git remote the Runner clones for job worktrees (the content repo). Any git URL or a local path."
+    },
+    "intake": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Source intake adapters, chosen by name. Never chosen by operating system.",
+      "properties": {
+        "renderer": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(:[a-z0-9-]+)?$",
+          "default": "pdfjs",
+          "description": "Page renderer adapter: pdfjs (default), pdftoppm, or api:<provider> later."
+        },
+        "dpi": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 400,
+          "default": 150
+        },
+        "maxEdge": {
+          "type": "integer",
+          "minimum": 400,
+          "maximum": 6000,
+          "default": 2000
+        },
+        "imageDpi": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 300,
+          "default": 100,
+          "description": "Resolution of the JPEG working copies a session reads."
+        },
+        "mediaStore": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "default": "local-disk",
+          "description": "Where page images are kept: local-disk now, a remote store later."
+        }
+      }
+    },
+    "ocr": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "type": "string",
+          "pattern": "^(wasm|native|auto|api:[a-z0-9-]+)$",
+          "default": "wasm",
+          "description": "OCR adapter: wasm (default, bundled), native, auto, or api:<provider> later."
+        },
+        "tessdataFolder": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Folder with extra traineddata files for other source languages."
+        }
+      }
+    },
+    "batchPages": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 40,
+      "description": "Override of the template batch size (scan pages per session)."
     }
   }
 }

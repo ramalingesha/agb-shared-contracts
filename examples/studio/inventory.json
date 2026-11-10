@@ -1,0 +1,41 @@
+{
+  "job": "class4-english-unit7",
+  "source": "jobs/class4-english-unit7/unit7.pdf",
+  "items": [
+    {
+      "id": "T-01",
+      "kind": "T",
+      "text": "Pillar",
+      "section": "1 Our story",
+      "pages": [
+        "2l"
+      ],
+      "mode": "rebuild"
+    },
+    {
+      "id": "Q-01",
+      "kind": "Q",
+      "text": "Why was Ravi sad?",
+      "section": "1 Our story",
+      "pages": [
+        "2r"
+      ],
+      "mode": "rebuild"
+    }
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "printed": "cover",
+      "status": "skipped",
+      "questions": 0,
+      "note": "title page, no teaching content"
+    },
+    {
+      "page": 2,
+      "printed": "30-31",
+      "status": "covered",
+      "questions": 1
+    }
+  ]
+}

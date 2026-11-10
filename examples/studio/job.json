@@ -4,7 +4,8 @@
     {
       "key": "sources/c4-science/book.pdf",
       "label": "Class 4 Science book",
-      "rebuildMode": "rebuild"
+      "rebuildMode": "rebuild",
+      "layout": "auto"
     }
   ],
   "circle": "class-4-science",
@@ -27,5 +28,9 @@
     "classId": "class-4",
     "subjectId": "english",
     "bookId": "marigold"
-  }
+  },
+  "sourceLanguage": "en",
+  "asIsItems": [
+    "Q-04"
+  ]
 }

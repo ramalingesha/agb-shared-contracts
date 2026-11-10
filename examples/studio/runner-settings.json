@@ -17,5 +17,15 @@
     "slides": "rules"
   },
   "person": "content-lead",
-  "machine": "mac-studio-1"
+  "machine": "mac-studio-1",
+  "intake": {
+    "renderer": "pdfjs",
+    "dpi": 150,
+    "maxEdge": 2000,
+    "imageDpi": 100,
+    "mediaStore": "local-disk"
+  },
+  "ocr": {
+    "engine": "wasm"
+  }
 }

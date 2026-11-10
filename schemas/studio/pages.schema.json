@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioPages",
+  "description": "studio-jobs/<job>/pages.json: the intake manifest. Facts about each page or half; no pixels.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job",
+    "pages"
+  ],
+  "properties": {
+    "job": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "source": {
+      "type": "string"
+    },
+    "sourceHash": {
+      "type": "string"
+    },
+    "layout": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "single",
+        "spread"
+      ]
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "scanPage",
+          "side",
+          "width",
+          "height",
+          "words"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^p[0-9]+[lr]?$"
+          },
+          "scanPage": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "single",
+              "l",
+              "r"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "words": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "printed": {
+            "type": "string"
+          },
+          "imageHash": {
+            "type": "string"
+          },
+          "questionHint": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

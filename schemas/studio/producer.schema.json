@@ -41,6 +41,19 @@
           "items": {
             "$ref": "common.schema.json#/definitions/StoreKey"
           }
+        },
+        "pagesDir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional hint: the local folder of page images a session may read. A working-copy path on the Runner; never committed and never stored in a job."
+        },
+        "pageImages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^p[0-9]+[lr]?$"
+          },
+          "description": "Ids of the page images in pagesDir that this run should read."
         }
       }
     },
