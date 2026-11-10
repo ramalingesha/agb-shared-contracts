@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioItemKeys",
+  "description": "studio-jobs/<job>/items/<item>/keys.json: the review keys of one item grouped by section. Written by the engine, read by the Worker for Gate 2.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job",
+    "item",
+    "sections"
+  ],
+  "properties": {
+    "job": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "keys"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

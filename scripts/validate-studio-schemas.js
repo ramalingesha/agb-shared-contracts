@@ -160,6 +160,67 @@ test('runner-settings: sessionTimeoutMinutes is a whole number of minutes, 1 to 
   expectInvalid('runner-settings', str, 'type', '/sessionTimeoutMinutes');
 });
 
+test('template generate block: items as data, dependencies and producers (2.11.0)', () => {
+  const t = example('template'); t.body.generate = example('template-generate');
+  expectValid('template', t);
+  const noItems = example('template'); noItems.body.generate = { maxParallelItems: 3 };
+  expectInvalid('template', noItems, 'required', 'items');
+  const badFamily = example('template'); badFamily.body.generate = example('template-generate');
+  badFamily.body.generate.items[0].family = 'magic';
+  expectInvalid('template', badFamily, 'enum', '/family');
+  const badAfter = example('template-generate'); badAfter.items[1].after[0].when = 'sometime';
+  expectInvalid('template-generate', badAfter, 'enum', '/after/0/when');
+  const noReq = example('template-generate'); delete noReq.items[0].required;
+  expectInvalid('template-generate', noReq, 'required', 'required');
+});
+
+test('job: generation start block is optional and strict (2.11.0)', () => {
+  expectValid('job', example('job'));
+  const none = example('job'); delete none.generation; expectValid('job', none);
+  const bad = example('job'); bad.generation.extra = 1;
+  expectInvalid('job', bad, 'additionalProperties', 'extra');
+  const sample = example('job'); sample.generation.sample = { sections: [] };
+  expectInvalid('job', sample, 'minItems', '/generation/sample/sections');
+});
+
+test('job-item: ten states and no others (2.11.0)', () => {
+  const states = ['waiting', 'queued', 'working', 'produced', 'in-review', 'changes-asked', 'approved', 'locked', 'failed', 'blocked', 'stale', 'paused'];
+  for (const state of states) { const i = example('job-item'); i.state = state; expectValid('job-item', i); }
+  const bad = example('job-item'); bad.state = 'done';
+  expectInvalid('job-item', bad, 'enum', '/state');
+});
+
+test('gate-index accepts the items gate; item-keys needs sections (2.11.0)', () => {
+  const g = example('gate-index'); g.gates[0].gate = 'items'; expectValid('gate-index', g);
+  const bad = example('gate-index'); bad.gates[0].gate = 'slides';
+  expectInvalid('gate-index', bad, 'enum', '/gate');
+  const k = example('item-keys'); delete k.sections;
+  expectInvalid('item-keys', k, 'required', 'sections');
+});
+
+test('practice: ids only, no question or answer text (2.11.0)', () => {
+  const withText = example('practice'); withText.questions[0].question = 'What is a cycle?';
+  expectInvalid('practice', withText, 'additionalProperties', 'question');
+  const withAnswer = example('practice'); withAnswer.questions[0].answer = 'It repeats.';
+  expectInvalid('practice', withAnswer, 'additionalProperties', 'answer');
+  const noLink = example('practice'); noLink.questions[0].readAgain = [];
+  expectInvalid('practice', noLink, 'minItems', '/readAgain');
+  const kind = example('practice'); kind.questions[0].kind = 'essay';
+  expectInvalid('practice', kind, 'enum', '/kind');
+});
+
+test('runner-settings: session cap, pause on limit, load limit, per-item producers (2.11.0)', () => {
+  expectValid('runner-settings', example('runner-settings'));
+  const zero = example('runner-settings'); zero.maxParallelSessions = 0;
+  expectInvalid('runner-settings', zero, 'minimum', '/maxParallelSessions');
+  const load = example('runner-settings'); load.loadLimit = 0;
+  expectInvalid('runner-settings', load, 'exclusiveMinimum', '/loadLimit');
+  const plain = example('runner-settings'); plain.producers.generate = 'claude-session';
+  expectValid('runner-settings', plain);
+  const badItem = example('runner-settings'); badItem.producers.generate = { 'style-simple': 'Claude' };
+  expectInvalid('runner-settings', badItem, 'pattern', '/producers/generate/style-simple');
+});
+
 test('stage-io: inventory and master list their Phase 3 artifacts (2.9.0)', () => {
   const io = readJson(path.join(SCHEMA_DIR, 'stage-io.json')).stages;
   assert.deepEqual(io.inventory.outputs, ['inventory', 'pages', 'source-text']);

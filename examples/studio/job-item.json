@@ -1,0 +1,15 @@
+{
+  "id": "style-simple",
+  "label": "Simple",
+  "family": "style",
+  "required": true,
+  "state": "in-review",
+  "attempt": 1,
+  "person": "content-lead",
+  "machine": "mac-studio-1",
+  "producer": "claude-session",
+  "checks": [],
+  "approved": 7,
+  "total": 24,
+  "stale": false
+}

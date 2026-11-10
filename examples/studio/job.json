@@ -32,5 +32,10 @@
   "sourceLanguage": "en",
   "asIsItems": [
     "Q-04"
-  ]
+  ],
+  "generation": {
+    "started": true,
+    "startedBy": "content-lead",
+    "startedAt": "2026-11-11T09:00:00Z"
+  }
 }

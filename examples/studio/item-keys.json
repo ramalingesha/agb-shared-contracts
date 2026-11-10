@@ -1,0 +1,14 @@
+{
+  "job": "c4-science-its-all-a-cycle",
+  "item": "style-simple",
+  "sections": [
+    {
+      "id": "s1",
+      "title": "Section 1",
+      "keys": [
+        "simple:en:s1-p1",
+        "simple:en:s1-p2"
+      ]
+    }
+  ]
+}

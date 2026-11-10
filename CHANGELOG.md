@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.11.0] - 2026-11-11
+
+### Added (AGB-888 Phase 4: parallel generation and Gate 2; all optional or new files, so everything valid before still is)
+- **`template-generate`** schema and `template.body.generate` (checked when present): items as data with `after`, producers per tier, `group`, `checks`, `review`, `required`, `when`, estimate hints and `maxParallelItems`.
+- **`job.generation`** (`started`, `startedBy`, `startedAt`, `items`, `sample`), **`job-item`** (the items board view with twelve states), **`item-keys`** and **`practice`** (ids only; no question or answer text).
+- **`gate-index`** gate enum gains `items` (Gate 2). **`stage`** gains optional `retryAfter`, `scope` and `targetItem`.
+- **`runner-settings`**: `maxParallelSessions`, `pauseOnLimit`, `loadLimit`; `producers.<stage>` may be a per-item map with `default`.
+- Block-key styles `bank`, `activity`, `glossary`, `objects`, `lab`, `practice` documented in the README (key grammar unchanged). No knowledge-schema change.
+
 ## [2.10.0] - 2026-11-10
 
 ### Added (AGB-888: Studio Runner session limit; one optional field, so everything valid before still is)

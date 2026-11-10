@@ -40,7 +40,8 @@
         "glossary",
         "objects",
         "pictures"
-      ]
+      ],
+      "items_note": "Known kinds only (documentation). Since 2.11.0 the plan comes from the template's `generate.items`; the Worker no longer fans out from this list."
     },
     "slides": {
       "inputs": [

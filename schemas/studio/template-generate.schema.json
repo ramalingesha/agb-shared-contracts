@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioTemplateGenerate",
+  "description": "The `generate` block of a lesson template body (2.11.0): the item plan for Phase 4, as data. No item name is hard-coded in the Worker; a template with a different list plans a different job.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "maxParallelItems": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16,
+      "default": 3,
+      "description": "Items of one job that may run at once."
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/definitions/LanguageTag"
+      },
+      "minItems": 1
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/GenerateItem"
+      }
+    }
+  },
+  "definitions": {
+    "GenerateItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "family",
+        "required"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/definitions/StudioId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "family": {
+          "type": "string",
+          "enum": [
+            "style",
+            "study-jam",
+            "bank",
+            "activities",
+            "glossary",
+            "objects",
+            "lab",
+            "practice"
+          ]
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Gate 2 asks for this item when true."
+        },
+        "after": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "item",
+              "when"
+            ],
+            "properties": {
+              "item": {
+                "$ref": "common.schema.json#/definitions/StudioId"
+              },
+              "when": {
+                "type": "string",
+                "enum": [
+                  "produced",
+                  "approved"
+                ]
+              }
+            }
+          }
+        },
+        "producers": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[A-Za-z]+$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "common.schema.json#/definitions/ProducerKind"
+            }
+          },
+          "description": "Producer kinds allowed per tier (for example free: claude-session, manual)."
+        },
+        "group": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "by"
+          ],
+          "properties": {
+            "by": {
+              "type": "string",
+              "enum": [
+                "section",
+                "terms",
+                "missing-links",
+                "whole"
+              ]
+            },
+            "maxLeaves": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 400
+            }
+          },
+          "description": "How the Runner splits the work into sessions (checkpoint per group)."
+        },
+        "checks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        },
+        "review": {
+          "type": "string",
+          "enum": [
+            "block",
+            "line",
+            "card"
+          ]
+        },
+        "when": {
+          "type": "string",
+          "description": "A small data expression over the job spec and template, for example `template.lab == true`. False means the item is not planned, shown or required."
+        },
+        "estimate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tokensPerLeaf": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "tokensPerExchange": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "tokensPerCard": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sessions": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

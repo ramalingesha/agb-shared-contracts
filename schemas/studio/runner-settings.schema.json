@@ -52,7 +52,21 @@
         "$ref": "common.schema.json#/definitions/StageId"
       },
       "additionalProperties": {
-        "$ref": "common.schema.json#/definitions/ProducerKind"
+        "oneOf": [
+          {
+            "$ref": "common.schema.json#/definitions/ProducerKind"
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "pattern": "^(default|[a-z0-9][a-z0-9-]*)$"
+            },
+            "additionalProperties": {
+              "$ref": "common.schema.json#/definitions/ProducerKind"
+            },
+            "description": "Per item producers for the generate stage, with an optional `default`."
+          }
+        ]
       }
     },
     "person": {
@@ -133,6 +147,25 @@
       "maximum": 240,
       "default": 30,
       "description": "How long one Claude session may run, in minutes, before the Runner stops it. Leave out for 30 minutes. The STUDIO_CLAUDE_TIMEOUT_MS environment value, when set, wins over this."
+    },
+    "maxParallelSessions": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16,
+      "default": 2,
+      "description": "Most simultaneous Claude sessions on this machine."
+    },
+    "pauseOnLimit": {
+      "type": "boolean",
+      "default": true,
+      "description": "Pause and resume when the person's Claude usage limit is reached."
+    },
+    "loadLimit": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 4,
+      "default": 0.9,
+      "description": "No new work is claimed while the one-minute load per core is above this."
     }
   }
 }
