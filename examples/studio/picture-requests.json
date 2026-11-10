@@ -1,0 +1,16 @@
+{
+  "job": "class4-english-unit7",
+  "requests": [
+    {
+      "slug": "ravi-at-the-gate",
+      "alt": "Ravi stands at the school gate",
+      "describe": "A boy standing at a school gate in the morning",
+      "kitParts": [
+        "boy",
+        "gate"
+      ],
+      "page": "2l",
+      "block": "img1"
+    }
+  ]
+}

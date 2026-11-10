@@ -1,0 +1,206 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioCoverageReport",
+  "description": "studio-jobs/<job>/coverage.json: what the inventory or the master covers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job",
+    "stage",
+    "items",
+    "summary"
+  ],
+  "properties": {
+    "job": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "inventory",
+        "master"
+      ]
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "covered"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "T",
+              "D",
+              "F",
+              "E",
+              "Q",
+              "A",
+              "B",
+              "P"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*[lr]?$",
+              "description": "A scan page number with an optional l or r side for a two-page spread, such as 12 or 12l."
+            }
+          },
+          "covered": {
+            "type": "boolean"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "section"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "section": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "page",
+          "status"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "covered",
+              "skipped"
+            ]
+          },
+          "listed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "counted": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "hinted": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "fail",
+              "warn"
+            ]
+          }
+        }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "fail",
+              "warn"
+            ]
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "covered",
+        "gaps"
+      ],
+      "properties": {
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "covered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gaps": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

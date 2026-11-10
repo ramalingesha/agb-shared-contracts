@@ -6,7 +6,9 @@
         "source"
       ],
       "outputs": [
-        "inventory"
+        "inventory",
+        "pages",
+        "source-text"
       ]
     },
     "master": {
@@ -15,7 +17,11 @@
         "template:lesson"
       ],
       "outputs": [
-        "master"
+        "master",
+        "coverage",
+        "picture-requests",
+        "page-map",
+        "gate-index"
       ]
     },
     "generate": {

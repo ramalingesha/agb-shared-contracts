@@ -40,6 +40,16 @@
               "rebuild",
               "as-is"
             ]
+          },
+          "layout": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "single",
+              "spread"
+            ],
+            "default": "auto",
+            "description": "Scan layout: auto detects two-page spreads, single is one book page per scan page, spread is always two."
           }
         }
       }
@@ -124,6 +134,24 @@
           "minLength": 1
         }
       }
+    },
+    "sourceLanguage": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/definitions/LanguageTag"
+        }
+      ],
+      "default": "en",
+      "description": "Language of the source book, used for OCR."
+    },
+    "asIsItems": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z]-[0-9]{2,}$"
+      },
+      "description": "Inventory item ids whose text is kept as in the book. Only effective where the job settings allow as-is."
     }
   }
 }

@@ -1,0 +1,47 @@
+{
+  "job": "class4-english-unit7",
+  "stage": "master",
+  "items": [
+    {
+      "id": "T-01",
+      "kind": "T",
+      "text": "Pillar",
+      "pages": [
+        "2l"
+      ],
+      "covered": true,
+      "blocks": [
+        {
+          "id": "p1",
+          "section": "s1"
+        }
+      ]
+    },
+    {
+      "id": "Q-01",
+      "kind": "Q",
+      "text": "Why was Ravi sad?",
+      "pages": [
+        "2r"
+      ],
+      "covered": false
+    }
+  ],
+  "warnings": [
+    {
+      "id": "terms",
+      "message": "The word \"pillar\" is bold on page 2 but is not a listed term."
+    }
+  ],
+  "failures": [
+    {
+      "id": "coverage",
+      "message": "Q-01 is not covered by any block."
+    }
+  ],
+  "summary": {
+    "items": 2,
+    "covered": 1,
+    "gaps": 1
+  }
+}

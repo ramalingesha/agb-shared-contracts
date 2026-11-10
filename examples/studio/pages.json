@@ -1,0 +1,41 @@
+{
+  "job": "class4-english-unit7",
+  "source": "jobs/class4-english-unit7/unit7.pdf",
+  "sourceHash": "0123abcd",
+  "layout": "auto",
+  "pages": [
+    {
+      "id": "p001",
+      "scanPage": 1,
+      "side": "single",
+      "width": 1240,
+      "height": 1754,
+      "words": 12,
+      "confidence": 80,
+      "questionHint": 0
+    },
+    {
+      "id": "p002l",
+      "scanPage": 2,
+      "side": "l",
+      "width": 877,
+      "height": 1240,
+      "words": 290,
+      "confidence": 82,
+      "printed": "30",
+      "imageHash": "ab12",
+      "questionHint": 2
+    },
+    {
+      "id": "p002r",
+      "scanPage": 2,
+      "side": "r",
+      "width": 877,
+      "height": 1240,
+      "words": 310,
+      "confidence": 81,
+      "printed": "31",
+      "questionHint": 1
+    }
+  ]
+}

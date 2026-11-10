@@ -1,0 +1,31 @@
+{
+  "job": "class4-english-unit7",
+  "gates": [
+    {
+      "gate": "inventory",
+      "sections": [
+        {
+          "id": "1-our-story",
+          "title": "1 Our story",
+          "keys": [
+            "inventory:src:T-01",
+            "inventory:src:Q-01"
+          ]
+        }
+      ]
+    },
+    {
+      "gate": "master",
+      "sections": [
+        {
+          "id": "s1",
+          "title": "Our story",
+          "keys": [
+            "master:en:p1",
+            "master:en:qa1"
+          ]
+        }
+      ]
+    }
+  ]
+}

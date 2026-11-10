@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2026-11-10
+
+### Added (AGB-898/899/900: Content Studio Phase 3, upload to Gate 1; all optional or new files, so everything valid before still is)
+- **`job.sources[].layout`** (`auto`, `single`, `spread`), **`job.sourceLanguage`** and **`job.asIsItems`** (inventory ids kept as in the book).
+- New schemas and examples: **`inventory`** (items and page ledger), **`pages`** (intake manifest), **`coverage-report`**, **`gate-index`**, **`picture-requests`**.
+- **`stage-io`**: `inventory` outputs `inventory`, `pages`, `source-text`; `master` outputs `master`, `coverage`, `picture-requests`, `page-map`, `gate-index`.
+- **`producer.input.pagesDir`** and **`pageImages`**: the local page folder a session may read (never committed).
+- **`runner-settings.intake`** (`renderer`, `dpi`, `maxEdge`, `imageDpi`, `mediaStore`), **`ocr`** (`engine`, `tessdataFolder`) and **`batchPages`**: adapters are chosen by name in settings, never by operating system, so moving a step to a cloud service is configuration.
+
 ## [2.8.0] - 2026-11-09
 
 ### Added (AGB-894/895/896: Studio review screens; all optional or new files, so everything valid before still is)

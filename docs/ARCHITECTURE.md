@@ -3,7 +3,7 @@
 ## What this is
 
 A static, versioned set of language-agnostic contracts published as one npm package,
-`@ramalingesha/shared-contracts` (version 2.8.0), to GitHub Packages. It holds JSON Schema files,
+`@ramalingesha/shared-contracts` (version 2.9.0), to GitHub Packages. It holds JSON Schema files,
 two JSON data tables, an error-code registry, generated TypeScript `.d.ts` files and examples. There
 is no runtime service, database or API. Node consumers `npm install` it; Python consumers fetch the
 raw JSON over HTTPS. Services validate against the schemas themselves.
@@ -64,7 +64,7 @@ Core enums (all verified in the schema):
 
 ## Content Studio contracts (`schemas/studio/`)
 
-Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896). JSON Schema draft-07 is the source.
+Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) and 2.9.0 (AGB-898/899/900). JSON Schema draft-07 is the source.
 
 - **Job and stage:** `job` (sources, circle, class, subject, book, template, rebuildMode, languages,
   state, parentJob, item, and the optional `catalog` reference); `stage` (status, producer, attempt,
@@ -82,6 +82,7 @@ Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896). JSON Schema dr
 - **Config and runner:** `provider-profile` (tier `Free`, `Standard`, `Premium`, `Enterprise`),
   `media-store`, `runner-settings`, `studio-config`.
 - **page-map (2.8.0):** the book pages each block came from.
+- **inventory, pages, coverage-report, gate-index, picture-requests (2.9.0):** the source inventory, the page ledger, the inventory-to-master coverage report, the Gate 1 index and the picture requests for the drawn kits. The job also gains `sources[].layout`, `sourceLanguage` and `asIsItems`, and the Runner settings gain `intake` and `ocr`.
 - **Store keys** are relative, forward-slash, pattern-checked; no schema holds an OS path.
 
 ## Versioning policy

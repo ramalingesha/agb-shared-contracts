@@ -205,7 +205,7 @@ existing consumers get every type they did before with no import changes. CI fai
 the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
-### schemas/studio (Content Studio, 2.8.0)
+### schemas/studio (Content Studio, 2.9.0)
 
 The contracts of the Content Studio (AGB-888): jobs, stages, review states and records,
 producers, provider profiles, templates, the media store and the Runner settings. JSON Schema
