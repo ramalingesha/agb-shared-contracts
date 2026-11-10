@@ -369,6 +369,10 @@ export interface StudioRunnerSettings {
    * Override of the template batch size (scan pages per session).
    */
   batchPages?: number;
+  /**
+   * How long one Claude session may run, in minutes, before the Runner stops it. Leave out for 30 minutes. The STUDIO_CLAUDE_TIMEOUT_MS environment value, when set, wins over this.
+   */
+  sessionTimeoutMinutes?: number;
 }
 /**
  * Configuration held outside the schemas (Worker env or a data file). Enabling a Circle teacher is adding a role here.

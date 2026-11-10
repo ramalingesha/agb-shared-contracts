@@ -149,6 +149,17 @@ test('runner-settings: intake and ocr adapters are names, not operating systems 
   expectInvalid('runner-settings', dpi, 'minimum', '/intake/dpi');
 });
 
+test('runner-settings: sessionTimeoutMinutes is a whole number of minutes, 1 to 240 (2.10.0)', () => {
+  const ok = example('runner-settings'); ok.sessionTimeoutMinutes = 45;
+  expectValid('runner-settings', ok);
+  const none = example('runner-settings'); delete none.sessionTimeoutMinutes;
+  expectValid('runner-settings', none);
+  const zero = example('runner-settings'); zero.sessionTimeoutMinutes = 0;
+  expectInvalid('runner-settings', zero, 'minimum', '/sessionTimeoutMinutes');
+  const str = example('runner-settings'); str.sessionTimeoutMinutes = '30';
+  expectInvalid('runner-settings', str, 'type', '/sessionTimeoutMinutes');
+});
+
 test('stage-io: inventory and master list their Phase 3 artifacts (2.9.0)', () => {
   const io = readJson(path.join(SCHEMA_DIR, 'stage-io.json')).stages;
   assert.deepEqual(io.inventory.outputs, ['inventory', 'pages', 'source-text']);

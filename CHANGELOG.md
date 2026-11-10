@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.10.0] - 2026-11-10
+
+### Added (AGB-888: Studio Runner session limit; one optional field, so everything valid before still is)
+- **`runner-settings.sessionTimeoutMinutes`** (integer, 1 to 240, default 30): how long one Claude session may run before the Runner stops it. The Runner already honours it; the `STUDIO_CLAUDE_TIMEOUT_MS` environment value still wins when set.
+
 ## [2.9.0] - 2026-11-10
 
 ### Added (AGB-898/899/900: Content Studio Phase 3, upload to Gate 1; all optional or new files, so everything valid before still is)
