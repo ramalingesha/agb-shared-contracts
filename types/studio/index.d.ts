@@ -41,6 +41,7 @@ export type StudioTemplate = {
 export interface StudioContracts {
   job?: StudioJob;
   'media-store'?: StudioMediaStoreConfig;
+  'page-map'?: StudioPageMap;
   producer?: StudioProducer;
   'provider-profile'?: StudioProviderProfile;
   'review-record'?: StudioReviewRecord;
@@ -87,10 +88,35 @@ export interface StudioJob {
    * Block or output id an item-level job is about.
    */
   item?: string;
+  /**
+   * Optional reference into the app catalog; class, subject and book stay human names.
+   */
+  catalog?: {
+    boardId: string;
+    classId: string;
+    subjectId: string;
+    bookId: string;
+  };
 }
 export interface TemplateRef {
   id: StudioId;
   version: number;
+}
+/**
+ * studio-jobs/<job>/page-map.json: for each block id, the book pages it came from (from the source inventory page ranges).
+ */
+export interface StudioPageMap {
+  job: StudioId;
+  /**
+   * Store key of the source file the pages refer to.
+   */
+  source?: string;
+  blocks: {
+    /**
+     * @minItems 1
+     */
+    [k: string]: [number, ...number[]];
+  };
 }
 export interface StudioProducer {
   kind: ProducerKind;
