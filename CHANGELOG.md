@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.12.0] - 2026-11-11
+
+### Added (AGB-888 Phase 5: job status, plan before start, leave and come back; all optional or new files, so everything valid before still is)
+- **`stage`** gains optional `progress` (closed `step` list, `i`, `n`, `label`), `wait` (closed `reason` list: start, review, dependency, usage, runner, busy, capacity, claim), `startedAt`, `finishedAt`, `estimate` and `actual`.
+- **`job.autoContinue`** (default false): pre-approves the next Claude-session stage after a gate is approved; never approves a gate.
+- New schemas and examples: **`job-plan`** (per-stage plan and estimate in sessions and tokens of the person's own plan, ranges, confidence, approvals), **`runner-presence`**, **`notification`** (closed kind list plus params) and **`notification-prefs`** (per kind: inApp, email, browser).
+
 ## [2.11.0] - 2026-11-11
 
 ### Added (AGB-888 Phase 4: parallel generation and Gate 2; all optional or new files, so everything valid before still is)

@@ -1,12 +1,32 @@
 {
   "job": "c4-science-its-all-a-cycle",
   "stage": "generate",
-  "status": "queued",
+  "status": "running",
   "item": "lesson",
   "producer": "claude-session",
   "attempt": 0,
   "inputs": [
     "jobs/c4-science-its-all-a-cycle/master.json"
   ],
-  "outputs": []
+  "outputs": [],
+  "startedAt": "2026-11-11T05:00:00Z",
+  "progress": {
+    "step": "generating-item",
+    "i": 1,
+    "n": 3,
+    "label": "lesson"
+  },
+  "estimate": {
+    "stage": "generate",
+    "sessions": 1,
+    "minutes": {
+      "low": 2,
+      "high": 6
+    },
+    "tokens": {
+      "low": 20000,
+      "high": 50000
+    },
+    "confidence": "typical"
+  }
 }

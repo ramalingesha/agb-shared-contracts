@@ -409,6 +409,26 @@ test('runner-settings: validates; bad worker URL and parallelism rejected', () =
 });
 
 // ---- no OS or path assumptions
+test('phase 5: plan, presence, notification and the new stage fields', () => {
+  const stage = example('stage');
+  stage.progress = { step: 'rebuilding' };
+  expectInvalid('stage', stage, 'enum', '/progress/step');
+  const wait = example('stage'); wait.wait = { reason: 'because' };
+  expectInvalid('stage', wait, 'enum', '/wait/reason');
+  const old = example('stage'); for (const k of ['progress', 'startedAt', 'estimate']) delete old[k];
+  expectValid('stage', old); // a 2.11.0 stage is still valid
+  const plan = example('job-plan'); plan.stages[0].confidence = 'sure';
+  expectInvalid('job-plan', plan, 'enum', '/stages/0/confidence');
+  const state = example('runner-presence'); state.state = 'sleeping';
+  expectInvalid('runner-presence', state, 'enum', '/state');
+  const kind = example('notification'); kind.kind = 'custom';
+  expectInvalid('notification', kind, 'enum', '/kind');
+  const prefs = example('notification-prefs'); prefs.kinds.bogus = { email: true };
+  expectInvalid('notification-prefs', prefs, 'enum');
+  const free = example('notification'); free.params = { note: { text: 'x' } };
+  expectInvalid('notification', free, 'type');
+});
+
 test('no schema or example assumes an OS, a drive letter, a backslash path or an absolute path', () => {
   const files = [
     ...schemaFiles.map((f) => path.join(SCHEMA_DIR, f)),

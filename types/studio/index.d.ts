@@ -10,6 +10,8 @@ export type StudioId = string;
  */
 export type ProducerKind = string;
 export type Timestamp = string;
+export type StageId =
+  'inventory' | 'master' | 'generate' | 'slides' | 'narration-script' | 'audio' | 'translation' | 'publish';
 /**
  * A relative, forward-slash key such as jobs/<id>/inventory.json. No leading slash, no drive letter, no backslash, no '.' or '..' segment.
  */
@@ -26,8 +28,6 @@ export type Tier = 'Free' | 'Standard' | 'Premium' | 'Enterprise';
 export type StudioReviewRecord = {
   [k: string]: unknown;
 };
-export type StageId =
-  'inventory' | 'master' | 'generate' | 'slides' | 'narration-script' | 'audio' | 'translation' | 'publish';
 export type StudioStage = {
   [k: string]: unknown;
 };
@@ -44,8 +44,11 @@ export interface StudioContracts {
   inventory?: StudioInventory;
   'item-keys'?: StudioItemKeys;
   'job-item'?: StudioJobItem;
+  'job-plan'?: StudioJobPlan;
   job?: StudioJob;
   'media-store'?: StudioMediaStoreConfig;
+  'notification-prefs'?: StudioNotificationPrefs;
+  notification?: StudioNotification;
   'page-map'?: StudioPageMap;
   pages?: StudioPages;
   'picture-requests'?: StudioPictureRequests;
@@ -54,6 +57,7 @@ export interface StudioContracts {
   'provider-profile'?: StudioProviderProfile;
   'review-record'?: StudioReviewRecord;
   review?: StudioReview;
+  'runner-presence'?: StudioRunnerPresence;
   'runner-settings'?: StudioRunnerSettings;
   stage?: StudioStage;
   'studio-config'?: StudioConfig;
@@ -196,6 +200,51 @@ export interface StudioJobItem {
   blockedBy?: StudioId[];
   retryAfter?: Timestamp;
 }
+export interface StudioJobPlan {
+  job: StudioId;
+  stages: StageEstimate[];
+  basis: {
+    template: string;
+    ratesVersion?: string;
+    calibratedFrom?: number;
+  };
+  limits?: {
+    personMaxActive?: number;
+    maxParallelItems?: number;
+    maxParallelSessions?: number;
+    loadLimit?: number;
+  };
+  autoContinue?: boolean;
+  /**
+   * Stages whose plan the person has started.
+   */
+  approved?: {
+    stage: StageId;
+    approvedBy: string;
+    approvedAt: Timestamp;
+  }[];
+}
+/**
+ * Plan and estimate for one Claude-session stage (2.12.0). Sessions and tokens of the person's own Claude plan; no money.
+ */
+export interface StageEstimate {
+  stage: StageId;
+  pages?: number;
+  items?: number;
+  batches?: number;
+  sessions: number;
+  minutes: {
+    low: number;
+    high: number;
+  };
+  tokens: {
+    low: number;
+    high: number;
+  };
+  confidence: 'exact' | 'typical' | 'rough' | 'calibrated';
+  canStart?: boolean;
+  blockedBy?: string;
+}
 export interface StudioJob {
   id: StudioId;
   /**
@@ -279,10 +328,41 @@ export interface StudioJob {
       sections: [string, ...string[]];
     };
   };
+  /**
+   * Pre-approve the next Claude-session stage after each gate is approved (2.12.0). Never approves a gate.
+   */
+  autoContinue?: boolean;
 }
 export interface TemplateRef {
   id: StudioId;
   version: number;
+}
+/**
+ * Per person, per event kind, which channels are on (2.12.0). Missing means the default: in-app on; email on for needs-review, failed and stage-finished.
+ */
+export interface StudioNotificationPrefs {
+  kinds?: {
+    [k: string]: {
+      inApp?: boolean;
+      email?: boolean;
+      browser?: boolean;
+    };
+  };
+  digestMinutes?: number;
+}
+/**
+ * One in-app notification (2.12.0). Title is a closed key plus params so every language can render it; no free text from users.
+ */
+export interface StudioNotification {
+  id: string;
+  kind: 'stage-finished' | 'needs-review' | 'failed' | 'paused' | 'runner-offline' | 'ready-to-start';
+  job: StudioId;
+  stage?: StageId;
+  params?: {
+    [k: string]: string | number;
+  };
+  createdAt: Timestamp;
+  readAt?: Timestamp;
 }
 /**
  * studio-jobs/<job>/page-map.json: for each block id, the book pages it came from (from the source inventory page ranges).
@@ -407,6 +487,25 @@ export interface StudioReview {
     by: string;
     at: Timestamp;
   }[];
+}
+/**
+ * A Runner as the Worker last saw it (2.12.0). Informational: never used for authorisation. Machine and version are shown to admins only.
+ */
+export interface StudioRunnerPresence {
+  runnerId: string;
+  /**
+   * Person label, e.g. Ram's Mac.
+   */
+  label?: string;
+  machine?: string;
+  version?: string;
+  state: 'idle' | 'working' | 'paused' | 'busy-load';
+  stateDetail?: string;
+  allowedStages?: StageId[];
+  maxSessions?: number;
+  firstSeen?: Timestamp;
+  lastSeen: Timestamp;
+  online?: boolean;
 }
 export interface StudioRunnerSettings {
   workerUrl: string;

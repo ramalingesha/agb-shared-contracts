@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioNotification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "job",
+    "createdAt"
+  ],
+  "description": "One in-app notification (2.12.0). Title is a closed key plus params so every language can render it; no free text from users.",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "stage-finished",
+        "needs-review",
+        "failed",
+        "paused",
+        "runner-offline",
+        "ready-to-start"
+      ]
+    },
+    "job": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "stage": {
+      "$ref": "common.schema.json#/definitions/StageId"
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number"
+        ]
+      }
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "readAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    }
+  }
+}
