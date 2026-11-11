@@ -196,6 +196,11 @@
           "description": "Run each item on these sections first (pattern sample)."
         }
       }
+    },
+    "autoContinue": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pre-approve the next Claude-session stage after each gate is approved (2.12.0). Never approves a gate."
     }
   }
 }

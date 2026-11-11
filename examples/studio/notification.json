@@ -1,0 +1,11 @@
+{
+  "id": "n-0001",
+  "kind": "needs-review",
+  "job": "c4-science-its-all-a-cycle",
+  "stage": "inventory",
+  "params": {
+    "items": 58,
+    "minutes": 27
+  },
+  "createdAt": "2026-11-11T05:30:00Z"
+}

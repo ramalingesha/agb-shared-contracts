@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioNotificationPrefs",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "Per person, per event kind, which channels are on (2.12.0). Missing means the default: in-app on; email on for needs-review, failed and stage-finished.",
+  "properties": {
+    "kinds": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "stage-finished",
+          "needs-review",
+          "failed",
+          "paused",
+          "runner-offline",
+          "ready-to-start"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "inApp": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "boolean"
+          },
+          "browser": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "digestMinutes": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 120,
+      "default": 10
+    }
+  }
+}

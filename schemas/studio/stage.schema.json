@@ -86,6 +86,106 @@
     "targetItem": {
       "type": "string",
       "description": "For a generate re-run: the item the block key belongs to (2.11.0)."
+    },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step"
+      ],
+      "description": "What the Runner is doing now (2.12.0). The step is a closed list so every language can translate it; message is never shown as free text to other people.",
+      "properties": {
+        "step": {
+          "type": "string",
+          "enum": [
+            "fetching-source",
+            "rendering-pages",
+            "ocr",
+            "reading-batch",
+            "master-group",
+            "generating-item",
+            "checks",
+            "pushing-checkpoint"
+          ]
+        },
+        "i": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 120
+        }
+      }
+    },
+    "wait": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason"
+      ],
+      "description": "Why a queued stage is not running yet, computed by the Worker (2.12.0). First matching reason wins.",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": [
+            "start",
+            "review",
+            "dependency",
+            "usage",
+            "runner",
+            "busy",
+            "capacity",
+            "claim"
+          ]
+        },
+        "since": {
+          "$ref": "common.schema.json#/definitions/Timestamp"
+        },
+        "retryAfter": {
+          "$ref": "common.schema.json#/definitions/Timestamp"
+        },
+        "detail": {
+          "type": "string",
+          "maxLength": 120
+        }
+      }
+    },
+    "startedAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "finishedAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "estimate": {
+      "$ref": "job-plan.schema.json#/definitions/StageEstimate"
+    },
+    "actual": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Measured after the stage ended (2.12.0).",
+      "properties": {
+        "activeMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sessions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tokensIn": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tokensOut": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     }
   },
   "allOf": [

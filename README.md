@@ -205,7 +205,7 @@ existing consumers get every type they did before with no import changes. CI fai
 the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
-### schemas/studio (Content Studio, 2.11.0)
+### schemas/studio (Content Studio, 2.12.0)
 
 The contracts of the Content Studio (AGB-888): jobs, stages, review states and records,
 producers, provider profiles, templates, the media store and the Runner settings. JSON Schema
@@ -226,6 +226,8 @@ a published template version (`id@version`) is immutable and a changed pattern i
 review state `locked` is terminal (`review-transitions.json`). Tests:
 `scripts/validate-studio-schemas.js`, part of `npm run validate`. Set `STUDIO_TEMPLATES_DIR=<folder>`
 to also validate a folder of template files (used by gnanora-content).
+
+Job status and plan (2.12.0, AGB-922/923/924): `stage` gains optional `progress`, `wait`, `startedAt`, `finishedAt`, `estimate`, `actual`; `job.autoContinue`; new schemas `job-plan`, `runner-presence`, `notification`, `notification-prefs`. All optional or new, so 2.11.0 documents stay valid.
 
 Generation items (2.11.0, AGB-908/909/910): a lesson template's `body.generate` (schema `template-generate`) lists the
 items to produce as data (id, family, `after` dependencies, producers per tier, grouping, checks, review unit,

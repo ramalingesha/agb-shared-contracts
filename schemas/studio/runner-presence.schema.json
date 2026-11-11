@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioRunnerPresence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runnerId",
+    "state",
+    "lastSeen"
+  ],
+  "description": "A Runner as the Worker last saw it (2.12.0). Informational: never used for authorisation. Machine and version are shown to admins only.",
+  "properties": {
+    "runnerId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "label": {
+      "type": "string",
+      "description": "Person label, e.g. Ram's Mac."
+    },
+    "machine": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "idle",
+        "working",
+        "paused",
+        "busy-load"
+      ]
+    },
+    "stateDetail": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "allowedStages": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/definitions/StageId"
+      }
+    },
+    "maxSessions": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "firstSeen": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "lastSeen": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "online": {
+      "type": "boolean"
+    }
+  }
+}

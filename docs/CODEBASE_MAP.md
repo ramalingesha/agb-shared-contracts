@@ -1,6 +1,6 @@
 # Codebase Map — agb-shared-contracts
 
-**Purpose:** "where do I look for X?" for `@ramalingesha/shared-contracts` (package version 2.11.0).
+**Purpose:** "where do I look for X?" for `@ramalingesha/shared-contracts` (package version 2.12.0).
 Read [ARCHITECTURE.md](ARCHITECTURE.md) for what the contracts mean. This repo has no runtime
 code: it is JSON Schema, JSON data tables, generated `.d.ts` files, examples and validator scripts.
 Default branch is `main`. There is no `CLAUDE.md` or `AGENTS.md` on `main`; `.github/instructions/shared/`
@@ -14,7 +14,7 @@ holds the shared coding-standards files.
 | Generated Knowledge types | `types/knowledge-api/index.d.ts` (barrel) | `primitives`, `media`, `content-blocks`, `explanation`, `knowledge`, `narration`, `buddy`, `study-jam` `.d.ts` | Generated, never hand-edit |
 | Knowledge type generator | `scripts/generate-knowledge-types.js` | `npm run generate:types` | Compiles the schema, then splits by topic |
 | Knowledge schema validation and samples | `scripts/validate-knowledge-api-schema.js` | `scripts/contract-samples.json` | Samples: real snippets that must pass, and invalid ones that must fail for a named field |
-| Content Studio contracts (job, stage, review, producer, template, config; 2.11.0 adds the template `generate` block, `job-item`, `item-keys`, `practice` and `job.generation`; 2.10.0 adds `runner-settings.sessionTimeoutMinutes`; 2.9.0 adds inventory, pages, coverage-report, gate-index, picture-requests) | `schemas/studio/*.schema.json` | `schemas/studio/common.schema.json` | JSON Schema draft-07, source of truth |
+| Content Studio contracts (job, stage, review, producer, template, config; 2.12.0 adds job-plan, runner-presence, notification, notification-prefs and stage progress, wait and estimate; 2.11.0 adds the template `generate` block, `job-item`, `item-keys`, `practice` and `job.generation`; 2.10.0 adds `runner-settings.sessionTimeoutMinutes`; 2.9.0 adds inventory, pages, coverage-report, gate-index, picture-requests) | `schemas/studio/*.schema.json` | `schemas/studio/common.schema.json` | JSON Schema draft-07, source of truth |
 | Legal review state moves | `schemas/studio/review-transitions.json` | `schemas/studio/review.schema.json` | `locked` has no exit |
 | Stage inputs and outputs | `schemas/studio/stage-io.json` | `schemas/studio/stage.schema.json` | Artifacts are store keys under `jobs/<job>/` |
 | Studio examples (one per contract) | `examples/studio/*.json` | `scripts/validate-studio-schemas.js` | Checked against the schemas |

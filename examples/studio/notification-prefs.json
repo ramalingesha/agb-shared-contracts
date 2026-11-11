@@ -1,0 +1,13 @@
+{
+  "kinds": {
+    "failed": {
+      "inApp": true,
+      "email": true,
+      "browser": true
+    },
+    "runner-offline": {
+      "email": false
+    }
+  },
+  "digestMinutes": 10
+}

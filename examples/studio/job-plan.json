@@ -1,0 +1,49 @@
+{
+  "job": "c4-science-its-all-a-cycle",
+  "stages": [
+    {
+      "stage": "inventory",
+      "pages": 13,
+      "batches": 2,
+      "sessions": 2,
+      "minutes": {
+        "low": 20,
+        "high": 35
+      },
+      "tokens": {
+        "low": 70000,
+        "high": 120000
+      },
+      "confidence": "exact",
+      "canStart": true
+    },
+    {
+      "stage": "master",
+      "sessions": 1,
+      "minutes": {
+        "low": 10,
+        "high": 25
+      },
+      "tokens": {
+        "low": 40000,
+        "high": 90000
+      },
+      "confidence": "rough",
+      "canStart": false,
+      "blockedBy": "Shown exactly after the inventory is approved."
+    }
+  ],
+  "basis": {
+    "template": "science-default@3",
+    "ratesVersion": "3",
+    "calibratedFrom": 0
+  },
+  "limits": {
+    "personMaxActive": 2,
+    "maxParallelItems": 3,
+    "maxParallelSessions": 2,
+    "loadLimit": 0.9
+  },
+  "autoContinue": false,
+  "approved": []
+}
