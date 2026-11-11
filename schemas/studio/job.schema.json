@@ -152,6 +152,50 @@
         "pattern": "^[A-Z]-[0-9]{2,}$"
       },
       "description": "Inventory item ids whose text is kept as in the book. Only effective where the job settings allow as-is."
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "started"
+      ],
+      "description": "Per-job start of generation (2.11.0).",
+      "properties": {
+        "started": {
+          "type": "boolean"
+        },
+        "startedBy": {
+          "type": "string"
+        },
+        "startedAt": {
+          "$ref": "common.schema.json#/definitions/Timestamp"
+        },
+        "items": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/StudioId"
+          },
+          "description": "Optional subset of items to run."
+        },
+        "sample": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sections"
+          ],
+          "properties": {
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Run each item on these sections first (pattern sample)."
+        }
+      }
     }
   }
 }

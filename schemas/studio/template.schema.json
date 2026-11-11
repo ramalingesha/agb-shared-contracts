@@ -139,6 +139,35 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "lesson"
+          },
+          "body": {
+            "required": [
+              "generate"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "body"
+        ]
+      },
+      "then": {
+        "properties": {
+          "body": {
+            "properties": {
+              "generate": {
+                "$ref": "template-generate.schema.json"
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }

@@ -13,7 +13,10 @@
   "mediaPort": 4580,
   "studioOrigin": "https://app.example.invalid",
   "producers": {
-    "generate": "claude-session",
+    "generate": {
+      "default": "claude-session",
+      "practice": "rules"
+    },
     "slides": "rules"
   },
   "person": "content-lead",
@@ -28,5 +31,8 @@
   "ocr": {
     "engine": "wasm"
   },
-  "sessionTimeoutMinutes": 30
+  "sessionTimeoutMinutes": 30,
+  "maxParallelSessions": 2,
+  "pauseOnLimit": true,
+  "loadLimit": 0.9
 }

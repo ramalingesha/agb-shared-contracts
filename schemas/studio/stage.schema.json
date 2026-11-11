@@ -74,6 +74,18 @@
       "type": "string",
       "pattern": "^[0-9a-f]{7,40}$",
       "description": "The branch commit before this stage regenerated its output (before/after view)."
+    },
+    "retryAfter": {
+      "$ref": "common.schema.json#/definitions/Timestamp",
+      "description": "Set when the person's Claude usage limit paused this item (2.11.0)."
+    },
+    "scope": {
+      "type": "string",
+      "description": "For a generate re-run: the block key (or keys) to change; everything else is locked (2.11.0)."
+    },
+    "targetItem": {
+      "type": "string",
+      "description": "For a generate re-run: the item the block key belongs to (2.11.0)."
     }
   },
   "allOf": [

@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioJobItem",
+  "description": "One planned generation item as the Worker shows it on the items board (GET /jobs/:id, `items`). State is derived from stages and review records.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "family",
+    "required",
+    "state",
+    "attempt"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "label": {
+      "type": "string"
+    },
+    "family": {
+      "type": "string"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "queued",
+        "working",
+        "produced",
+        "in-review",
+        "changes-asked",
+        "approved",
+        "locked",
+        "failed",
+        "blocked",
+        "stale",
+        "paused"
+      ]
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "person": {
+      "type": "string"
+    },
+    "machine": {
+      "type": "string"
+    },
+    "producer": {
+      "$ref": "common.schema.json#/definitions/ProducerKind"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "error": {
+      "type": "string"
+    },
+    "approved": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stale": {
+      "type": "boolean"
+    },
+    "blockedBy": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/definitions/StudioId"
+      }
+    },
+    "retryAfter": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    }
+  }
+}

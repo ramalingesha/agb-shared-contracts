@@ -6,6 +6,11 @@
 
 export type StudioId = string;
 /**
+ * manual, claude-session, rules, fake (tests), or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema.
+ */
+export type ProducerKind = string;
+export type Timestamp = string;
+/**
  * A relative, forward-slash key such as jobs/<id>/inventory.json. No leading slash, no drive letter, no backslash, no '.' or '..' segment.
  */
 export type StoreKey = string;
@@ -17,11 +22,6 @@ export type ReviewState = 'draft' | 'in-review' | 'changes-requested' | 'approve
 export type StudioMediaStoreConfig = {
   [k: string]: unknown;
 };
-/**
- * manual, claude-session, rules, fake (tests), or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema.
- */
-export type ProducerKind = string;
-export type Timestamp = string;
 export type Tier = 'Free' | 'Standard' | 'Premium' | 'Enterprise';
 export type StudioReviewRecord = {
   [k: string]: unknown;
@@ -42,11 +42,14 @@ export interface StudioContracts {
   'coverage-report'?: StudioCoverageReport;
   'gate-index'?: StudioGateIndex;
   inventory?: StudioInventory;
+  'item-keys'?: StudioItemKeys;
+  'job-item'?: StudioJobItem;
   job?: StudioJob;
   'media-store'?: StudioMediaStoreConfig;
   'page-map'?: StudioPageMap;
   pages?: StudioPages;
   'picture-requests'?: StudioPictureRequests;
+  practice?: StudioPractice;
   producer?: StudioProducer;
   'provider-profile'?: StudioProviderProfile;
   'review-record'?: StudioReviewRecord;
@@ -54,6 +57,7 @@ export interface StudioContracts {
   'runner-settings'?: StudioRunnerSettings;
   stage?: StudioStage;
   'studio-config'?: StudioConfig;
+  'template-generate'?: StudioTemplateGenerate;
   template?: StudioTemplate;
 }
 /**
@@ -103,7 +107,7 @@ export interface StudioCoverageReport {
 export interface StudioGateIndex {
   job: StudioId;
   gates: {
-    gate: 'inventory' | 'master';
+    gate: 'inventory' | 'master' | 'items';
     sections: {
       id: string;
       title: string;
@@ -143,6 +147,54 @@ export interface StudioInventory {
     questions: number;
     note?: string;
   }[];
+}
+/**
+ * studio-jobs/<job>/items/<item>/keys.json: the review keys of one item grouped by section. Written by the engine, read by the Worker for Gate 2.
+ */
+export interface StudioItemKeys {
+  job: StudioId;
+  item: StudioId;
+  sections: {
+    id: string;
+    title: string;
+    keys: string[];
+  }[];
+}
+/**
+ * One planned generation item as the Worker shows it on the items board (GET /jobs/:id, `items`). State is derived from stages and review records.
+ */
+export interface StudioJobItem {
+  id: StudioId;
+  label?: string;
+  family: string;
+  required: boolean;
+  state:
+    | 'waiting'
+    | 'queued'
+    | 'working'
+    | 'produced'
+    | 'in-review'
+    | 'changes-asked'
+    | 'approved'
+    | 'locked'
+    | 'failed'
+    | 'blocked'
+    | 'stale'
+    | 'paused';
+  attempt: number;
+  person?: string;
+  machine?: string;
+  producer?: ProducerKind;
+  checks?: {
+    id: string;
+    message: string;
+  }[];
+  error?: string;
+  approved?: number;
+  total?: number;
+  stale?: boolean;
+  blockedBy?: StudioId[];
+  retryAfter?: Timestamp;
 }
 export interface StudioJob {
   id: StudioId;
@@ -206,6 +258,27 @@ export interface StudioJob {
    * Inventory item ids whose text is kept as in the book. Only effective where the job settings allow as-is.
    */
   asIsItems?: string[];
+  /**
+   * Per-job start of generation (2.11.0).
+   */
+  generation?: {
+    started: boolean;
+    startedBy?: string;
+    startedAt?: Timestamp;
+    /**
+     * Optional subset of items to run.
+     */
+    items?: StudioId[];
+    /**
+     * Run each item on these sections first (pattern sample).
+     */
+    sample?: {
+      /**
+       * @minItems 1
+       */
+      sections: [string, ...string[]];
+    };
+  };
 }
 export interface TemplateRef {
   id: StudioId;
@@ -261,6 +334,28 @@ export interface StudioPictureRequests {
     kitParts?: string[];
     page?: string;
     block?: string;
+  }[];
+}
+/**
+ * studio-jobs/<job>/items/practice/out/practice.json: ids only. The question and its answer live once, in the lesson block; this file holds no question text and no answer text.
+ */
+export interface StudioPractice {
+  job: StudioId;
+  questions: {
+    questionId: string;
+    order: number;
+    kind: 'mcq' | 'true-false' | 'odd-one-out' | 'short' | 'long' | 'fill-blank' | 'activity' | 'personal';
+    /**
+     * The book's question number, when it is a book question.
+     */
+    ref?: string;
+    /**
+     * Section ids that answer the question.
+     *
+     * @minItems 1
+     */
+    readAgain: [string, ...string[]];
+    linkSource: 'master' | 'own-section' | 'session';
   }[];
 }
 export interface StudioProducer {
@@ -328,7 +423,11 @@ export interface StudioRunnerSettings {
    */
   studioOrigin?: string;
   producers: {
-    [k: string]: ProducerKind;
+    [k: string]:
+      | ProducerKind
+      | {
+          [k: string]: ProducerKind;
+        };
   };
   person?: string;
   machine?: string;
@@ -373,6 +472,18 @@ export interface StudioRunnerSettings {
    * How long one Claude session may run, in minutes, before the Runner stops it. Leave out for 30 minutes. The STUDIO_CLAUDE_TIMEOUT_MS environment value, when set, wins over this.
    */
   sessionTimeoutMinutes?: number;
+  /**
+   * Most simultaneous Claude sessions on this machine.
+   */
+  maxParallelSessions?: number;
+  /**
+   * Pause and resume when the person's Claude usage limit is reached.
+   */
+  pauseOnLimit?: boolean;
+  /**
+   * No new work is claimed while the one-minute load per core is above this.
+   */
+  loadLimit?: number;
 }
 /**
  * Configuration held outside the schemas (Worker env or a data file). Enabling a Circle teacher is adding a role here.
@@ -384,5 +495,64 @@ export interface StudioConfig {
   reviewRoles: [string, ...string[]];
   permissions?: {
     [k: string]: string[];
+  };
+}
+/**
+ * The `generate` block of a lesson template body (2.11.0): the item plan for Phase 4, as data. No item name is hard-coded in the Worker; a template with a different list plans a different job.
+ */
+export interface StudioTemplateGenerate {
+  /**
+   * Items of one job that may run at once.
+   */
+  maxParallelItems?: number;
+  /**
+   * @minItems 1
+   */
+  languages?: [LanguageTag, ...LanguageTag[]];
+  /**
+   * @minItems 1
+   */
+  items: [GenerateItem, ...GenerateItem[]];
+  minItems?: 0;
+}
+export interface GenerateItem {
+  id: StudioId;
+  label?: string;
+  family: 'style' | 'study-jam' | 'bank' | 'activities' | 'glossary' | 'objects' | 'lab' | 'practice';
+  /**
+   * Gate 2 asks for this item when true.
+   */
+  required: boolean;
+  after?: {
+    item: StudioId;
+    when: 'produced' | 'approved';
+  }[];
+  /**
+   * Producer kinds allowed per tier (for example free: claude-session, manual).
+   */
+  producers?: {
+    /**
+     * @minItems 1
+     */
+    [k: string]: [ProducerKind, ...ProducerKind[]];
+  };
+  /**
+   * How the Runner splits the work into sessions (checkpoint per group).
+   */
+  group?: {
+    by: 'section' | 'terms' | 'missing-links' | 'whole';
+    maxLeaves?: number;
+  };
+  checks?: string[];
+  review?: 'block' | 'line' | 'card';
+  /**
+   * A small data expression over the job spec and template, for example `template.lab == true`. False means the item is not planned, shown or required.
+   */
+  when?: string;
+  estimate?: {
+    tokensPerLeaf?: number;
+    tokensPerExchange?: number;
+    tokensPerCard?: number;
+    sessions?: number;
   };
 }

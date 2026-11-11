@@ -1,0 +1,77 @@
+{
+  "maxParallelItems": 3,
+  "languages": [
+    "en"
+  ],
+  "items": [
+    {
+      "id": "style-simple",
+      "label": "Simple",
+      "family": "style",
+      "required": true,
+      "after": [],
+      "producers": {
+        "free": [
+          "claude-session",
+          "manual"
+        ]
+      },
+      "group": {
+        "by": "section",
+        "maxLeaves": 40
+      },
+      "checks": [
+        "styles"
+      ],
+      "review": "block",
+      "estimate": {
+        "tokensPerLeaf": 220
+      }
+    },
+    {
+      "id": "study-jam",
+      "family": "study-jam",
+      "required": true,
+      "after": [
+        {
+          "item": "style-simple",
+          "when": "produced"
+        }
+      ],
+      "group": {
+        "by": "section"
+      },
+      "checks": [
+        "study-jam"
+      ],
+      "review": "line"
+    },
+    {
+      "id": "practice",
+      "label": "Practice",
+      "family": "practice",
+      "required": true,
+      "after": [],
+      "producers": {
+        "free": [
+          "rules",
+          "claude-session",
+          "manual"
+        ]
+      },
+      "group": {
+        "by": "missing-links"
+      },
+      "checks": [
+        "practice"
+      ],
+      "review": "card"
+    },
+    {
+      "id": "lab",
+      "family": "lab",
+      "required": false,
+      "when": "template.lab == true"
+    }
+  ]
+}

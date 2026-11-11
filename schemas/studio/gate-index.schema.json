@@ -26,7 +26,8 @@
             "type": "string",
             "enum": [
               "inventory",
-              "master"
+              "master",
+              "items"
             ]
           },
           "sections": {

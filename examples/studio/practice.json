@@ -1,0 +1,24 @@
+{
+  "job": "c4-science-its-all-a-cycle",
+  "questions": [
+    {
+      "questionId": "s1-qa1",
+      "order": 1,
+      "kind": "mcq",
+      "readAgain": [
+        "s1"
+      ],
+      "linkSource": "own-section"
+    },
+    {
+      "questionId": "ex-q3",
+      "order": 2,
+      "kind": "short",
+      "ref": "3",
+      "readAgain": [
+        "s2"
+      ],
+      "linkSource": "master"
+    }
+  ]
+}
