@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioLesson",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "circle",
+    "baseJob",
+    "release"
+  ],
+  "description": "A lesson (knowledge id) owns the approved master and its facets (2.13.0). Stored by Worker in a later phase; the shape is fixed here.",
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "circle": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "baseJob": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "masterCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "release": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "createdBy": {
+      "type": "string"
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    }
+  }
+}

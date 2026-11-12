@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.0] - 2026-11-12
+
+### Added (AGB-888 Phase 6a: creator journey; all optional or new files, so everything valid before still is)
+- **`job`** gains optional `kind` (`lesson`, `extension`), `lessonId`, `facet`, `knowledgeName`, `outputs` (`languages` and `narrationStyles`, at least one each, plus reserved `extras`), `audience` (`presets`, `text` up to 500 characters, `version`) and `review.mode` (`each-phase`; `auto` reserved). `template.source` (`standard`, `circle`, `mine`). `languages` stays as a mirror of `outputs.languages`.
+- New schemas and examples: **`lesson`** and **`lesson-facet`** (facet grammar `narration:<style>:<lang>`, `slides:<lang>`, `audio:<style>:<lang>`, `buddy:<lang>`).
+- **`TemplateKind`** gains `audience`. **`stage.wait.reason`** gains `paused` and `cancelled`.
+- New data files: **`audience-presets.json`** (the closed list of presets, each with a short English brief and structured constraints) and **`studio-errors.json`** (every Studio Worker error code, with `internal` for codes people never see).
+
 ## [2.12.0] - 2026-11-11
 
 ### Added (AGB-888 Phase 5: job status, plan before start, leave and come back; all optional or new files, so everything valid before still is)

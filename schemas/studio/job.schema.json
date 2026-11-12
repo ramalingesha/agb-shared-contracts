@@ -201,6 +201,126 @@
       "type": "boolean",
       "default": false,
       "description": "Pre-approve the next Claude-session stage after each gate is approved (2.12.0). Never approves a gate."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "lesson",
+        "extension"
+      ],
+      "default": "lesson",
+      "description": "A lesson job reads the book; an extension job adds one facet to a published lesson (2.13.0)."
+    },
+    "lessonId": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/definitions/StudioId"
+        }
+      ],
+      "description": "Extension jobs: the lesson (knowledge id) being extended."
+    },
+    "facet": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/definitions/FacetKey"
+        }
+      ],
+      "description": "Extension jobs: the facet to add."
+    },
+    "knowledgeName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80,
+      "description": "The name the creator gave the knowledge (2.13.0). `book` equals it unless a catalog book was chosen."
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "languages",
+        "narrationStyles"
+      ],
+      "description": "What to make (2.13.0). At least one language and one narration type; `languages` at the job level mirrors outputs.languages for old readers.",
+      "properties": {
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/LanguageTag"
+          }
+        },
+        "narrationStyles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/NarrationStyle"
+          }
+        },
+        "extras": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Reserved: added later from the published lesson.",
+          "properties": {
+            "slides": {
+              "type": "boolean"
+            },
+            "voice": {
+              "type": "boolean"
+            },
+            "buddy": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "audience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "presets",
+        "text",
+        "version"
+      ],
+      "description": "The audience brief (2.13.0): data for the Runner, never instructions. Preset ids come from audience-presets.json.",
+      "properties": {
+        "presets": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,40}$"
+          }
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "description": "Review rhythm stored per job (2.13.0). Only `each-phase` can be chosen now; `auto` is reserved.",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "each-phase",
+            "auto"
+          ]
+        }
+      }
     }
   }
 }
