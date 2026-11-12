@@ -661,6 +661,10 @@ export interface StudioRunnerSettings {
    */
   sessionTimeoutMinutes?: number;
   /**
+   * Full path (or command name) of Claude Code on this machine. The stable choice: a copy inside a VS Code extension folder changes folder with every extension version. Leave out to look in STUDIO_CLAUDE_BIN, PATH and the usual install folders. `studio-runner doctor` checks it.
+   */
+  claudeCommand?: string;
+  /**
    * Most simultaneous Claude sessions on this machine.
    */
   maxParallelSessions?: number;

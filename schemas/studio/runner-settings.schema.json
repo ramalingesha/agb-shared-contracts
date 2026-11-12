@@ -148,6 +148,12 @@
       "default": 30,
       "description": "How long one Claude session may run, in minutes, before the Runner stops it. Leave out for 30 minutes. The STUDIO_CLAUDE_TIMEOUT_MS environment value, when set, wins over this."
     },
+    "claudeCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Full path (or command name) of Claude Code on this machine. The stable choice: a copy inside a VS Code extension folder changes folder with every extension version. Leave out to look in STUDIO_CLAUDE_BIN, PATH and the usual install folders. `studio-runner doctor` checks it."
+    },
     "maxParallelSessions": {
       "type": "integer",
       "minimum": 1,

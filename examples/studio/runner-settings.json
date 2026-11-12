@@ -34,5 +34,6 @@
   "sessionTimeoutMinutes": 30,
   "maxParallelSessions": 2,
   "pauseOnLimit": true,
-  "loadLimit": 0.9
+  "loadLimit": 0.9,
+  "claudeCommand": "/usr/local/bin/claude"
 }

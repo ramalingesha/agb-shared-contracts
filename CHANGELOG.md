@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.15.0] - 2026-11-12
+
+### Added (AGB-888 Phase 6b Runner operations, AGB-943; optional field only, so everything valid before still is)
+- **`runner-settings`** gains optional `claudeCommand` (full path of Claude Code on the machine). `studio-runner doctor` checks it; the Runner already reads it before this release.
+
 ## [2.14.0] - 2026-11-12
 
 ### Added (AGB-888 Studio fixes round 2: status check; new codes only, so everything valid before still is)
