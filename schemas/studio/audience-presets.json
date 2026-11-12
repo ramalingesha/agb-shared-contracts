@@ -1,0 +1,85 @@
+{
+  "_about": "Audience presets for the Studio creator flow (2.13.0). Data, not instructions: the Runner renders `constraints` by code and puts `brief` in a labelled low-priority block; the engine's checks decide pass or fail regardless. Labels are in the app's five-language strings.",
+  "version": 1,
+  "default": "standard",
+  "maxPresetsPerJob": 4,
+  "presets": [
+    {
+      "id": "standard",
+      "brief": "",
+      "constraints": {}
+    },
+    {
+      "id": "ages-6-10",
+      "brief": "Explain for children aged 6 to 10: very short sentences, everyday words, one idea at a time.",
+      "constraints": {
+        "readingLevel": "grade-2-4",
+        "sentenceMaxWords": 12,
+        "vocabulary": "everyday",
+        "tone": "warm",
+        "examples": "home-and-village",
+        "depth": "light"
+      }
+    },
+    {
+      "id": "ages-11-14",
+      "brief": "Explain for children aged 11 to 14: clear sentences, new words explained once, short reasons for why.",
+      "constraints": {
+        "readingLevel": "grade-5-8",
+        "sentenceMaxWords": 18,
+        "vocabulary": "everyday-plus-subject",
+        "tone": "friendly",
+        "examples": "school-and-town",
+        "depth": "standard"
+      }
+    },
+    {
+      "id": "new-learners",
+      "brief": "Explain for someone meeting the topic for the first time: no assumed background, small steps, repeat the key word.",
+      "constraints": {
+        "readingLevel": "grade-3-5",
+        "sentenceMaxWords": 14,
+        "vocabulary": "everyday",
+        "tone": "patient",
+        "examples": "everyday",
+        "depth": "light"
+      }
+    },
+    {
+      "id": "exam-revision",
+      "brief": "Help a learner revise: crisp points, key terms stressed, the usual exam question shapes.",
+      "constraints": {
+        "readingLevel": "grade-5-8",
+        "sentenceMaxWords": 16,
+        "vocabulary": "subject",
+        "tone": "direct",
+        "examples": "exam-style",
+        "depth": "focused"
+      }
+    },
+    {
+      "id": "for-parents",
+      "brief": "Write for a parent helping at home: plain adult language, what to ask the child, no jargon.",
+      "constraints": {
+        "readingLevel": "adult",
+        "sentenceMaxWords": 20,
+        "vocabulary": "everyday",
+        "tone": "calm",
+        "examples": "family-life",
+        "depth": "light"
+      }
+    },
+    {
+      "id": "advanced-learners",
+      "brief": "Go a little deeper for a strong learner: reasons, links between ideas, one stretch question.",
+      "constraints": {
+        "readingLevel": "grade-8-10",
+        "sentenceMaxWords": 24,
+        "vocabulary": "subject",
+        "tone": "curious",
+        "examples": "beyond-the-book",
+        "depth": "deep"
+      }
+    }
+  ]
+}

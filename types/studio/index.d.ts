@@ -19,6 +19,11 @@ export type StoreKey = string;
 export type LanguageTag = string;
 export type ReviewState = 'draft' | 'in-review' | 'changes-requested' | 'approved' | 'locked';
 /**
+ * narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0).
+ */
+export type FacetKey = string;
+export type NarrationStyle = 'simple' | 'favorite-teacher' | 'professional' | 'friend';
+/**
  * Describes a media store. The interface every store implements: put(key, bytes), get(key), exists(key), url(key). Keys are StoreKeys. Only local-disk exists now.
  */
 export type StudioMediaStoreConfig = {
@@ -46,6 +51,8 @@ export interface StudioContracts {
   'job-item'?: StudioJobItem;
   'job-plan'?: StudioJobPlan;
   job?: StudioJob;
+  'lesson-facet'?: StudioLessonFacet;
+  lesson?: StudioLesson;
   'media-store'?: StudioMediaStoreConfig;
   'notification-prefs'?: StudioNotificationPrefs;
   notification?: StudioNotification;
@@ -332,10 +339,92 @@ export interface StudioJob {
    * Pre-approve the next Claude-session stage after each gate is approved (2.12.0). Never approves a gate.
    */
   autoContinue?: boolean;
+  /**
+   * A lesson job reads the book; an extension job adds one facet to a published lesson (2.13.0).
+   */
+  kind?: 'lesson' | 'extension';
+  /**
+   * Extension jobs: the lesson (knowledge id) being extended.
+   */
+  lessonId?: StudioId;
+  /**
+   * Extension jobs: the facet to add.
+   */
+  facet?: FacetKey;
+  /**
+   * The name the creator gave the knowledge (2.13.0). `book` equals it unless a catalog book was chosen.
+   */
+  knowledgeName?: string;
+  /**
+   * What to make (2.13.0). At least one language and one narration type; `languages` at the job level mirrors outputs.languages for old readers.
+   */
+  outputs?: {
+    /**
+     * @minItems 1
+     */
+    languages: [LanguageTag, ...LanguageTag[]];
+    /**
+     * @minItems 1
+     */
+    narrationStyles: [NarrationStyle, ...NarrationStyle[]];
+    /**
+     * Reserved: added later from the published lesson.
+     */
+    extras?: {
+      slides?: boolean;
+      voice?: boolean;
+      buddy?: boolean;
+    };
+  };
+  /**
+   * The audience brief (2.13.0): data for the Runner, never instructions. Preset ids come from audience-presets.json.
+   */
+  audience?: {
+    /**
+     * @maxItems 4
+     */
+    presets: [] | [string] | [string, string] | [string, string, string] | [string, string, string, string];
+    text: string;
+    version: number;
+  };
+  /**
+   * Review rhythm stored per job (2.13.0). Only `each-phase` can be chosen now; `auto` is reserved.
+   */
+  review?: {
+    mode: 'each-phase' | 'auto';
+  };
 }
 export interface TemplateRef {
   id: StudioId;
   version: number;
+  /**
+   * Where the template comes from (2.13.0). Custom ones are pinned per job. Absent means standard.
+   */
+  source?: 'standard' | 'circle' | 'mine';
+}
+/**
+ * One publishable piece of a lesson: a narration type in a language, slides, audio or the Buddy bank (2.13.0).
+ */
+export interface StudioLessonFacet {
+  lessonId: StudioId;
+  facet: FacetKey;
+  state: 'planned' | 'working' | 'in-review' | 'approved' | 'published' | 'stale' | 'failed' | 'dropped';
+  version: number;
+  jobId?: StudioId;
+  publishedAt?: Timestamp;
+  baseRelease?: number;
+}
+/**
+ * A lesson (knowledge id) owns the approved master and its facets (2.13.0). Stored by Worker in a later phase; the shape is fixed here.
+ */
+export interface StudioLesson {
+  id: StudioId;
+  circle: StudioId;
+  baseJob: StudioId;
+  masterCommit?: string;
+  release: number;
+  createdBy?: string;
+  createdAt?: Timestamp;
 }
 /**
  * Per person, per event kind, which channels are on (2.12.0). Missing means the default: in-app on; email on for needs-review, failed and stage-finished.

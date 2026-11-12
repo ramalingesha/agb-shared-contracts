@@ -429,6 +429,81 @@ test('phase 5: plan, presence, notification and the new stage fields', () => {
   expectInvalid('notification', free, 'type');
 });
 
+test('job spec v2: knowledge name, outputs, audience, review, extension fields (2.13.0)', () => {
+  const ok = example('job'); expectValid('job', ok);
+  const old = example('job');
+  for (const k of ['kind', 'knowledgeName', 'outputs', 'audience', 'review']) delete old[k];
+  delete old.template.source;
+  expectValid('job', old); // a 2.12.0 job document is still valid
+  const noLang = example('job'); noLang.outputs.languages = [];
+  expectInvalid('job', noLang, 'minItems', '/outputs/languages');
+  const noType = example('job'); noType.outputs.narrationStyles = [];
+  expectInvalid('job', noType, 'minItems', '/outputs/narrationStyles');
+  const badType = example('job'); badType.outputs.narrationStyles = ['loud'];
+  expectInvalid('job', badType, 'enum', '/outputs/narrationStyles/0');
+  const dup = example('job'); dup.outputs.languages = ['en', 'en'];
+  expectInvalid('job', dup, 'uniqueItems', '/outputs/languages');
+  const long = example('job'); long.audience.text = 'x'.repeat(501);
+  expectInvalid('job', long, 'maxLength', '/audience/text');
+  const short = example('job'); short.knowledgeName = 'ab';
+  expectInvalid('job', short, 'minLength', '/knowledgeName');
+  const mode = example('job'); mode.review.mode = 'sometimes';
+  expectInvalid('job', mode, 'enum', '/review/mode');
+  const ext = example('job'); ext.kind = 'extension'; ext.lessonId = 'c4-science-its-all-a-cycle'; ext.facet = 'narration:favorite-teacher:kn';
+  expectValid('job', ext);
+  const facet = example('job'); facet.facet = 'narration:loud:en';
+  expectInvalid('job', facet, 'pattern', '/facet');
+  const src = example('job'); src.template.source = 'elsewhere';
+  expectInvalid('job', src, 'enum', '/template/source');
+});
+
+test('lesson and lesson-facet: shapes and facet grammar (2.13.0)', () => {
+  expectValid('lesson', example('lesson'));
+  expectValid('lesson-facet', example('lesson-facet'));
+  for (const f of ['narration:simple:kn', 'slides:en', 'audio:friend:hi', 'buddy:ta']) {
+    const x = example('lesson-facet'); x.facet = f; expectValid('lesson-facet', x);
+  }
+  for (const f of ['narration:simple', 'slides:simple:en', 'video:en']) {
+    const x = example('lesson-facet'); x.facet = f; expectInvalid('lesson-facet', x, 'pattern', '/facet');
+  }
+  const state = example('lesson-facet'); state.state = 'done';
+  expectInvalid('lesson-facet', state, 'enum', '/state');
+});
+
+test('stage wait reasons include paused and cancelled; template kind audience (2.13.0)', () => {
+  const s = example('stage'); s.status = 'queued'; s.wait = { reason: 'paused' }; expectValid('stage', s);
+  s.wait = { reason: 'cancelled' }; expectValid('stage', s);
+  const t = example('template'); t.kind = 'audience'; expectValid('template', t);
+});
+
+test('audience-presets: a closed list with a short brief each, Standard first and empty (2.13.0)', () => {
+  const data = readJson(path.join(SCHEMA_DIR, 'audience-presets.json'));
+  assert.equal(data.default, 'standard');
+  assert.equal(data.presets[0].id, 'standard');
+  assert.equal(data.presets[0].brief, '');
+  const ids = data.presets.map((p) => p.id);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const p of data.presets) {
+    assert.match(p.id, /^[a-z0-9][a-z0-9-]{0,40}$/);
+    assert.ok(p.brief.length <= 200, `${p.id}: brief over 200 characters`);
+    assert.doesNotMatch(p.brief, /https?:|\/|`/, `${p.id}: no URLs, paths or code in a brief`);
+  }
+  const job = example('job');
+  for (const id of job.audience.presets) assert.ok(ids.includes(id), `example uses unknown preset ${id}`);
+});
+
+test('studio-errors: unique sorted codes, internal flag is true or absent (2.13.0)', () => {
+  const list = readJson(path.join(SCHEMA_DIR, 'studio-errors.json')).codes;
+  const codes = list.map((c) => c.code);
+  assert.equal(new Set(codes).size, codes.length);
+  assert.deepEqual([...codes].sort(), codes);
+  for (const c of list) {
+    assert.match(c.code, /^[a-z][a-z0-9_]*$/);
+    assert.ok(c.internal === undefined || c.internal === true);
+  }
+  for (const needed of ['gate_index_missing', 'lease_lost', 'name_taken', 'job_cancelled']) assert.ok(codes.includes(needed), needed);
+});
+
 test('no schema or example assumes an OS, a drive letter, a backslash path or an absolute path', () => {
   const files = [
     ...schemaFiles.map((f) => path.join(SCHEMA_DIR, f)),

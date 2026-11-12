@@ -14,7 +14,8 @@
   "book": "It's all a cycle",
   "template": {
     "id": "science-default",
-    "version": 1
+    "version": 1,
+    "source": "standard"
   },
   "rebuildMode": "rebuild",
   "languages": [
@@ -38,5 +39,26 @@
     "startedBy": "content-lead",
     "startedAt": "2026-11-11T09:00:00Z"
   },
-  "autoContinue": false
+  "autoContinue": false,
+  "kind": "lesson",
+  "knowledgeName": "It's all a cycle",
+  "outputs": {
+    "languages": [
+      "en",
+      "kn"
+    ],
+    "narrationStyles": [
+      "simple"
+    ]
+  },
+  "audience": {
+    "presets": [
+      "ages-6-10"
+    ],
+    "text": "Use examples from a village school.",
+    "version": 1
+  },
+  "review": {
+    "mode": "each-phase"
+  }
 }

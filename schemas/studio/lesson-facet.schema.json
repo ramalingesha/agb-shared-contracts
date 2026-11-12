@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioLessonFacet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lessonId",
+    "facet",
+    "state",
+    "version"
+  ],
+  "description": "One publishable piece of a lesson: a narration type in a language, slides, audio or the Buddy bank (2.13.0).",
+  "properties": {
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "working",
+        "in-review",
+        "approved",
+        "published",
+        "stale",
+        "failed",
+        "dropped"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "jobId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "publishedAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "baseRelease": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

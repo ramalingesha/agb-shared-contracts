@@ -140,7 +140,9 @@
             "runner",
             "busy",
             "capacity",
-            "claim"
+            "claim",
+            "paused",
+            "cancelled"
           ]
         },
         "since": {

@@ -69,7 +69,8 @@
         "narration-style",
         "slide",
         "voice-emotion",
-        "picture-kit"
+        "picture-kit",
+        "audience"
       ]
     },
     "TemplateRef": {
@@ -87,6 +88,15 @@
         "version": {
           "type": "integer",
           "minimum": 1
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "circle",
+            "mine"
+          ],
+          "description": "Where the template comes from (2.13.0). Custom ones are pinned per job. Absent means standard."
         }
       }
     },
@@ -138,6 +148,22 @@
           "$ref": "#/definitions/Timestamp"
         }
       }
+    },
+    "NarrationStyle": {
+      "title": "NarrationStyle",
+      "type": "string",
+      "enum": [
+        "simple",
+        "favorite-teacher",
+        "professional",
+        "friend"
+      ]
+    },
+    "FacetKey": {
+      "title": "FacetKey",
+      "type": "string",
+      "pattern": "^(narration|audio):(simple|favorite-teacher|professional|friend):[a-z]{2,3}$|^(slides|buddy):[a-z]{2,3}$",
+      "description": "narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0)."
     }
   }
 }

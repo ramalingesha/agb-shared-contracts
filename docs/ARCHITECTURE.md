@@ -3,7 +3,7 @@
 ## What this is
 
 A static, versioned set of language-agnostic contracts published as one npm package,
-`@ramalingesha/shared-contracts` (version 2.12.0), to GitHub Packages. It holds JSON Schema files,
+`@ramalingesha/shared-contracts` (version 2.13.0), to GitHub Packages. It holds JSON Schema files,
 two JSON data tables, an error-code registry, generated TypeScript `.d.ts` files and examples. There
 is no runtime service, database or API. Node consumers `npm install` it; Python consumers fetch the
 raw JSON over HTTPS. Services validate against the schemas themselves.
@@ -64,7 +64,7 @@ Core enums (all verified in the schema):
 
 ## Content Studio contracts (`schemas/studio/`)
 
-Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) 2.9.0 (AGB-898/899/900) 2.10.0 (AGB-888, `runner-settings.sessionTimeoutMinutes`) 2.11.0 (AGB-908/909/910, generation items and Gate 2) and 2.12.0 (AGB-922/923/924, job status, plan and notifications). JSON Schema draft-07 is the source.
+Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) 2.9.0 (AGB-898/899/900) 2.10.0 (AGB-888, `runner-settings.sessionTimeoutMinutes`) 2.11.0 (AGB-908/909/910, generation items and Gate 2) 2.12.0 (AGB-922/923/924, job status, plan and notifications) and 2.13.0 (AGB-888 Phase 6a, creator journey: job spec v2, lesson and facet, audience presets, Studio error list). JSON Schema draft-07 is the source.
 
 - **Job and stage:** `job` (sources, circle, class, subject, book, template, rebuildMode, languages,
   state, parentJob, item, and the optional `catalog` reference); `stage` (status, producer, attempt,
@@ -96,7 +96,7 @@ Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) 2.9.0 (AGB-898/
   version with the package version" as D67. It is not covered by the equality check.
 - Every schema change needs a `CHANGELOG.md` entry (checked in the pre-push hook), and no error code may
   be removed.
-- Release history: 2.12.0 Studio job status, plan before start, notifications (job-plan, runner-presence, notification, notification-prefs, stage progress/wait/estimate), 2.11.0 Studio generation items (template `generate`, job-item, item-keys, practice), 2.10.0 Runner session limit setting, 2.9.0 Studio upload to Gate 1, 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
+- Release history: 2.13.0 Studio creator journey (job spec v2, lesson, lesson-facet, audience presets, studio-errors), 2.12.0 Studio job status, plan before start, notifications (job-plan, runner-presence, notification, notification-prefs, stage progress/wait/estimate), 2.11.0 Studio generation items (template `generate`, job-item, item-keys, practice), 2.10.0 Runner session limit setting, 2.9.0 Studio upload to Gate 1, 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
   table explanations, 2.4.0 voice samples and answer marks, 2.3.0 technical lessons, 2.2.0 MVP modules,
   2.1.0 `uri-reference`, 2.0.0 StyleId, 1.2.0 Knowledge schema, 1.1.0 CI pipeline, 1.0.0 error registry.
 
