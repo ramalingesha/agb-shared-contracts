@@ -1,5 +1,5 @@
 {
-  "_about": "Every error code the Studio Worker can return (2.13.0). A code that people can meet needs a plain sentence in the app in all five languages; `internal` codes are for the Runner or for protocol faults and are never shown as such. A test in the Worker fails when it emits a code missing here; a test in the app fails when a non-internal code has no sentence.",
+  "_about": "Every error code the Studio Worker can return (2.14.0). A code that people can meet needs a plain sentence in the app in all five languages; `internal` codes are for the Runner or for protocol faults and are never shown as such. A test in the Worker fails when it emits a code missing here; a test in the app fails when a non-internal code has no sentence.",
   "version": 1,
   "codes": [
     {
@@ -209,6 +209,9 @@
       "code": "not_reviewable"
     },
     {
+      "code": "nothing_running"
+    },
+    {
       "code": "nothing_to_edit"
     },
     {
@@ -239,6 +242,9 @@
     },
     {
       "code": "stage_busy"
+    },
+    {
+      "code": "status_check_too_soon"
     },
     {
       "code": "template_invalid"
