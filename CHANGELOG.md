@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.15.1] - 2026-11-13
+
+### Changed (AGB-990: documentation only, no schema change, so everything valid before still is)
+- **`StudyJam.labels`** is described as being in the language of the payload, not "English only": the Study Jam now exists in five languages and each language's payload carries its own labels, which the app applies over that language's table (AGB-988). The keys are the names of the app's Study Jam labels; the app ignores any it does not know.
+
 ## [2.15.0] - 2026-11-12
 
 ### Added (AGB-888 Phase 6b Runner operations, AGB-943; optional field only, so everything valid before still is)

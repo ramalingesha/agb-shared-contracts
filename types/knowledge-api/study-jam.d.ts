@@ -33,7 +33,7 @@ export interface StudyJam {
    */
   nav: 'tabs' | 'compact';
   /**
-   * Optional per-chapter UI string overrides. English only.
+   * Optional per-chapter UI string overrides, in the language of the payload (a Tamil Study Jam carries Tamil labels). The keys are the names of the app's Study Jam labels; the app ignores any it does not know.
    */
   labels?: {
     [k: string]: string;
