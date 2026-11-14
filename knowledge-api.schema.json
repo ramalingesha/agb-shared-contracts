@@ -1882,7 +1882,7 @@
             "type": "string",
             "minLength": 1
           },
-          "description": "Optional per-chapter UI string overrides. English only."
+          "description": "Optional per-chapter UI string overrides, in the language of the payload (a Tamil Study Jam carries Tamil labels). The keys are the names of the app's Study Jam labels; the app ignores any it does not know."
         },
         "speakers": {
           "type": "array",
