@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioRun",
+  "description": "One piece of background work for one item (2.16.0). The run has the estimate, the progress and the result. Review, approval and publish belong to the facet, not the run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "lessonId",
+    "jobId",
+    "kind",
+    "executor",
+    "item",
+    "state",
+    "createdAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^run-[a-z0-9]+$"
+    },
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "jobId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "generate",
+        "update-sections",
+        "edit",
+        "voice"
+      ],
+      "description": "voice is reserved (not built)."
+    },
+    "executor": {
+      "type": "string",
+      "enum": [
+        "runner",
+        "external"
+      ],
+      "default": "runner"
+    },
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "scope": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "common.schema.json#/definitions/StudioId"
+      },
+      "description": "Section ids, or null for the whole item."
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sample": {
+          "type": "boolean"
+        },
+        "sampleFirst": {
+          "type": "boolean"
+        }
+      }
+    },
+    "estimate": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "sessions",
+        "tokensLow",
+        "tokensHigh",
+        "minutesLow",
+        "minutesHigh"
+      ],
+      "properties": {
+        "sessions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tokensLow": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tokensHigh": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minutesLow": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minutesHigh": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "budgetTokens": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "actualTokens": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "paused",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "startedBy": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "startedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/definitions/Timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "finishedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/definitions/Timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inputRef": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Reserved for voice runs: {facet, version}."
+    },
+    "outputRef": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Reserved for voice runs."
+    }
+  }
+}

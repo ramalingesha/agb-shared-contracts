@@ -1,5 +1,5 @@
 {
-  "description": "Legal review state moves, as data (AGB-889). Anything not listed is illegal. 'locked' has no exit.",
+  "description": "Legal review state moves, as data (AGB-889). Anything not listed is illegal. From 2.16.0 'locked' is no longer reached by lessons; a job already in 'locked' can leave it.",
   "states": [
     "draft",
     "in-review",
@@ -22,6 +22,9 @@
       "locked",
       "changes-requested"
     ],
-    "locked": []
+    "locked": [
+      "approved",
+      "changes-requested"
+    ]
   }
 }

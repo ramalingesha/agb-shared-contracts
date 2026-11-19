@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioLessonView",
+  "description": "What GET /lessons/:lessonId returns (2.16.0): everything the lesson page shows. Only what exists is present.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lessonId",
+    "jobId",
+    "title",
+    "circle",
+    "template",
+    "master",
+    "cards",
+    "recentRuns",
+    "can"
+  ],
+  "properties": {
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "jobId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "title": {
+      "type": "string"
+    },
+    "circle": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "template": {
+      "type": "string"
+    },
+    "master": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "version",
+        "canChange"
+      ],
+      "properties": {
+        "state": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "canChange": {
+          "type": "boolean"
+        }
+      }
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item",
+          "family",
+          "label",
+          "offered"
+        ],
+        "properties": {
+          "item": {
+            "$ref": "common.schema.json#/definitions/StudioId"
+          },
+          "family": {
+            "type": "string"
+          },
+          "style": {
+            "type": "string",
+            "description": "The style key in facet names, when the item is a narration style."
+          },
+          "label": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "en"
+            ],
+            "properties": {
+              "en": {
+                "type": "string"
+              },
+              "kn": {
+                "type": "string"
+              },
+              "ta": {
+                "type": "string"
+              },
+              "te": {
+                "type": "string"
+              },
+              "hi": {
+                "type": "string"
+              }
+            }
+          },
+          "offered": {
+            "type": "boolean",
+            "description": "True when Generate may be shown: the item is not generated and every `after` edge is met."
+          },
+          "offeredReason": {
+            "type": "string",
+            "description": "Why not offered, for example the label of the item it waits for."
+          },
+          "run": {
+            "$ref": "run.schema.json"
+          },
+          "facet": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "facet",
+              "state",
+              "version"
+            ],
+            "properties": {
+              "facet": {
+                "$ref": "common.schema.json#/definitions/FacetKey"
+              },
+              "state": {
+                "$ref": "lesson-facet.schema.json#/properties/state"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "marks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "section",
+                "state"
+              ],
+              "properties": {
+                "section": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "out-of-date",
+                    "missing"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Reserved for 2.17.0."
+          },
+          "draft": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "working",
+                  "in-review",
+                  "approved"
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "changedSections": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "description": "Reserved for 2.17.0."
+          },
+          "approved": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "recentRuns": {
+      "type": "array",
+      "items": {
+        "$ref": "run.schema.json"
+      }
+    },
+    "can": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generate",
+        "publish",
+        "change"
+      ],
+      "properties": {
+        "generate": {
+          "type": "boolean"
+        },
+        "publish": {
+          "type": "boolean"
+        },
+        "change": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -19,7 +19,7 @@ export type StoreKey = string;
 export type LanguageTag = string;
 export type ReviewState = 'draft' | 'in-review' | 'changes-requested' | 'approved' | 'locked';
 /**
- * narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0).
+ * narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0). From 2.16.0 the style is any key a template names (a fifth style needs no contract change).
  */
 export type FacetKey = string;
 export type NarrationStyle = 'simple' | 'favorite-teacher' | 'professional' | 'friend';
@@ -52,6 +52,7 @@ export interface StudioContracts {
   'job-plan'?: StudioJobPlan;
   job?: StudioJob;
   'lesson-facet'?: StudioLessonFacet;
+  'lesson-view'?: StudioLessonView;
   lesson?: StudioLesson;
   'media-store'?: StudioMediaStoreConfig;
   'notification-prefs'?: StudioNotificationPrefs;
@@ -64,6 +65,7 @@ export interface StudioContracts {
   'provider-profile'?: StudioProviderProfile;
   'review-record'?: StudioReviewRecord;
   review?: StudioReview;
+  run?: StudioRun;
   'runner-presence'?: StudioRunnerPresence;
   'runner-settings'?: StudioRunnerSettings;
   stage?: StudioStage;
@@ -415,6 +417,117 @@ export interface StudioLessonFacet {
   baseRelease?: number;
 }
 /**
+ * What GET /lessons/:lessonId returns (2.16.0): everything the lesson page shows. Only what exists is present.
+ */
+export interface StudioLessonView {
+  lessonId: StudioId;
+  jobId: StudioId;
+  title: string;
+  circle: StudioId;
+  template: string;
+  master: {
+    state: string;
+    version: number;
+    canChange: boolean;
+  };
+  cards: {
+    item: StudioId;
+    family: string;
+    /**
+     * The style key in facet names, when the item is a narration style.
+     */
+    style?: string;
+    label: {
+      en: string;
+      kn?: string;
+      ta?: string;
+      te?: string;
+      hi?: string;
+    };
+    /**
+     * True when Generate may be shown: the item is not generated and every `after` edge is met.
+     */
+    offered: boolean;
+    /**
+     * Why not offered, for example the label of the item it waits for.
+     */
+    offeredReason?: string;
+    run?: StudioRun;
+    facet?: {
+      facet: FacetKey;
+      state: 'planned' | 'working' | 'in-review' | 'approved' | 'published' | 'stale' | 'failed' | 'dropped';
+      version: number;
+    };
+    /**
+     * Reserved for 2.17.0.
+     */
+    marks?: {
+      section: string;
+      state: 'out-of-date' | 'missing';
+      reason?: string;
+    }[];
+    /**
+     * Reserved for 2.17.0.
+     */
+    draft?: {
+      state: 'working' | 'in-review' | 'approved';
+      version?: number;
+      changedSections?: number;
+    };
+    approved?: boolean;
+  }[];
+  recentRuns: StudioRun[];
+  can: {
+    generate: boolean;
+    publish: boolean;
+    change: boolean;
+  };
+}
+/**
+ * One piece of background work for one item (2.16.0). The run has the estimate, the progress and the result. Review, approval and publish belong to the facet, not the run.
+ */
+export interface StudioRun {
+  id: string;
+  lessonId: StudioId;
+  jobId: StudioId;
+  /**
+   * voice is reserved (not built).
+   */
+  kind: 'generate' | 'update-sections' | 'edit' | 'voice';
+  executor: 'runner' | 'external';
+  item: StudioId;
+  /**
+   * Section ids, or null for the whole item.
+   */
+  scope?: StudioId[] | null;
+  options?: {
+    sample?: boolean;
+    sampleFirst?: boolean;
+  };
+  estimate?: {
+    sessions: number;
+    tokensLow: number;
+    tokensHigh: number;
+    minutesLow: number;
+    minutesHigh: number;
+  } | null;
+  budgetTokens?: number | null;
+  actualTokens?: number | null;
+  state: 'queued' | 'running' | 'paused' | 'succeeded' | 'failed' | 'cancelled';
+  startedBy?: string | null;
+  createdAt: Timestamp;
+  startedAt?: Timestamp | null;
+  finishedAt?: Timestamp | null;
+  /**
+   * Reserved for voice runs: {facet, version}.
+   */
+  inputRef?: {} | null;
+  /**
+   * Reserved for voice runs.
+   */
+  outputRef?: {} | null;
+}
+/**
  * A lesson (knowledge id) owns the approved master and its facets (2.13.0). Stored by Worker in a later phase; the shape is fixed here.
  */
 export interface StudioLesson {
@@ -746,5 +859,23 @@ export interface GenerateItem {
     tokensPerExchange?: number;
     tokensPerCard?: number;
     sessions?: number;
+  };
+  /**
+   * 2.16.0. At most one style item of a template is the base style, made first. Every other style item names it in `after` with `when: approved`. The Worker never says which style that is.
+   */
+  base?: boolean;
+  /**
+   * 2.16.0. The key of the style in facet names and block keys (for example `friend` for Study Jam). When absent: `style-<x>` means `<x>`.
+   */
+  style?: string;
+  /**
+   * 2.16.0. The display name of the item in each language. `label` is the fallback.
+   */
+  names?: {
+    en: string;
+    kn?: string;
+    ta?: string;
+    te?: string;
+    hi?: string;
   };
 }

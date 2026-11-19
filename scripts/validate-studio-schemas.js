@@ -289,14 +289,55 @@ test('state machine: every move not in the table is rejected', () => {
   assert.ok(illegal >= 15);
 });
 
-test("state machine: 'locked' is terminal (no exit, and nothing returns to draft)", () => {
-  assert.deepEqual(table.transitions.locked, []);
+test("state machine: 'locked' can leave (2.16.0) and nothing returns to draft", () => {
+  assert.deepEqual(table.transitions.locked, ['approved', 'changes-requested']);
   for (const from of table.states) assert.equal(canMove(from, 'draft'), false, `${from} -> draft`);
 });
 
 test('review: unknown state rejected', () => {
   const bad = example('review'); bad.state = 'published';
   expectInvalid('review', bad, 'enum', '/state');
+});
+
+// ---- runs, lesson view, template style fields (2.16.0)
+test('run: example valid; bad kind, bad state, bad id rejected; voice kind is reserved but valid', () => {
+  expectValid('run', example('run'));
+  const kind = example('run'); kind.kind = 'magic';
+  expectInvalid('run', kind, 'enum', '/kind');
+  const state = example('run'); state.state = 'reviewed';
+  expectInvalid('run', state, 'enum', '/state');
+  const id = example('run'); id.id = 'abc';
+  expectInvalid('run', id, 'pattern', '/id');
+  const voice = example('run'); voice.kind = 'voice'; voice.executor = 'external';
+  expectValid('run', voice);
+});
+
+test('lesson-view: example valid; a card needs offered and a five-language-capable label', () => {
+  expectValid('lesson-view', example('lesson-view'));
+  const bad = example('lesson-view'); delete bad.cards[0].offered;
+  expectInvalid('lesson-view', bad, 'required', 'offered');
+  const noLabel = example('lesson-view'); noLabel.cards[0].label = { kn: 'x' };
+  expectInvalid('lesson-view', noLabel, 'required', 'en');
+});
+
+test('template-generate: base, style and names are optional and checked (2.16.0)', () => {
+  const t = example('template-generate');
+  t.items[0].base = true; t.items[0].style = 'simple';
+  t.items[0].names = { en: 'Simple', kn: 'ಸರಳ', ta: 'எளிய', te: 'సులభం', hi: 'सरल' };
+  expectValid('template-generate', t);
+  const badStyle = structuredClone(t); badStyle.items[0].style = 'Bad Key';
+  expectInvalid('template-generate', badStyle, 'pattern', '/style');
+  const noEn = structuredClone(t); noEn.items[0].names = { kn: 'x' };
+  expectInvalid('template-generate', noEn, 'required', 'en');
+  const base = structuredClone(t); base.items[0].base = 'yes';
+  expectInvalid('template-generate', base, 'type', '/base');
+});
+
+test('facet key accepts any style key a template names (2.16.0), still rejects bad shapes', () => {
+  const f = example('lesson-facet'); f.facet = 'narration:storyteller:en';
+  expectValid('lesson-facet', f);
+  const bad = example('lesson-facet'); bad.facet = 'narration:Story Teller:en';
+  expectInvalid('lesson-facet', bad, 'pattern', '/facet');
 });
 
 // ---- review records
@@ -451,7 +492,7 @@ test('job spec v2: knowledge name, outputs, audience, review, extension fields (
   expectInvalid('job', mode, 'enum', '/review/mode');
   const ext = example('job'); ext.kind = 'extension'; ext.lessonId = 'c4-science-its-all-a-cycle'; ext.facet = 'narration:favorite-teacher:kn';
   expectValid('job', ext);
-  const facet = example('job'); facet.facet = 'narration:loud:en';
+  const facet = example('job'); facet.facet = 'narration:Loud One:en';
   expectInvalid('job', facet, 'pattern', '/facet');
   const src = example('job'); src.template.source = 'elsewhere';
   expectInvalid('job', src, 'enum', '/template/source');

@@ -167,6 +167,45 @@
               "minimum": 0
             }
           }
+        },
+        "base": {
+          "type": "boolean",
+          "description": "2.16.0. At most one style item of a template is the base style, made first. Every other style item names it in `after` with `when: approved`. The Worker never says which style that is."
+        },
+        "style": {
+          "type": "string",
+          "pattern": "^[a-z][a-z-]{1,30}$",
+          "description": "2.16.0. The key of the style in facet names and block keys (for example `friend` for Study Jam). When absent: `style-<x>` means `<x>`."
+        },
+        "names": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "en"
+          ],
+          "properties": {
+            "en": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kn": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ta": {
+              "type": "string",
+              "minLength": 1
+            },
+            "te": {
+              "type": "string",
+              "minLength": 1
+            },
+            "hi": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": "2.16.0. The display name of the item in each language. `label` is the fallback."
         }
       }
     }
