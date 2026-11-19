@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioCommentCreate",
+  "description": "POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. `seenHash` is the hash of the block text the reviewer saw; the Worker stores the text it reads now as the anchor and flags a comment whose seenHash differs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "line",
+        "section"
+      ],
+      "default": "line"
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "proposedText": {
+      "type": "string",
+      "maxLength": 8000
+    },
+    "seenHash": {
+      "$ref": "common.schema.json#/definitions/PreviewHash"
+    },
+    "clientId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,64}$",
+      "description": "Optional idempotency key: the same clientId returns the comment already saved."
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "body"
+      ],
+      "properties": {
+        "body": {
+          "minLength": 1
+        }
+      }
+    },
+    {
+      "required": [
+        "proposedText"
+      ],
+      "properties": {
+        "proposedText": {
+          "minLength": 1
+        }
+      }
+    }
+  ]
+}

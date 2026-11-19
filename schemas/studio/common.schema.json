@@ -164,6 +164,12 @@
       "type": "string",
       "pattern": "^(narration|audio):[a-z][a-z-]{1,30}:[a-z]{2,3}$|^(slides|buddy):[a-z]{2,3}$",
       "description": "narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0). From 2.16.0 the style is any key a template names (a fifth style needs no contract change)."
+    },
+    "PreviewHash": {
+      "title": "PreviewHash",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 (lower-case hex) of the text a reviewer was looking at (2.17.0). For a style version it is the hash of the version's file, the same value the Worker keeps as the approval hash; for the master and for study material it is the hash of the item's lines (id and words) in id order."
     }
   }
 }

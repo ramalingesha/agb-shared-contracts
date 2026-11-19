@@ -76,7 +76,16 @@
       "code": "circle_scope_only"
     },
     {
+      "code": "comment_not_found"
+    },
+    {
       "code": "comment_required"
+    },
+    {
+      "code": "comment_state"
+    },
+    {
+      "code": "comments_open"
     },
     {
       "code": "coverage_gap"
@@ -257,6 +266,9 @@
     },
     {
       "code": "template_not_found"
+    },
+    {
+      "code": "text_changed_since_preview"
     },
     {
       "code": "unapproved_blocks"

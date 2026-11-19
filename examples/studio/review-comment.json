@@ -1,0 +1,17 @@
+{
+  "id": "rc-01hxk3m9a",
+  "lessonId": "c4-english-trustworthy-friends",
+  "jobId": "english-trustworthy-friends-6af0",
+  "item": "style-simple",
+  "facet": "narration:simple:en",
+  "kind": "line",
+  "key": "simple:en:x-q-14",
+  "anchorText": "Why did Tara not tell the shopkeeper at once?",
+  "anchorHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "body": "The question hides the answer. Ask what Tara was afraid of instead.",
+  "state": "open",
+  "textChanged": false,
+  "origin": "reviewer",
+  "createdBy": "content-lead",
+  "createdAt": "2026-11-19T10:00:00Z"
+}

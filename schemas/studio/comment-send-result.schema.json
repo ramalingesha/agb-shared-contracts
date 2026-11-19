@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioCommentSendResult",
+  "description": "The answer to Send for changes (2.17.0).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sent",
+    "already",
+    "jobs"
+  ],
+  "properties": {
+    "sent": {
+      "type": "array",
+      "items": {
+        "$ref": "review-comment.schema.json"
+      },
+      "description": "Comments sent by this call."
+    },
+    "already": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ids that were not open any more (a second Confirm changes nothing)."
+    },
+    "jobs": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Background jobs queued by this call."
+    }
+  }
+}

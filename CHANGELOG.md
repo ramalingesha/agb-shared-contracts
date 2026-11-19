@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.17.0] - 2026-11-19
+
+### Added (AGB-1024, review by comments; all new or optional, so everything valid before still is)
+- **`review-comment`** schema and example: a reviewer's change request on a line or a section (key, anchor text and hash, body, optional typed text, state `open` / `sent` / `changed` / `accepted` / `withdrawn`, the run that handled it, the text it produced, the thread of earlier rounds).
+- **`comment-list`**: `GET /lessons/:lessonId/items/:item/comments` (comments with their current text, `previewHash`, counts, `can`).
+- **Requests and answers:** `comment-create`, `comment-edit`, `comment-send` and `comment-send-result`, `comment-again`, `comment-accept-result`, `approve-request` (`previewHash`) and `approve-result`.
+- **`common` `PreviewHash`** (SHA-256 hex of the text the reviewer looked at).
+- **`lesson-view`**: optional `comments` `{open, sent, changed}` and `canApprove` on `master` and on each card; optional `approvedHash` on a card's `facet`.
+- **`studio-errors.json`** gains `comments_open`, `text_changed_since_preview`, `comment_state`, `comment_not_found`.
+
 ## [2.16.0] - 2026-11-19
 
 ### Added (AGB-1018, Studio lesson that stays open; all optional or new, so everything valid before still is)

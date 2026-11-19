@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioApproveRequest",
+  "description": "POST /lessons/:lessonId/items/:item/approve and the older approve routes (2.17.0). `previewHash` is the hash of the text the reviewer looked at (from the comment list). The Worker refuses with comments_open while a change request is open and with text_changed_since_preview when the text differs; the hash it stores is this one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "previewHash"
+  ],
+  "properties": {
+    "previewHash": {
+      "$ref": "common.schema.json#/definitions/PreviewHash"
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "confirmFlagged": {
+      "type": "boolean",
+      "description": "Master only: confirm that blocks flagged by the checks are approved with the rest."
+    }
+  }
+}

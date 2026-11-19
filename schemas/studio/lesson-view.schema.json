@@ -49,6 +49,13 @@
         },
         "canChange": {
           "type": "boolean"
+        },
+        "comments": {
+          "$ref": "comment-list.schema.json#/properties/counts"
+        },
+        "canApprove": {
+          "type": "boolean",
+          "description": "No change request is open, the master can be approved and the caller may approve it (2.17.0)."
         }
       }
     },
@@ -127,6 +134,9 @@
               "version": {
                 "type": "integer",
                 "minimum": 0
+              },
+              "approvedHash": {
+                "$ref": "common.schema.json#/definitions/PreviewHash"
               }
             }
           },
@@ -185,6 +195,13 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "comments": {
+            "$ref": "comment-list.schema.json#/properties/counts"
+          },
+          "canApprove": {
+            "type": "boolean",
+            "description": "No change request is open, the style version is in review and the caller may approve it (2.17.0)."
           }
         }
       }

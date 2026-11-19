@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioReviewComment",
+  "description": "A reviewer's change request on one line or one section of the preview (2.17.0). Saving, editing or withdrawing a comment changes no lesson state; Send for changes and Approve do. The comment is anchored to the review key of the block (block ids do not change when text is rewritten) and to the text it was written against.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "lessonId",
+    "item",
+    "kind",
+    "key",
+    "body",
+    "state",
+    "anchorText",
+    "anchorHash",
+    "createdBy",
+    "createdAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^rc-[a-z0-9]+$"
+    },
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "jobId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId",
+      "description": "`master`, or the item id such as `style-simple`, `activities`."
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey",
+      "description": "The style and language (narration:simple:en); absent for the master and for study material."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "line",
+        "section",
+        "add-section"
+      ],
+      "description": "add-section is reserved for AGB-1020 (the Worker does not accept it yet)."
+    },
+    "key": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "description": "The review key: <style>:<lang>:<blockId> for a line, <style>:<lang>:section:<sectionId> for a section."
+    },
+    "anchorText": {
+      "type": "string",
+      "maxLength": 2048,
+      "description": "The text the reviewer was looking at, as it read when the comment was written (capped at 2 KB). Empty for a comment migrated from an old change request."
+    },
+    "anchorHash": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/definitions/PreviewHash"
+        },
+        {
+          "type": "string",
+          "maxLength": 0
+        }
+      ],
+      "description": "SHA-256 of anchorText; empty when no snapshot was kept (migrated comment)."
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 4000,
+      "description": "What is wrong and what should change, in the reviewer's words. Data, never an instruction to the Studio."
+    },
+    "proposedText": {
+      "type": "string",
+      "maxLength": 8000,
+      "description": "Optional: the corrected text the reviewer typed."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "sent",
+        "changed",
+        "accepted",
+        "withdrawn"
+      ],
+      "description": "open, sent for change, changed (awaiting acceptance), accepted, withdrawn. open + sent + changed count as open change requests."
+    },
+    "textChanged": {
+      "type": "boolean",
+      "description": "True when the block's text no longer matches anchorHash and no run of ours produced the change. The comment stays open; the reviewer chooses Keep open, Accept or Withdraw."
+    },
+    "blockRemoved": {
+      "type": "boolean",
+      "description": "True when the block no longer exists; the comment can only be withdrawn."
+    },
+    "currentText": {
+      "type": "string",
+      "description": "The block's text now (only in a list response)."
+    },
+    "afterText": {
+      "type": "string",
+      "description": "The text the run produced (state changed or accepted)."
+    },
+    "afterHash": {
+      "$ref": "common.schema.json#/definitions/PreviewHash"
+    },
+    "sentJob": {
+      "type": "string",
+      "description": "The background job that handles the comment (state sent, changed)."
+    },
+    "failure": {
+      "type": "string",
+      "maxLength": 400,
+      "description": "A plain sentence when the run for this comment failed; the comment is back to open."
+    },
+    "thread": {
+      "type": "array",
+      "description": "Earlier rounds of a comment that was commented on again, oldest first.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "by",
+          "at",
+          "body"
+        ],
+        "properties": {
+          "by": {
+            "type": "string"
+          },
+          "at": {
+            "$ref": "common.schema.json#/definitions/Timestamp"
+          },
+          "body": {
+            "type": "string"
+          },
+          "afterText": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "targetVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The version the comment is against (the live version for a published style); reserved for AGB-1020."
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "reviewer",
+        "migrated"
+      ],
+      "default": "reviewer"
+    },
+    "createdBy": {
+      "type": "string"
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "editedAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "sentBy": {
+      "type": "string"
+    },
+    "sentAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "acceptedBy": {
+      "type": "string"
+    },
+    "acceptedAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "withdrawnBy": {
+      "type": "string"
+    },
+    "withdrawnAt": {
+      "$ref": "common.schema.json#/definitions/Timestamp"
+    }
+  }
+}
