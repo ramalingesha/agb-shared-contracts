@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioCommentList",
+  "description": "GET /lessons/:lessonId/items/:item/comments (2.17.0): the comments with their current text, the hash of the text being previewed, and what the caller may do.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lessonId",
+    "item",
+    "previewHash",
+    "counts",
+    "approved",
+    "can",
+    "comments"
+  ],
+  "properties": {
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "previewHash": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/definitions/PreviewHash"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Hash of the text the reviewer is looking at; sent back with Approve. Null when the text cannot be read now."
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "open",
+        "sent",
+        "changed"
+      ],
+      "properties": {
+        "open": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "changed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "Open change requests by state; open + sent + changed is the number the top bar shows and Approve waits on."
+    },
+    "approved": {
+      "type": "boolean",
+      "description": "The item (and facet) is approved now."
+    },
+    "approvedHash": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/definitions/PreviewHash"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The preview hash that was approved, when approved."
+    },
+    "can": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comment",
+        "send",
+        "accept",
+        "approve"
+      ],
+      "properties": {
+        "comment": {
+          "type": "boolean"
+        },
+        "send": {
+          "type": "boolean",
+          "description": "There is an open comment and the caller may send it."
+        },
+        "accept": {
+          "type": "boolean",
+          "description": "There is a changed comment to accept."
+        },
+        "approve": {
+          "type": "boolean",
+          "description": "No change request is open, the caller may approve and the item is ready to be approved."
+        }
+      }
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "$ref": "review-comment.schema.json"
+      }
+    }
+  }
+}

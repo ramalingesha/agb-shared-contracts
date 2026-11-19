@@ -4,12 +4,42 @@
  * Run `npm run generate:studio-types` after changing a schema, then commit the result.
  */
 
+/**
+ * SHA-256 (lower-case hex) of the text a reviewer was looking at (2.17.0). For a style version it is the hash of the version's file, the same value the Worker keeps as the approval hash; for the master and for study material it is the hash of the item's lines (id and words) in id order.
+ */
+export type PreviewHash = string;
+/**
+ * narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0). From 2.16.0 the style is any key a template names (a fifth style needs no contract change).
+ */
+export type FacetKey = string;
 export type StudioId = string;
+/**
+ * `master`, or the item id such as `style-simple`, `activities`.
+ */
+export type StudioId1 = string;
+/**
+ * narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0). From 2.16.0 the style is any key a template names (a fifth style needs no contract change).
+ */
+export type FacetKey1 = string;
+export type Timestamp = string;
+/**
+ * POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor. `proposedText` belongs to one line: the Worker refuses it on a section comment (400 bad_request).
+ */
+export type StudioCommentCreate =
+  | {
+      body: {
+        [k: string]: unknown;
+      };
+    }
+  | {
+      proposedText: {
+        [k: string]: unknown;
+      };
+    };
 /**
  * manual, claude-session, rules, fake (tests), or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema.
  */
 export type ProducerKind = string;
-export type Timestamp = string;
 export type StageId =
   'inventory' | 'master' | 'generate' | 'slides' | 'narration-script' | 'audio' | 'translation' | 'publish';
 /**
@@ -18,10 +48,6 @@ export type StageId =
 export type StoreKey = string;
 export type LanguageTag = string;
 export type ReviewState = 'draft' | 'in-review' | 'changes-requested' | 'approved' | 'locked';
-/**
- * narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0). From 2.16.0 the style is any key a template names (a fifth style needs no contract change).
- */
-export type FacetKey = string;
 export type NarrationStyle = 'simple' | 'favorite-teacher' | 'professional' | 'friend';
 /**
  * Describes a media store. The interface every store implements: put(key, bytes), get(key), exists(key), url(key). Keys are StoreKeys. Only local-disk exists now.
@@ -44,6 +70,15 @@ export type StudioTemplate = {
 };
 
 export interface StudioContracts {
+  'approve-request'?: StudioApproveRequest;
+  'approve-result'?: StudioApproveResult;
+  'comment-accept-result'?: StudioCommentAcceptResult;
+  'comment-again'?: StudioCommentAgain;
+  'comment-create'?: StudioCommentCreate;
+  'comment-edit'?: StudioCommentEdit;
+  'comment-list'?: StudioCommentList;
+  'comment-send-result'?: StudioCommentSendResult;
+  'comment-send'?: StudioCommentSend;
   'coverage-report'?: StudioCoverageReport;
   'gate-index'?: StudioGateIndex;
   inventory?: StudioInventory;
@@ -63,6 +98,7 @@ export interface StudioContracts {
   practice?: StudioPractice;
   producer?: StudioProducer;
   'provider-profile'?: StudioProviderProfile;
+  'review-comment'?: StudioReviewComment;
   'review-record'?: StudioReviewRecord;
   review?: StudioReview;
   run?: StudioRun;
@@ -72,6 +108,209 @@ export interface StudioContracts {
   'studio-config'?: StudioConfig;
   'template-generate'?: StudioTemplateGenerate;
   template?: StudioTemplate;
+}
+/**
+ * POST /lessons/:lessonId/items/:item/approve (2.17.0): previewHash is required. The older routes POST /jobs/:id/lesson/facets/:facet/approve and POST /jobs/:id/items/:item/approve accept the same body with every field optional (without previewHash they only check that no change request is open). `previewHash` is the hash of the text the reviewer looked at (from the comment list). The Worker refuses with comments_open while a change request is open, with text_changed_since_preview when the text differs from what was looked at (also when it changes while the approval is being written), and with text_changed_since_approval when the item is already approved on other text; the hash it stores is this one.
+ */
+export interface StudioApproveRequest {
+  previewHash: PreviewHash;
+  facet?: FacetKey;
+  /**
+   * Master only: confirm that blocks flagged by the checks are approved with the rest.
+   */
+  confirmFlagged?: boolean;
+}
+/**
+ * The answer to Approve (2.17.0).
+ */
+export interface StudioApproveResult {
+  item: StudioId;
+  facet?: FacetKey;
+  state: 'approved';
+  previewHash: PreviewHash;
+  /**
+   * True when it was already approved with the same hash.
+   */
+  noop?: boolean;
+}
+/**
+ * The answer to Accept all (2.17.0).
+ */
+export interface StudioCommentAcceptResult {
+  accepted: StudioReviewComment[];
+}
+/**
+ * A reviewer's change request on one line or one section of the preview (2.17.0). Saving, editing or withdrawing a comment changes no lesson state; Send for changes and Approve do. The comment is anchored to the review key of the block (block ids do not change when text is rewritten) and to the text it was written against.
+ */
+export interface StudioReviewComment {
+  id: string;
+  lessonId: StudioId;
+  jobId?: StudioId;
+  item: StudioId1;
+  facet?: FacetKey1;
+  /**
+   * add-section is reserved for AGB-1020 (the Worker does not accept it yet).
+   */
+  kind: 'line' | 'section' | 'add-section';
+  /**
+   * The review key: <style>:<lang>:<blockId> for a line, <style>:<lang>:section:<sectionId> for a section.
+   */
+  key: string;
+  /**
+   * The text the reviewer was looking at, as it read when the comment was written (capped at 2 KB). Empty for a comment migrated from an old change request.
+   */
+  anchorText: string;
+  /**
+   * SHA-256 of anchorText; empty when no snapshot was kept (migrated comment).
+   */
+  anchorHash: PreviewHash;
+  /**
+   * What is wrong and what should change, in the reviewer's words. Data, never an instruction to the Studio.
+   */
+  body: string;
+  /**
+   * Optional: the corrected text the reviewer typed.
+   */
+  proposedText?: string;
+  /**
+   * open, sent for change, changed (awaiting acceptance), accepted, withdrawn. open + sent + changed count as open change requests.
+   */
+  state: 'open' | 'sent' | 'changed' | 'accepted' | 'withdrawn';
+  /**
+   * True when the block's text no longer matches anchorHash and no run of ours produced the change. The comment stays open; the reviewer chooses Keep open, Accept or Withdraw.
+   */
+  textChanged?: boolean;
+  /**
+   * True when the block no longer exists; the comment can only be withdrawn.
+   */
+  blockRemoved?: boolean;
+  /**
+   * The block's text now (only in a list response).
+   */
+  currentText?: string;
+  /**
+   * The text the run produced (state changed or accepted).
+   */
+  afterText?: string;
+  afterHash?: PreviewHash;
+  /**
+   * The background job that handles the comment (state sent, changed).
+   */
+  sentJob?: string;
+  /**
+   * A plain sentence when the run for this comment failed; the comment is back to open.
+   */
+  failure?: string;
+  /**
+   * Earlier rounds of a comment that was commented on again, oldest first.
+   *
+   * @maxItems 100
+   */
+  thread?: {
+    by: string;
+    at: Timestamp;
+    body: string;
+    afterText?: string;
+  }[];
+  /**
+   * The version the comment is against (the live version for a published style); reserved for AGB-1020.
+   */
+  targetVersion?: number;
+  origin?: 'reviewer' | 'migrated';
+  createdBy: string;
+  createdAt: Timestamp;
+  editedAt?: Timestamp;
+  sentBy?: string;
+  sentAt?: Timestamp;
+  acceptedBy?: string;
+  acceptedAt?: Timestamp;
+  withdrawnBy?: string;
+  withdrawnAt?: Timestamp;
+}
+/**
+ * POST …/comments/:cid/again (2.17.0): comment again on a changed comment. The state goes back to open, the anchor becomes the changed text and the earlier body stays in the thread.
+ */
+export interface StudioCommentAgain {
+  body: string;
+  proposedText?: string;
+}
+/**
+ * PATCH (or POST) /lessons/:lessonId/items/:item/comments/:cid (2.17.0): edit your own comment while it is open.
+ */
+export interface StudioCommentEdit {
+  body?: string;
+  proposedText?: string;
+}
+/**
+ * GET /lessons/:lessonId/items/:item/comments (2.17.0): the comments with their current text, the hash of the text being previewed, and what the caller may do.
+ */
+export interface StudioCommentList {
+  lessonId: StudioId;
+  item: StudioId;
+  facet?: FacetKey;
+  /**
+   * Hash of the text the reviewer is looking at; sent back with Approve. Null when the text cannot be read now.
+   */
+  previewHash: PreviewHash | null;
+  /**
+   * Open change requests by state; open + sent + changed is the number the top bar shows and Approve waits on.
+   */
+  counts: {
+    open: number;
+    sent: number;
+    changed: number;
+  };
+  /**
+   * The item (and facet) is approved now.
+   */
+  approved: boolean;
+  /**
+   * The preview hash that was approved, when approved.
+   */
+  approvedHash?: PreviewHash | null;
+  can: {
+    comment: boolean;
+    /**
+     * There is an open comment and the caller may send it.
+     */
+    send: boolean;
+    /**
+     * There is a changed comment to accept.
+     */
+    accept: boolean;
+    /**
+     * No change request is open, the caller may approve and the item is ready to be approved.
+     */
+    approve: boolean;
+  };
+  comments: StudioReviewComment[];
+}
+/**
+ * The answer to Send for changes (2.17.0).
+ */
+export interface StudioCommentSendResult {
+  /**
+   * Comments sent by this call.
+   */
+  sent: StudioReviewComment[];
+  /**
+   * Ids that were not open any more (a second Confirm changes nothing).
+   */
+  already: string[];
+  /**
+   * Background jobs queued by this call.
+   */
+  jobs: number;
+}
+/**
+ * POST /lessons/:lessonId/items/:item/comments/send (2.17.0): Send for changes. Without `ids` every open comment of the item (and facet) is sent. Confirmed in the app; the route is idempotent.
+ */
+export interface StudioCommentSend {
+  /**
+   * @maxItems 500
+   */
+  ids?: string[];
+  facet?: FacetKey;
 }
 /**
  * studio-jobs/<job>/coverage.json: what the inventory or the master covers.
@@ -429,6 +668,18 @@ export interface StudioLessonView {
     state: string;
     version: number;
     canChange: boolean;
+    /**
+     * Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on.
+     */
+    comments?: {
+      open: number;
+      sent: number;
+      changed: number;
+    };
+    /**
+     * No change request is open, the master can be approved and the caller may approve it (2.17.0).
+     */
+    canApprove?: boolean;
   };
   cards: {
     item: StudioId;
@@ -457,6 +708,7 @@ export interface StudioLessonView {
       facet: FacetKey;
       state: 'planned' | 'working' | 'in-review' | 'approved' | 'published' | 'stale' | 'failed' | 'dropped';
       version: number;
+      approvedHash?: PreviewHash;
     };
     /**
      * Reserved for 2.17.0.
@@ -475,6 +727,18 @@ export interface StudioLessonView {
       changedSections?: number;
     };
     approved?: boolean;
+    /**
+     * Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on.
+     */
+    comments?: {
+      open: number;
+      sent: number;
+      changed: number;
+    };
+    /**
+     * No change request is open, the style version is in review and the caller may approve it (2.17.0).
+     */
+    canApprove?: boolean;
   }[];
   recentRuns: StudioRun[];
   can: {

@@ -340,6 +340,91 @@ test('facet key accepts any style key a template names (2.16.0), still rejects b
   expectInvalid('lesson-facet', bad, 'pattern', '/facet');
 });
 
+// ---- review by comments (2.17.0)
+const HASH_A = 'a'.repeat(64);
+test('review-comment: example valid; bad state, bad kind, bad id, short hash, unknown field rejected; every state and kind is accepted', () => {
+  expectValid('review-comment', example('review-comment'));
+  for (const state of ['open', 'sent', 'changed', 'accepted', 'withdrawn']) {
+    const c = example('review-comment'); c.state = state; expectValid('review-comment', c);
+  }
+  for (const kind of ['line', 'section', 'add-section']) {
+    const c = example('review-comment'); c.kind = kind; expectValid('review-comment', c);
+  }
+  const state = example('review-comment'); state.state = 'approved';
+  expectInvalid('review-comment', state, 'enum', '/state');
+  const kind = example('review-comment'); kind.kind = 'block';
+  expectInvalid('review-comment', kind, 'enum', '/kind');
+  const id = example('review-comment'); id.id = 'abc';
+  expectInvalid('review-comment', id, 'pattern', '/id');
+  const hash = example('review-comment'); hash.anchorHash = 'abc';
+  expectInvalid('review-comment', hash, undefined, '/anchorHash');
+  const extra = example('review-comment'); extra.approved = true;
+  expectInvalid('review-comment', extra, 'additionalProperties');
+  const missing = example('review-comment'); delete missing.key;
+  expectInvalid('review-comment', missing, 'required', 'key');
+  const migrated = example('review-comment'); migrated.anchorText = ''; migrated.anchorHash = ''; migrated.origin = 'migrated';
+  expectValid('review-comment', migrated);
+  const longText = example('review-comment'); longText.currentText = 'x'.repeat(4001);
+  expectInvalid('review-comment', longText, 'maxLength', '/currentText');
+  const big = example('review-comment'); big.anchorText = 'x'.repeat(2049);
+  expectInvalid('review-comment', big, 'maxLength', '/anchorText');
+});
+
+test('comment-list: example valid; counts and can are required; previewHash may be null', () => {
+  expectValid('comment-list', example('comment-list'));
+  const noCounts = example('comment-list'); delete noCounts.counts;
+  expectInvalid('comment-list', noCounts, 'required', 'counts');
+  const nullHash = example('comment-list'); nullHash.previewHash = null;
+  expectValid('comment-list', nullHash);
+  const bad = example('comment-list'); bad.counts.open = -1;
+  expectInvalid('comment-list', bad, 'minimum', '/counts/open');
+});
+
+test('comment requests: create needs a key and a note or typed text; edit needs a field; send ids are comment ids; approve needs previewHash', () => {
+  expectValid('comment-create', example('comment-create'));
+  const noKey = example('comment-create'); delete noKey.key;
+  expectInvalid('comment-create', noKey, 'required', 'key');
+  const nothing = example('comment-create'); delete nothing.body;
+  expectInvalid('comment-create', nothing, 'anyOf');
+  expectValid('comment-create', { key: 'simple:en:x-q-14', proposedText: 'Why was Tara afraid?' });
+  const section = example('comment-create'); section.kind = 'add-section';
+  expectInvalid('comment-create', section, 'enum', '/kind');
+  expectValid('comment-edit', example('comment-edit'));
+  expectInvalid('comment-edit', {}, 'minProperties');
+  expectValid('comment-send', example('comment-send'));
+  expectValid('comment-send', {});
+  expectInvalid('comment-send', { ids: ['x'] }, 'pattern', '/ids/0');
+  expectValid('comment-send-result', example('comment-send-result'));
+  expectValid('comment-again', example('comment-again'));
+  expectInvalid('comment-again', { body: '' }, 'minLength', '/body');
+  expectValid('comment-accept-result', example('comment-accept-result'));
+  expectValid('approve-request', example('approve-request'));
+  expectInvalid('approve-request', {}, 'required', 'previewHash');
+  expectInvalid('approve-request', { previewHash: HASH_A.slice(1) }, undefined, '/previewHash');
+  expectValid('approve-result', example('approve-result'));
+  const state = example('approve-result'); state.state = 'published';
+  expectInvalid('approve-result', state, 'enum', '/state');
+});
+
+test('lesson-view: comments counts and canApprove are optional additions on the master and on a card (2.17.0)', () => {
+  const v = example('lesson-view');
+  assert.ok(v.master.comments && typeof v.master.canApprove === 'boolean');
+  expectValid('lesson-view', v);
+  const old = example('lesson-view'); delete old.master.comments; delete old.master.canApprove;
+  for (const c of old.cards) { delete c.comments; delete c.canApprove; }
+  expectValid('lesson-view', old);
+  const bad = example('lesson-view'); bad.cards[0].comments = { open: 1 };
+  expectInvalid('lesson-view', bad, 'required', 'sent');
+  const hash = example('lesson-view'); hash.cards[0].facet.approvedHash = 'nope';
+  expectInvalid('lesson-view', hash, undefined, 'approvedHash');
+});
+
+test('studio-errors: the four review-by-comments codes exist and none was removed', () => {
+  const codes = readJson(path.join(SCHEMA_DIR, 'studio-errors.json')).codes.map((c) => c.code);
+  for (const code of ['comments_open', 'text_changed_since_preview', 'text_changed_since_approval', 'comment_state', 'comment_not_found']) assert.ok(codes.includes(code), code);
+  for (const code of ['after_not_met', 'run_not_found', 'blocks_differ', 'item_not_produced', 'already_approved']) assert.ok(codes.includes(code), `kept: ${code}`);
+});
+
 // ---- review records
 test('review-record: global and circle scope', () => {
   expectValid('review-record', example('review-record'));

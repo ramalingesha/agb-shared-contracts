@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioCommentSend",
+  "description": "POST /lessons/:lessonId/items/:item/comments/send (2.17.0): Send for changes. Without `ids` every open comment of the item (and facet) is sent. Confirmed in the app; the route is idempotent.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "ids": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "string",
+        "pattern": "^rc-[a-z0-9]+$"
+      }
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    }
+  }
+}

@@ -7,7 +7,13 @@
   "master": {
     "state": "approved",
     "version": 1,
-    "canChange": true
+    "canChange": true,
+    "comments": {
+      "open": 0,
+      "sent": 0,
+      "changed": 0
+    },
+    "canApprove": false
   },
   "cards": [
     {
@@ -27,7 +33,13 @@
         "state": "published",
         "version": 3
       },
-      "approved": true
+      "approved": true,
+      "comments": {
+        "open": 1,
+        "sent": 0,
+        "changed": 1
+      },
+      "canApprove": false
     },
     {
       "item": "style-favorite-teacher",
@@ -67,6 +79,11 @@
         "createdAt": "2026-11-19T09:00:00Z",
         "startedAt": "2026-11-19T09:00:05Z",
         "finishedAt": null
+      },
+      "comments": {
+        "open": 0,
+        "sent": 0,
+        "changed": 0
       }
     },
     {
@@ -81,7 +98,12 @@
         "hi": "Study Jam"
       },
       "offered": false,
-      "offeredReason": "Simple"
+      "offeredReason": "Simple",
+      "comments": {
+        "open": 0,
+        "sent": 0,
+        "changed": 0
+      }
     }
   ],
   "recentRuns": [

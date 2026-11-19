@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioCommentCreate",
+  "description": "POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor. `proposedText` belongs to one line: the Worker refuses it on a section comment (400 bad_request).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "line",
+        "section"
+      ],
+      "default": "line"
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "proposedText": {
+      "type": "string",
+      "maxLength": 8000,
+      "description": "The corrected text of ONE line. Not accepted when kind is section."
+    },
+    "seenHash": {
+      "$ref": "common.schema.json#/definitions/PreviewHash",
+      "description": "The previewHash the page was showing (from the comment list). When the text changed since, the Worker refuses with text_changed_since_preview and the page reloads."
+    },
+    "clientId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,64}$",
+      "description": "Optional idempotency key: the same clientId returns the comment already saved."
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "body"
+      ],
+      "properties": {
+        "body": {
+          "minLength": 1
+        }
+      }
+    },
+    {
+      "required": [
+        "proposedText"
+      ],
+      "properties": {
+        "proposedText": {
+          "minLength": 1
+        }
+      }
+    }
+  ]
+}

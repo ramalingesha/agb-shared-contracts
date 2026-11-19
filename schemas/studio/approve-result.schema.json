@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioApproveResult",
+  "description": "The answer to Approve (2.17.0).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "item",
+    "state",
+    "previewHash"
+  ],
+  "properties": {
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "approved"
+      ]
+    },
+    "previewHash": {
+      "$ref": "common.schema.json#/definitions/PreviewHash"
+    },
+    "noop": {
+      "type": "boolean",
+      "description": "True when it was already approved with the same hash."
+    }
+  }
+}

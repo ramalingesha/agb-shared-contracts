@@ -49,6 +49,34 @@
         },
         "canChange": {
           "type": "boolean"
+        },
+        "comments": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "open",
+            "sent",
+            "changed"
+          ],
+          "properties": {
+            "open": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sent": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "changed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "description": "Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on."
+        },
+        "canApprove": {
+          "type": "boolean",
+          "description": "No change request is open, the master can be approved and the caller may approve it (2.17.0)."
         }
       }
     },
@@ -127,6 +155,9 @@
               "version": {
                 "type": "integer",
                 "minimum": 0
+              },
+              "approvedHash": {
+                "$ref": "common.schema.json#/definitions/PreviewHash"
               }
             }
           },
@@ -185,6 +216,34 @@
           },
           "approved": {
             "type": "boolean"
+          },
+          "comments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "open",
+              "sent",
+              "changed"
+            ],
+            "properties": {
+              "open": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sent": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "changed": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "description": "Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on."
+          },
+          "canApprove": {
+            "type": "boolean",
+            "description": "No change request is open, the style version is in review and the caller may approve it (2.17.0)."
           }
         }
       }

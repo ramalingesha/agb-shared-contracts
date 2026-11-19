@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioCommentAgain",
+  "description": "POST …/comments/:cid/again (2.17.0): comment again on a changed comment. The state goes back to open, the anchor becomes the changed text and the earlier body stays in the thread.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "body"
+  ],
+  "properties": {
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "proposedText": {
+      "type": "string",
+      "maxLength": 8000
+    }
+  }
+}

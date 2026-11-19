@@ -1,0 +1,69 @@
+{
+  "lessonId": "c4-english-trustworthy-friends",
+  "item": "style-simple",
+  "facet": "narration:simple:en",
+  "previewHash": "6dcd6b63f5ae4d65a0c0e09c01013b12693dfbc63275d724b8a441bed207aba2",
+  "counts": {
+    "open": 1,
+    "sent": 0,
+    "changed": 1
+  },
+  "approved": false,
+  "approvedHash": null,
+  "can": {
+    "comment": true,
+    "send": true,
+    "accept": true,
+    "approve": false
+  },
+  "comments": [
+    {
+      "id": "rc-01hxk3m9a",
+      "lessonId": "c4-english-trustworthy-friends",
+      "jobId": "english-trustworthy-friends-6af0",
+      "item": "style-simple",
+      "facet": "narration:simple:en",
+      "kind": "line",
+      "key": "simple:en:x-q-14",
+      "anchorText": "Why did Tara not tell the shopkeeper at once?",
+      "anchorHash": "a65ecfe754d7a3291691b1996a24cbe50bd538e9c5859d20a39f033138d25368",
+      "body": "The question hides the answer. Ask what Tara was afraid of instead.",
+      "state": "open",
+      "textChanged": false,
+      "origin": "reviewer",
+      "createdBy": "content-lead",
+      "createdAt": "2026-11-19T10:00:00Z",
+      "currentText": "Why did Tara not tell the shopkeeper at once?"
+    },
+    {
+      "id": "rc-01hxk3m9b",
+      "lessonId": "c4-english-trustworthy-friends",
+      "jobId": "english-trustworthy-friends-6af0",
+      "item": "style-simple",
+      "facet": "narration:simple:en",
+      "kind": "section",
+      "key": "simple:en:section:s4",
+      "anchorText": "",
+      "anchorHash": "",
+      "body": "This whole part is too long for a child of nine.",
+      "state": "changed",
+      "afterText": "Tara waited. Then she told the shopkeeper the truth.",
+      "afterHash": "52e7de0ec4d61625e6d6ca364906d49135d5741f8aa1c72bc419f1e0125fbfaf",
+      "sentJob": "english-trustworthy-friends-6af0--simple-en-s4-p2-5",
+      "sentBy": "content-lead",
+      "sentAt": "2026-11-19T10:05:00Z",
+      "thread": [
+        {
+          "by": "content-lead",
+          "at": "2026-11-19T09:40:00Z",
+          "body": "Too long.",
+          "afterText": "Tara waited for a long time before she spoke."
+        }
+      ],
+      "origin": "reviewer",
+      "createdBy": "content-lead",
+      "createdAt": "2026-11-19T09:30:00Z",
+      "editedAt": "2026-11-19T09:35:00Z"
+    }
+  ]
+}
