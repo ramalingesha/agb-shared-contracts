@@ -1,0 +1,27 @@
+{
+  "id": "run-01hxk3m9",
+  "lessonId": "trustworthy-friends",
+  "jobId": "english-trustworthy-friends-6af0",
+  "kind": "generate",
+  "executor": "runner",
+  "item": "style-favorite-teacher",
+  "scope": null,
+  "options": {
+    "sample": false,
+    "sampleFirst": true
+  },
+  "estimate": {
+    "sessions": 6,
+    "tokensLow": 90000,
+    "tokensHigh": 180000,
+    "minutesLow": 12,
+    "minutesHigh": 30
+  },
+  "budgetTokens": 180000,
+  "actualTokens": null,
+  "state": "running",
+  "startedBy": "content-lead",
+  "createdAt": "2026-11-19T09:00:00Z",
+  "startedAt": "2026-11-19T09:00:05Z",
+  "finishedAt": null
+}

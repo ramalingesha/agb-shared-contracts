@@ -162,8 +162,8 @@
     "FacetKey": {
       "title": "FacetKey",
       "type": "string",
-      "pattern": "^(narration|audio):(simple|favorite-teacher|professional|friend):[a-z]{2,3}$|^(slides|buddy):[a-z]{2,3}$",
-      "description": "narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0)."
+      "pattern": "^(narration|audio):[a-z][a-z-]{1,30}:[a-z]{2,3}$|^(slides|buddy):[a-z]{2,3}$",
+      "description": "narration:<style>:<lang>, audio:<style>:<lang>, slides:<lang>, buddy:<lang> (2.13.0). From 2.16.0 the style is any key a template names (a fifth style needs no contract change)."
     }
   }
 }

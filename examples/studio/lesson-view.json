@@ -1,0 +1,121 @@
+{
+  "lessonId": "trustworthy-friends",
+  "jobId": "english-trustworthy-friends-6af0",
+  "title": "Trustworthy Friends",
+  "circle": "class-6-english",
+  "template": "general-default@3",
+  "master": {
+    "state": "approved",
+    "version": 1,
+    "canChange": true
+  },
+  "cards": [
+    {
+      "item": "style-simple",
+      "family": "style",
+      "style": "simple",
+      "label": {
+        "en": "Simple",
+        "kn": "Simple",
+        "ta": "Simple",
+        "te": "Simple",
+        "hi": "Simple"
+      },
+      "offered": false,
+      "facet": {
+        "facet": "narration:simple:en",
+        "state": "published",
+        "version": 3
+      },
+      "approved": true
+    },
+    {
+      "item": "style-favorite-teacher",
+      "family": "style",
+      "style": "favorite-teacher",
+      "label": {
+        "en": "Favourite Teacher",
+        "kn": "Favourite Teacher",
+        "ta": "Favourite Teacher",
+        "te": "Favourite Teacher",
+        "hi": "Favourite Teacher"
+      },
+      "offered": false,
+      "run": {
+        "id": "run-01hxk3m9",
+        "lessonId": "trustworthy-friends",
+        "jobId": "english-trustworthy-friends-6af0",
+        "kind": "generate",
+        "executor": "runner",
+        "item": "style-favorite-teacher",
+        "scope": null,
+        "options": {
+          "sample": false,
+          "sampleFirst": true
+        },
+        "estimate": {
+          "sessions": 6,
+          "tokensLow": 90000,
+          "tokensHigh": 180000,
+          "minutesLow": 12,
+          "minutesHigh": 30
+        },
+        "budgetTokens": 180000,
+        "actualTokens": null,
+        "state": "running",
+        "startedBy": "content-lead",
+        "createdAt": "2026-11-19T09:00:00Z",
+        "startedAt": "2026-11-19T09:00:05Z",
+        "finishedAt": null
+      }
+    },
+    {
+      "item": "study-jam",
+      "family": "study-jam",
+      "style": "friend",
+      "label": {
+        "en": "Study Jam",
+        "kn": "Study Jam",
+        "ta": "Study Jam",
+        "te": "Study Jam",
+        "hi": "Study Jam"
+      },
+      "offered": false,
+      "offeredReason": "Simple"
+    }
+  ],
+  "recentRuns": [
+    {
+      "id": "run-01hxk3m9",
+      "lessonId": "trustworthy-friends",
+      "jobId": "english-trustworthy-friends-6af0",
+      "kind": "generate",
+      "executor": "runner",
+      "item": "style-favorite-teacher",
+      "scope": null,
+      "options": {
+        "sample": false,
+        "sampleFirst": true
+      },
+      "estimate": {
+        "sessions": 6,
+        "tokensLow": 90000,
+        "tokensHigh": 180000,
+        "minutesLow": 12,
+        "minutesHigh": 30
+      },
+      "budgetTokens": 180000,
+      "actualTokens": null,
+      "state": "running",
+      "startedBy": "content-lead",
+      "createdAt": "2026-11-19T09:00:00Z",
+      "startedAt": "2026-11-19T09:00:05Z",
+      "finishedAt": null
+    }
+  ],
+  "can": {
+    "generate": true,
+    "publish": true,
+    "change": true
+  }
+}

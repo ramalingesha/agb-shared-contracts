@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.16.0] - 2026-11-19
+
+### Added (AGB-1018, Studio lesson that stays open; all optional or new, so everything valid before still is)
+- **`run`** schema and example: one piece of background work for one item (kind `generate`, `update-sections`, `edit`, `voice` reserved; executor `runner` or `external`; estimate, state, actual tokens).
+- **`lesson-view`** schema and example: what `GET /lessons/:lessonId` returns (master, a card per item with label in five languages, run, facet, reserved `marks` and `draft`, recent runs, `can`).
+- **`template-generate`** items gain optional `base` (the base style, made first), `style` (the key in facet names and block keys) and `names` (display name per language).
+- **`studio-errors.json`** gains `after_not_met` and `run_not_found`.
+
+### Changed
+- **`review-transitions.json`**: `locked` may now move to `approved` or `changes-requested` (lessons no longer reach `locked`; a job already there must be able to leave). The one test that said `locked` is terminal now says it can leave.
+- **`FacetKey`** accepts any style key (`[a-z][a-z-]{1,30}`), not only the four known ones, so a template can add a style with no contract change. Every key valid before is still valid.
+
 ## [2.15.1] - 2026-11-13
 
 ### Changed (AGB-990: documentation only, no schema change, so everything valid before still is)
