@@ -23,7 +23,7 @@ export type StudioId1 = string;
 export type FacetKey1 = string;
 export type Timestamp = string;
 /**
- * POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor.
+ * POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor. `proposedText` belongs to one line: the Worker refuses it on a section comment (400 bad_request).
  */
 export type StudioCommentCreate =
   | {
@@ -110,7 +110,7 @@ export interface StudioContracts {
   template?: StudioTemplate;
 }
 /**
- * POST /lessons/:lessonId/items/:item/approve and the older approve routes (2.17.0). `previewHash` is the hash of the text the reviewer looked at (from the comment list). The Worker refuses with comments_open while a change request is open and with text_changed_since_preview when the text differs; the hash it stores is this one.
+ * POST /lessons/:lessonId/items/:item/approve (2.17.0): previewHash is required. The older routes POST /jobs/:id/lesson/facets/:facet/approve and POST /jobs/:id/items/:item/approve accept the same body with every field optional (without previewHash they only check that no change request is open). `previewHash` is the hash of the text the reviewer looked at (from the comment list). The Worker refuses with comments_open while a change request is open, with text_changed_since_preview when the text differs from what was looked at (also when it changes while the approval is being written), and with text_changed_since_approval when the item is already approved on other text; the hash it stores is this one.
  */
 export interface StudioApproveRequest {
   previewHash: PreviewHash;
@@ -203,6 +203,8 @@ export interface StudioReviewComment {
   failure?: string;
   /**
    * Earlier rounds of a comment that was commented on again, oldest first.
+   *
+   * @maxItems 100
    */
   thread?: {
     by: string;

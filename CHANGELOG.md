@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Requests and answers:** `comment-create`, `comment-edit`, `comment-send` and `comment-send-result`, `comment-again`, `comment-accept-result`, `approve-request` (`previewHash`) and `approve-result`.
 - **`common` `PreviewHash`** (SHA-256 hex of the text the reviewer looked at).
 - **`lesson-view`**: optional `comments` `{open, sent, changed}` and `canApprove` on `master` and on each card; optional `approvedHash` on a card's `facet`.
-- **`studio-errors.json`** gains `comments_open`, `text_changed_since_preview`, `comment_state`, `comment_not_found`.
+- **`studio-errors.json`** gains `comments_open`, `text_changed_since_preview`, `text_changed_since_approval` (the item is approved on other text than the one sent), `comment_state`, `comment_not_found`.
+- Response-only strings of `review-comment` have a `maxLength` matching the Worker's clipping; `approve-request` says which older routes take it with every field optional; `comment-create` says typed text belongs to one line.
 
 ## [2.16.0] - 2026-11-19
 

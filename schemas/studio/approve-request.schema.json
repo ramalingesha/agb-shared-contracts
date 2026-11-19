@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "StudioApproveRequest",
-  "description": "POST /lessons/:lessonId/items/:item/approve and the older approve routes (2.17.0). `previewHash` is the hash of the text the reviewer looked at (from the comment list). The Worker refuses with comments_open while a change request is open and with text_changed_since_preview when the text differs; the hash it stores is this one.",
+  "description": "POST /lessons/:lessonId/items/:item/approve (2.17.0): previewHash is required. The older routes POST /jobs/:id/lesson/facets/:facet/approve and POST /jobs/:id/items/:item/approve accept the same body with every field optional (without previewHash they only check that no change request is open). `previewHash` is the hash of the text the reviewer looked at (from the comment list). The Worker refuses with comments_open while a change request is open, with text_changed_since_preview when the text differs from what was looked at (also when it changes while the approval is being written), and with text_changed_since_approval when the item is already approved on other text; the hash it stores is this one.",
   "type": "object",
   "additionalProperties": false,
   "required": [

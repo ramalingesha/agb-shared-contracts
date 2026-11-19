@@ -364,6 +364,8 @@ test('review-comment: example valid; bad state, bad kind, bad id, short hash, un
   expectInvalid('review-comment', missing, 'required', 'key');
   const migrated = example('review-comment'); migrated.anchorText = ''; migrated.anchorHash = ''; migrated.origin = 'migrated';
   expectValid('review-comment', migrated);
+  const longText = example('review-comment'); longText.currentText = 'x'.repeat(4001);
+  expectInvalid('review-comment', longText, 'maxLength', '/currentText');
   const big = example('review-comment'); big.anchorText = 'x'.repeat(2049);
   expectInvalid('review-comment', big, 'maxLength', '/anchorText');
 });
@@ -419,7 +421,7 @@ test('lesson-view: comments counts and canApprove are optional additions on the 
 
 test('studio-errors: the four review-by-comments codes exist and none was removed', () => {
   const codes = readJson(path.join(SCHEMA_DIR, 'studio-errors.json')).codes.map((c) => c.code);
-  for (const code of ['comments_open', 'text_changed_since_preview', 'comment_state', 'comment_not_found']) assert.ok(codes.includes(code), code);
+  for (const code of ['comments_open', 'text_changed_since_preview', 'text_changed_since_approval', 'comment_state', 'comment_not_found']) assert.ok(codes.includes(code), code);
   for (const code of ['after_not_met', 'run_not_found', 'blocks_differ', 'item_not_produced', 'already_approved']) assert.ok(codes.includes(code), `kept: ${code}`);
 });
 

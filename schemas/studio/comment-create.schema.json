@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "StudioCommentCreate",
-  "description": "POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor.",
+  "description": "POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor. `proposedText` belongs to one line: the Worker refuses it on a section comment (400 bad_request).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -27,7 +27,8 @@
     },
     "proposedText": {
       "type": "string",
-      "maxLength": 8000
+      "maxLength": 8000,
+      "description": "The corrected text of ONE line. Not accepted when kind is section."
     },
     "seenHash": {
       "$ref": "common.schema.json#/definitions/PreviewHash",
