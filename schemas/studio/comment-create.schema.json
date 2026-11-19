@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "StudioCommentCreate",
-  "description": "POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. `seenHash` is the hash of the block text the reviewer saw; the Worker stores the text it reads now as the anchor and flags a comment whose seenHash differs.",
+  "description": "POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -30,7 +30,8 @@
       "maxLength": 8000
     },
     "seenHash": {
-      "$ref": "common.schema.json#/definitions/PreviewHash"
+      "$ref": "common.schema.json#/definitions/PreviewHash",
+      "description": "The previewHash the page was showing (from the comment list). When the text changed since, the Worker refuses with text_changed_since_preview and the page reloads."
     },
     "clientId": {
       "type": "string",

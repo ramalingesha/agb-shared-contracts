@@ -51,7 +51,28 @@
           "type": "boolean"
         },
         "comments": {
-          "$ref": "comment-list.schema.json#/properties/counts"
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "open",
+            "sent",
+            "changed"
+          ],
+          "properties": {
+            "open": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sent": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "changed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "description": "Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on."
         },
         "canApprove": {
           "type": "boolean",
@@ -197,7 +218,28 @@
             "type": "boolean"
           },
           "comments": {
-            "$ref": "comment-list.schema.json#/properties/counts"
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "open",
+              "sent",
+              "changed"
+            ],
+            "properties": {
+              "open": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sent": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "changed": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "description": "Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on."
           },
           "canApprove": {
             "type": "boolean",

@@ -23,7 +23,7 @@ export type StudioId1 = string;
 export type FacetKey1 = string;
 export type Timestamp = string;
 /**
- * POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. `seenHash` is the hash of the block text the reviewer saw; the Worker stores the text it reads now as the anchor and flags a comment whose seenHash differs.
+ * POST /lessons/:lessonId/items/:item/comments (2.17.0). Saving a comment is not a state change. The Worker stores the text it reads now as the anchor.
  */
 export type StudioCommentCreate =
   | {
@@ -250,7 +250,14 @@ export interface StudioCommentList {
    * Hash of the text the reviewer is looking at; sent back with Approve. Null when the text cannot be read now.
    */
   previewHash: PreviewHash | null;
-  counts: Counts;
+  /**
+   * Open change requests by state; open + sent + changed is the number the top bar shows and Approve waits on.
+   */
+  counts: {
+    open: number;
+    sent: number;
+    changed: number;
+  };
   /**
    * The item (and facet) is approved now.
    */
@@ -275,14 +282,6 @@ export interface StudioCommentList {
     approve: boolean;
   };
   comments: StudioReviewComment[];
-}
-/**
- * Open change requests by state; open + sent + changed is the number the top bar shows and Approve waits on.
- */
-export interface Counts {
-  open: number;
-  sent: number;
-  changed: number;
 }
 /**
  * The answer to Send for changes (2.17.0).
@@ -667,7 +666,14 @@ export interface StudioLessonView {
     state: string;
     version: number;
     canChange: boolean;
-    comments?: Counts;
+    /**
+     * Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on.
+     */
+    comments?: {
+      open: number;
+      sent: number;
+      changed: number;
+    };
     /**
      * No change request is open, the master can be approved and the caller may approve it (2.17.0).
      */
@@ -719,7 +725,14 @@ export interface StudioLessonView {
       changedSections?: number;
     };
     approved?: boolean;
-    comments?: Counts;
+    /**
+     * Open change requests by state (2.17.0); open + sent + changed is the number Approve waits on.
+     */
+    comments?: {
+      open: number;
+      sent: number;
+      changed: number;
+    };
     /**
      * No change request is open, the style version is in review and the caller may approve it (2.17.0).
      */
