@@ -1,0 +1,41 @@
+{
+  "imported": true,
+  "lessonId": "trustworthy-friends",
+  "item": "style-favorite-teacher",
+  "facet": "narration:favorite-teacher:en",
+  "state": "in-review",
+  "previewHash": "8fd597a8a61e7f0f94f01d544677e270003984091602c5e4ce567d323665cef2",
+  "blocks": 3,
+  "run": {
+    "id": "run-01hxk3mc",
+    "lessonId": "trustworthy-friends",
+    "jobId": "english-trustworthy-friends-6af0",
+    "kind": "edit",
+    "executor": "external",
+    "item": "style-favorite-teacher",
+    "scope": null,
+    "options": {},
+    "estimate": null,
+    "budgetTokens": null,
+    "actualTokens": 0,
+    "state": "succeeded",
+    "startedBy": "u-owner",
+    "createdAt": "2026-11-20T07:00:00Z",
+    "startedAt": "2026-11-20T07:00:00Z",
+    "finishedAt": "2026-11-20T07:00:00Z",
+    "inputRef": {
+      "source": "import",
+      "from": "job-branch",
+      "branch": "studio/english-trustworthy-friends-6af0",
+      "path": "studio-preview/knowledge/trustworthy-friends/overview/favorite-teacher/en.json",
+      "facet": "narration:favorite-teacher:en",
+      "language": "en",
+      "sha256": "8fd597a8a61e7f0f94f01d544677e270003984091602c5e4ce567d323665cef2"
+    },
+    "outputRef": {
+      "facet": "narration:favorite-teacher:en",
+      "sha256": "8fd597a8a61e7f0f94f01d544677e270003984091602c5e4ce567d323665cef2",
+      "blocks": 3
+    }
+  }
+}

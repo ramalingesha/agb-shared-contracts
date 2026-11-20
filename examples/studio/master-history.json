@@ -1,0 +1,28 @@
+{
+  "lessonId": "trustworthy-friends",
+  "item": "master",
+  "change": {
+    "state": "working",
+    "by": "u-content",
+    "at": "2026-11-20T08:20:00Z",
+    "run": "run-01hxk3mb"
+  },
+  "versions": [
+    {
+      "version": 2,
+      "kind": "change",
+      "by": "u-owner",
+      "at": "2026-11-19T12:00:00Z",
+      "blocks": [
+        "master:en:p2"
+      ]
+    },
+    {
+      "version": 1,
+      "kind": "build",
+      "by": "u-content",
+      "at": "2026-11-18T10:00:00Z",
+      "blocks": []
+    }
+  ]
+}

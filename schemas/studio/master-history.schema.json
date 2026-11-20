@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioMasterHistory",
+  "description": "GET /lessons/:lessonId/master/history (2.18.0): the versions of the master (the build, each rewrite and each change after Gate 1; newest first) and an open change, if any.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lessonId",
+    "item",
+    "versions"
+  ],
+  "properties": {
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "item": {
+      "type": "string",
+      "enum": [
+        "master"
+      ]
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "by",
+        "at"
+      ],
+      "description": "Present only while a change to the approved master is open.",
+      "properties": {
+        "state": {
+          "type": "string",
+          "description": "`working` today."
+        },
+        "by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "at": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-z0-9]+$"
+        }
+      }
+    },
+    "versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "kind",
+          "by",
+          "at",
+          "blocks"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "build",
+              "rewrite",
+              "change"
+            ]
+          },
+          "by": {
+            "type": "string"
+          },
+          "at": {
+            "$ref": "common.schema.json#/definitions/Timestamp"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The block keys the version touched."
+          }
+        }
+      }
+    }
+  }
+}

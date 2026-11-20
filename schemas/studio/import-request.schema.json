@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioImportRequest",
+  "description": "Body of POST /lessons/:lessonId/items/:item/import (2.18.0, AGB-1035; studio:admin only). The text is not sent: the Worker reads the version file already on the job branch and registers it as a style version in review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "language"
+  ],
+  "properties": {
+    "language": {
+      "$ref": "common.schema.json#/definitions/LanguageTag"
+    },
+    "expectedSha256": {
+      "$ref": "common.schema.json#/definitions/PreviewHash",
+      "description": "The SHA-256 of the file the caller looked at; another hash answers 409 text_changed_since_preview."
+    }
+  }
+}

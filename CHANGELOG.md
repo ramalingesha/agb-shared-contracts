@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.18.0] - 2026-11-20
+
+### Added (AGB-1020 change after publish, AGB-1035 import, AGB-1028 total sections; all new or optional, so everything valid before still is)
+- **Change after publish** (Worker 0f38200): `facet-change-request` (body of `POST /lessons/:id/facets/:facet/change` and `.../discard`, optional `expectedVersion`), `take-down-request` (`.../take-down`, `expectedVersion` required), `change-open-result` (201 opened / 200 joined), `discard-result` (including the `noop` answer), `take-down-result` (202), `facet-history` (`GET .../facets/:facet/history`: live, draft with its changes so far, versions with before/after per line), `master-history` (`GET .../master/history`) and `add-section-request` (`POST .../master/sections`; the answer is a `review-comment` of kind `add-section`).
+- **`comment-send`** gains optional `expectedVersion` (the live version the page showed; stale answers `text_changed_since_preview`).
+- **`approve-result`** gains optional `version` and `draft` (not sent by the Worker yet; today approving a draft or a changed master answers the plain 2.17.0 result).
+- **Import** (AGB-1035): `import-request` (`POST /lessons/:id/items/:item/import`, `language`, optional `expectedSha256`) and `import-result` (201 imported / 200 `noop`, with an ordinary `run`).
+- **`run`**: `inputRef` and `outputRef` stay free-form objects but now document the keys of known runs (an import run: `source: "import"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run: `source: "change"`, `facet`, `baseVersion`, `changes`). Description only: the keys are not validated, so any older `inputRef` stays valid.
+- **`job-item`** gains optional `totalSections` (AGB-1028 item 11: the whole item's section count, for "1 of N sections" on a sample). Not sent by the Worker yet.
+- No new error codes: every code those routes use is already in `studio-errors.json` (a test now checks the list).
+
 ## [2.17.0] - 2026-11-19
 
 ### Added (AGB-1024, review by comments; all new or optional, so everything valid before still is)

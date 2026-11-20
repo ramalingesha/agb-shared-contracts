@@ -227,6 +227,8 @@ review state `locked` is terminal (`review-transitions.json`). Tests:
 `scripts/validate-studio-schemas.js`, part of `npm run validate`. Set `STUDIO_TEMPLATES_DIR=<folder>`
 to also validate a folder of template files (used by gnanora-content).
 
+Change after publish, import and sample size (2.18.0, AGB-1020 / AGB-1035 / AGB-1028): new schemas `facet-change-request`, `take-down-request`, `change-open-result`, `discard-result`, `take-down-result`, `facet-history`, `master-history`, `add-section-request`, `import-request`, `import-result`; optional `comment-send.expectedVersion`, `approve-result.version` / `draft`, `job-item.totalSections`; `run.inputRef` / `outputRef` document the import and change keys. All optional or new, so 2.17.0 documents stay valid.
+
 Creator journey (2.13.0, AGB-888 Phase 6a): `job` gains optional `kind`, `lessonId`, `facet`, `knowledgeName`, `outputs`, `audience`, `review`; `template.source`; new schemas `lesson` and `lesson-facet`; `TemplateKind` `audience`; wait reasons `paused` and `cancelled`; data files `audience-presets.json` and `studio-errors.json`. All optional or new, so 2.12.0 documents stay valid.
 
 Job status and plan (2.12.0, AGB-922/923/924): `stage` gains optional `progress`, `wait`, `startedAt`, `finishedAt`, `estimate`, `actual`; `job.autoContinue`; new schemas `job-plan`, `runner-presence`, `notification`, `notification-prefs`. All optional or new, so 2.11.0 documents stay valid.

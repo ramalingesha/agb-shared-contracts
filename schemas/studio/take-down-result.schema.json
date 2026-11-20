@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioTakeDownResult",
+  "description": "The answer to POST /lessons/:lessonId/facets/:facet/take-down (2.18.0): 202, the unpublish workflow has started.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "started",
+    "runId",
+    "facet",
+    "action"
+  ],
+  "properties": {
+    "started": {
+      "type": "boolean",
+      "enum": [
+        true
+      ]
+    },
+    "runId": {
+      "type": "string",
+      "description": "The workflow instance, not a `run`."
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "unpublish"
+      ]
+    }
+  }
+}

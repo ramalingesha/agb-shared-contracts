@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioDiscardResult",
+  "description": "The answer to POST /lessons/:lessonId/facets/:facet/discard (2.18.0). 200 either way: `discarded: false, noop: true` when there was no draft (a second Confirm).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "facet",
+    "discarded"
+  ],
+  "properties": {
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "discarded": {
+      "type": "boolean"
+    },
+    "noop": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "string",
+      "description": "Only with noop: the state of the version that has no draft."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The live version the lesson stays on (only when discarded)."
+    },
+    "withdrawn": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Comments of the draft that were withdrawn (only when discarded)."
+    }
+  }
+}

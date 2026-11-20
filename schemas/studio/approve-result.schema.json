@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "StudioApproveResult",
-  "description": "The answer to Approve (2.17.0).",
+  "description": "The answer to Approve (2.17.0). Since 2.18.0 it may say which version is meant: approving a draft of a published version or a changed master. The Worker (0f38200) does not send these two yet.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -28,6 +28,15 @@
     "noop": {
       "type": "boolean",
       "description": "True when it was already approved with the same hash."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Optional (2.18.0): the version the approval is for; for a draft, the version Publish will make live."
+    },
+    "draft": {
+      "type": "boolean",
+      "description": "Optional (2.18.0): true when what was approved is a draft beside a published version."
     }
   }
 }

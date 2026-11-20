@@ -1,0 +1,222 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioFacetHistory",
+  "description": "GET /lessons/:lessonId/facets/:facet/history (2.18.0): the published versions of one style version (newest first, who, when, each changed line before and after) and, while a change is open, what the draft has changed so far. For the Studio only; learners never read it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lessonId",
+    "facet",
+    "item",
+    "live",
+    "versions"
+  ],
+  "properties": {
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "live": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version"
+          ],
+          "properties": {
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "by": {
+              "type": "string"
+            },
+            "at": {
+              "$ref": "common.schema.json#/definitions/Timestamp"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The published version, or null when the version is not published."
+    },
+    "draft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "version",
+        "baseVersion",
+        "by",
+        "at"
+      ],
+      "description": "Present only while a change is open.",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "working",
+            "in-review",
+            "approved"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "baseVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "at": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-z0-9]+$"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "key",
+              "before",
+              "after"
+            ],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "before": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 8000,
+                "description": "The line before; null for a new line."
+              },
+              "after": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 8000,
+                "description": "The line after; null for a removed line."
+              }
+            }
+          },
+          "description": "The lines the draft has changed so far; absent when the text could not be read or compared."
+        },
+        "unread": {
+          "type": "boolean",
+          "description": "True when the draft text could not be read just now (try again)."
+        }
+      }
+    },
+    "versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "by",
+          "at",
+          "first",
+          "changes",
+          "current"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "at": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/definitions/Timestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "run": {
+            "type": "string",
+            "pattern": "^run-[a-z0-9]+$"
+          },
+          "first": {
+            "type": "boolean",
+            "description": "The first published version: it has no before."
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "key",
+                "before",
+                "after"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "before": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 8000,
+                  "description": "The line before; null for a new line."
+                },
+                "after": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 8000,
+                  "description": "The line after; null for a removed line."
+                }
+              }
+            }
+          },
+          "current": {
+            "type": "boolean",
+            "description": "The version learners read now."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "lessonId": "trustworthy-friends",
+  "facet": "narration:simple:en",
+  "item": "style-simple",
+  "live": {
+    "version": 1,
+    "by": "u-owner",
+    "at": "2026-11-19T09:30:00Z"
+  },
+  "draft": {
+    "state": "in-review",
+    "version": 2,
+    "baseVersion": 1,
+    "by": "u-content",
+    "at": "2026-11-20T08:15:00Z",
+    "run": "run-01hxk3ma",
+    "changes": [
+      {
+        "key": "simple:en:b2",
+        "before": "She forgot her purse.",
+        "after": "She forgot her purse at home."
+      }
+    ]
+  },
+  "versions": [
+    {
+      "version": 1,
+      "by": "u-owner",
+      "at": "2026-11-19T09:30:00Z",
+      "first": true,
+      "changes": [],
+      "current": true
+    }
+  ]
+}

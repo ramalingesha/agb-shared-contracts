@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioChangeOpenResult",
+  "description": "The answer to POST /lessons/:lessonId/facets/:facet/change (2.18.0): 201 when this call opened the draft, 200 when a draft was already open (the caller joins it).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "facet",
+    "item",
+    "opened",
+    "baseVersion",
+    "draftVersion"
+  ],
+  "properties": {
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "opened": {
+      "type": "boolean"
+    },
+    "baseVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The live (published) version the draft starts from."
+    },
+    "draftVersion": {
+      "type": "integer",
+      "minimum": 2,
+      "description": "The version number Publish will give the draft (baseVersion + 1)."
+    },
+    "draftState": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "working",
+        "in-review",
+        "approved",
+        null
+      ]
+    },
+    "run": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^run-[a-z0-9]+$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The `edit` run that stands for the change."
+    }
+  }
+}

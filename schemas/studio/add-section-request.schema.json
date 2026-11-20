@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioAddSectionRequest",
+  "description": "Body of POST /lessons/:lessonId/master/sections (2.18.0): asks for a new section of the master. It is stored as a review-comment of kind `add-section` (201 the new comment, 200 the same request already saved; the answer is a `review-comment`) and counts as an open change request. Sending it answers 409 cannot_start until the engine has the add-section mode. At least one of `notes` and `text` is required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title"
+  ],
+  "anyOf": [
+    {
+      "required": [
+        "notes"
+      ]
+    },
+    {
+      "required": [
+        "text"
+      ]
+    }
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "1 to 200 characters after trimming (the Worker trims, then checks)."
+    },
+    "afterSection": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$|^end$",
+      "description": "A section id of the master the new section follows; omitted, null or `end` for the end."
+    },
+    "sourcePages": {
+      "type": "string",
+      "description": "For example 12-13. The Worker keeps the first 100 characters."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Up to 4000 characters after trimming."
+    },
+    "text": {
+      "type": "string",
+      "description": "Typed text for the new section; up to 8000 characters after trimming."
+    }
+  }
+}
