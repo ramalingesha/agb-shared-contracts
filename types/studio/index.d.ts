@@ -5,6 +5,12 @@
  */
 
 /**
+ * Body of POST /lessons/:lessonId/master/sections (2.18.0): asks for a new section of the master. It is stored as a review-comment of kind `add-section` (201 the new comment, 200 the same request already saved; the answer is a `review-comment`) and counts as an open change request. Sending it answers 409 cannot_start until the engine has the add-section mode. At least one of `notes` and `text` is required.
+ */
+export type StudioAddSectionRequest = {
+  [k: string]: unknown;
+};
+/**
  * SHA-256 (lower-case hex) of the text a reviewer was looking at (2.17.0). For a style version it is the hash of the version's file, the same value the Worker keeps as the approval hash; for the master and for study material it is the hash of the item's lines (id and words) in id order.
  */
 export type PreviewHash = string;
@@ -36,6 +42,11 @@ export type StudioCommentCreate =
         [k: string]: unknown;
       };
     };
+export type LanguageTag = string;
+/**
+ * SHA-256 (lower-case hex) of the text a reviewer was looking at (2.17.0). For a style version it is the hash of the version's file, the same value the Worker keeps as the approval hash; for the master and for study material it is the hash of the item's lines (id and words) in id order.
+ */
+export type PreviewHash1 = string;
 /**
  * manual, claude-session, rules, fake (tests), or api:<provider>, voice:<provider>, parse:<provider>. A provider is a name, not an enum entry, so adding one never changes a schema.
  */
@@ -46,7 +57,6 @@ export type StageId =
  * A relative, forward-slash key such as jobs/<id>/inventory.json. No leading slash, no drive letter, no backslash, no '.' or '..' segment.
  */
 export type StoreKey = string;
-export type LanguageTag = string;
 export type ReviewState = 'draft' | 'in-review' | 'changes-requested' | 'approved' | 'locked';
 export type NarrationStyle = 'simple' | 'favorite-teacher' | 'professional' | 'friend';
 /**
@@ -70,8 +80,10 @@ export type StudioTemplate = {
 };
 
 export interface StudioContracts {
+  'add-section-request'?: StudioAddSectionRequest;
   'approve-request'?: StudioApproveRequest;
   'approve-result'?: StudioApproveResult;
+  'change-open-result'?: StudioChangeOpenResult;
   'comment-accept-result'?: StudioCommentAcceptResult;
   'comment-again'?: StudioCommentAgain;
   'comment-create'?: StudioCommentCreate;
@@ -80,7 +92,12 @@ export interface StudioContracts {
   'comment-send-result'?: StudioCommentSendResult;
   'comment-send'?: StudioCommentSend;
   'coverage-report'?: StudioCoverageReport;
+  'discard-result'?: StudioDiscardResult;
+  'facet-change-request'?: StudioFacetChangeRequest;
+  'facet-history'?: StudioFacetHistory;
   'gate-index'?: StudioGateIndex;
+  'import-request'?: StudioImportRequest;
+  'import-result'?: StudioImportResult;
   inventory?: StudioInventory;
   'item-keys'?: StudioItemKeys;
   'job-item'?: StudioJobItem;
@@ -89,6 +106,7 @@ export interface StudioContracts {
   'lesson-facet'?: StudioLessonFacet;
   'lesson-view'?: StudioLessonView;
   lesson?: StudioLesson;
+  'master-history'?: StudioMasterHistory;
   'media-store'?: StudioMediaStoreConfig;
   'notification-prefs'?: StudioNotificationPrefs;
   notification?: StudioNotification;
@@ -106,6 +124,8 @@ export interface StudioContracts {
   'runner-settings'?: StudioRunnerSettings;
   stage?: StudioStage;
   'studio-config'?: StudioConfig;
+  'take-down-request'?: StudioTakeDownRequest;
+  'take-down-result'?: StudioTakeDownResult;
   'template-generate'?: StudioTemplateGenerate;
   template?: StudioTemplate;
 }
@@ -121,7 +141,7 @@ export interface StudioApproveRequest {
   confirmFlagged?: boolean;
 }
 /**
- * The answer to Approve (2.17.0).
+ * The answer to Approve (2.17.0). Since 2.18.0 it may say which version is meant: approving a draft of a published version or a changed master. The Worker (0f38200) does not send these two yet.
  */
 export interface StudioApproveResult {
   item: StudioId;
@@ -132,6 +152,35 @@ export interface StudioApproveResult {
    * True when it was already approved with the same hash.
    */
   noop?: boolean;
+  /**
+   * Optional (2.18.0): the version the approval is for; for a draft, the version Publish will make live.
+   */
+  version?: number;
+  /**
+   * Optional (2.18.0): true when what was approved is a draft beside a published version.
+   */
+  draft?: boolean;
+}
+/**
+ * The answer to POST /lessons/:lessonId/facets/:facet/change (2.18.0): 201 when this call opened the draft, 200 when a draft was already open (the caller joins it).
+ */
+export interface StudioChangeOpenResult {
+  facet: FacetKey;
+  item: StudioId;
+  opened: boolean;
+  /**
+   * The live (published) version the draft starts from.
+   */
+  baseVersion: number;
+  /**
+   * The version number Publish will give the draft (baseVersion + 1).
+   */
+  draftVersion: number;
+  draftState?: 'working' | 'in-review' | 'approved' | null;
+  /**
+   * The `edit` run that stands for the change.
+   */
+  run?: string | null;
 }
 /**
  * The answer to Accept all (2.17.0).
@@ -303,7 +352,7 @@ export interface StudioCommentSendResult {
   jobs: number;
 }
 /**
- * POST /lessons/:lessonId/items/:item/comments/send (2.17.0): Send for changes. Without `ids` every open comment of the item (and facet) is sent. Confirmed in the app; the route is idempotent.
+ * POST /lessons/:lessonId/items/:item/comments/send (2.17.0; `expectedVersion` 2.18.0): Send for changes. Without `ids` every open comment of the item (and facet) is sent. Confirmed in the app; the route is idempotent. `expectedVersion` is for a comment on a published version or an approved master: the live version the page showed.
  */
 export interface StudioCommentSend {
   /**
@@ -311,6 +360,10 @@ export interface StudioCommentSend {
    */
   ids?: string[];
   facet?: FacetKey;
+  /**
+   * The live version number the page showed. Another number means the page is out of date (409 text_changed_since_preview, detail.version is the live one).
+   */
+  expectedVersion?: number;
 }
 /**
  * studio-jobs/<job>/coverage.json: what the inventory or the master covers.
@@ -354,6 +407,105 @@ export interface StudioCoverageReport {
   };
 }
 /**
+ * The answer to POST /lessons/:lessonId/facets/:facet/discard (2.18.0). 200 either way: `discarded: false, noop: true` when there was no draft (a second Confirm).
+ */
+export interface StudioDiscardResult {
+  facet: FacetKey;
+  discarded: boolean;
+  noop?: boolean;
+  /**
+   * Only with noop: the state of the version that has no draft.
+   */
+  state?: string;
+  /**
+   * The live version the lesson stays on (only when discarded).
+   */
+  version?: number;
+  /**
+   * Comments of the draft that were withdrawn (only when discarded).
+   */
+  withdrawn?: number;
+}
+/**
+ * Body of POST /lessons/:lessonId/facets/:facet/change and POST /lessons/:lessonId/facets/:facet/discard (2.18.0). Both are confirmed in the app and idempotent; every field is optional.
+ */
+export interface StudioFacetChangeRequest {
+  /**
+   * The live version number the page showed. Another number means the page is out of date (409 text_changed_since_preview, detail.version is the live one).
+   */
+  expectedVersion?: number;
+}
+/**
+ * GET /lessons/:lessonId/facets/:facet/history (2.18.0): the published versions of one style version (newest first, who, when, each changed line before and after) and, while a change is open, what the draft has changed so far. For the Studio only; learners never read it.
+ */
+export interface StudioFacetHistory {
+  lessonId: StudioId;
+  facet: FacetKey;
+  item: StudioId;
+  /**
+   * The published version, or null when the version is not published.
+   */
+  live: {
+    version: number;
+    by?: string;
+    at?: Timestamp;
+  } | null;
+  /**
+   * Present only while a change is open.
+   */
+  draft?: {
+    state: 'working' | 'in-review' | 'approved';
+    version: number;
+    baseVersion: number;
+    by: string | null;
+    at: Timestamp | null;
+    run?: string;
+    /**
+     * The lines the draft has changed so far; absent when the text could not be read or compared.
+     */
+    changes?: {
+      key: string;
+      /**
+       * The line before; null for a new line.
+       */
+      before: string | null;
+      /**
+       * The line after; null for a removed line.
+       */
+      after: string | null;
+    }[];
+    /**
+     * True when the draft text could not be read just now (try again).
+     */
+    unread?: boolean;
+  };
+  versions: {
+    version: number;
+    by: string | null;
+    at: Timestamp | null;
+    run?: string;
+    /**
+     * The first published version: it has no before.
+     */
+    first: boolean;
+    changes: {
+      key: string;
+      /**
+       * The line before; null for a new line.
+       */
+      before: string | null;
+      /**
+       * The line after; null for a removed line.
+       */
+      after: string | null;
+    }[];
+    /**
+     * The version learners read now.
+     */
+    current: boolean;
+  }[];
+}
+/**
  * studio-jobs/<job>/gate-index.json: the block keys each gate needs approved, grouped by section.
  */
 export interface StudioGateIndex {
@@ -366,6 +518,93 @@ export interface StudioGateIndex {
       keys: string[];
     }[];
   }[];
+}
+/**
+ * Body of POST /lessons/:lessonId/items/:item/import (2.18.0, AGB-1035; studio:admin only). The text is not sent: the Worker reads the version file already on the job branch and registers it as a style version in review.
+ */
+export interface StudioImportRequest {
+  language: LanguageTag;
+  expectedSha256?: PreviewHash1;
+}
+/**
+ * The answer to the import route (2.18.0, AGB-1035): 201 when imported (`replaced: true` when it replaced other imported text of a version in review), 200 `{imported: false, noop: true}` when the same file was imported already. The run is an ordinary `run`: kind `edit`, executor `external`, `inputRef.source` `import`.
+ */
+export interface StudioImportResult {
+  imported: boolean;
+  noop?: boolean;
+  replaced?: boolean;
+  lessonId: StudioId;
+  item: StudioId;
+  facet: FacetKey;
+  state: 'in-review';
+  previewHash: PreviewHash;
+  /**
+   * Number of blocks imported (absent on a noop).
+   */
+  blocks?: number;
+  run: StudioRun;
+}
+/**
+ * One piece of background work for one item (2.16.0). The run has the estimate, the progress and the result. Review, approval and publish belong to the facet, not the run.
+ */
+export interface StudioRun {
+  id: string;
+  lessonId: StudioId;
+  jobId: StudioId;
+  /**
+   * voice is reserved (not built).
+   */
+  kind: 'generate' | 'update-sections' | 'edit' | 'voice';
+  executor: 'runner' | 'external';
+  item: StudioId;
+  /**
+   * Section ids, or null for the whole item.
+   */
+  scope?: StudioId[] | null;
+  options?: {
+    sample?: boolean;
+    sampleFirst?: boolean;
+  };
+  estimate?: {
+    sessions: number;
+    tokensLow: number;
+    tokensHigh: number;
+    minutesLow: number;
+    minutesHigh: number;
+  } | null;
+  budgetTokens?: number | null;
+  actualTokens?: number | null;
+  state: 'queued' | 'running' | 'paused' | 'succeeded' | 'failed' | 'cancelled';
+  startedBy?: string | null;
+  createdAt: Timestamp;
+  startedAt?: Timestamp | null;
+  finishedAt?: Timestamp | null;
+  /**
+   * What the run was made from. Optional keys of known runs (other keys may appear): an import run (executor `external`) has `source: "import"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run has `source: "change"`, `facet`, `baseVersion`, `changes` (the comments it carries: `{id, key, kind}`); a voice run (reserved) has `facet` and `version`.
+   */
+  inputRef?: {
+    /**
+     * How the run came about when it did not start from a plain Start: `import` or `change` today; other values may come later.
+     */
+    source?: string;
+    from?: string;
+    branch?: string;
+    path?: string;
+    facet?: FacetKey;
+    language?: LanguageTag;
+    sha256?: PreviewHash;
+    baseVersion?: number;
+    version?: number;
+    changes?: {
+      id: string;
+      key: string;
+      kind: 'edit' | 'rewrite';
+    }[];
+  } | null;
+  /**
+   * What the run produced. An import run has `{facet, sha256, blocks}`; a failed run has `{failure: {code, message, at, checks?}}`; voice is reserved.
+   */
+  outputRef?: {} | null;
 }
 /**
  * studio-jobs/<job>/inventory.json: the source inventory parsed from inventory.md.
@@ -447,6 +686,10 @@ export interface StudioJobItem {
   stale?: boolean;
   blockedBy?: StudioId[];
   retryAfter?: Timestamp;
+  /**
+   * Optional (2.18.0, AGB-1028): the number of sections of the whole item. For a sample (only the first section is written) the app shows "1 of N sections"; `total` counts keys, not sections.
+   */
+  totalSections?: number;
 }
 export interface StudioJobPlan {
   job: StudioId;
@@ -748,50 +991,6 @@ export interface StudioLessonView {
   };
 }
 /**
- * One piece of background work for one item (2.16.0). The run has the estimate, the progress and the result. Review, approval and publish belong to the facet, not the run.
- */
-export interface StudioRun {
-  id: string;
-  lessonId: StudioId;
-  jobId: StudioId;
-  /**
-   * voice is reserved (not built).
-   */
-  kind: 'generate' | 'update-sections' | 'edit' | 'voice';
-  executor: 'runner' | 'external';
-  item: StudioId;
-  /**
-   * Section ids, or null for the whole item.
-   */
-  scope?: StudioId[] | null;
-  options?: {
-    sample?: boolean;
-    sampleFirst?: boolean;
-  };
-  estimate?: {
-    sessions: number;
-    tokensLow: number;
-    tokensHigh: number;
-    minutesLow: number;
-    minutesHigh: number;
-  } | null;
-  budgetTokens?: number | null;
-  actualTokens?: number | null;
-  state: 'queued' | 'running' | 'paused' | 'succeeded' | 'failed' | 'cancelled';
-  startedBy?: string | null;
-  createdAt: Timestamp;
-  startedAt?: Timestamp | null;
-  finishedAt?: Timestamp | null;
-  /**
-   * Reserved for voice runs: {facet, version}.
-   */
-  inputRef?: {} | null;
-  /**
-   * Reserved for voice runs.
-   */
-  outputRef?: {} | null;
-}
-/**
  * A lesson (knowledge id) owns the approved master and its facets (2.13.0). Stored by Worker in a later phase; the shape is fixed here.
  */
 export interface StudioLesson {
@@ -802,6 +1001,35 @@ export interface StudioLesson {
   release: number;
   createdBy?: string;
   createdAt?: Timestamp;
+}
+/**
+ * GET /lessons/:lessonId/master/history (2.18.0): the versions of the master (the build, each rewrite and each change after Gate 1; newest first) and an open change, if any.
+ */
+export interface StudioMasterHistory {
+  lessonId: StudioId;
+  item: 'master';
+  /**
+   * Present only while a change to the approved master is open.
+   */
+  change?: {
+    /**
+     * `working` today.
+     */
+    state: string;
+    by: string | null;
+    at: Timestamp | null;
+    run?: string;
+  };
+  versions: {
+    version: number;
+    kind: 'build' | 'rewrite' | 'change';
+    by: string;
+    at: Timestamp;
+    /**
+     * The block keys the version touched.
+     */
+    blocks: string[];
+  }[];
 }
 /**
  * Per person, per event kind, which channels are on (2.12.0). Missing means the default: in-app on; email on for needs-review, failed and stage-finished.
@@ -1065,6 +1293,27 @@ export interface StudioConfig {
   permissions?: {
     [k: string]: string[];
   };
+}
+/**
+ * Body of POST /lessons/:lessonId/facets/:facet/take-down (2.18.0). Confirmed in the app; the version being taken down must be named.
+ */
+export interface StudioTakeDownRequest {
+  /**
+   * The live version number the page showed. Another number means the page is out of date (409 text_changed_since_preview, detail.version is the live one).
+   */
+  expectedVersion: number;
+}
+/**
+ * The answer to POST /lessons/:lessonId/facets/:facet/take-down (2.18.0): 202, the unpublish workflow has started.
+ */
+export interface StudioTakeDownResult {
+  started: true;
+  /**
+   * The workflow instance, not a `run`.
+   */
+  runId: string;
+  facet: FacetKey;
+  action: 'unpublish';
 }
 /**
  * The `generate` block of a lesson template body (2.11.0): the item plan for Phase 4, as data. No item name is hard-coded in the Worker; a template with a different list plans a different job.

@@ -425,6 +425,137 @@ test('studio-errors: the four review-by-comments codes exist and none was remove
   for (const code of ['after_not_met', 'run_not_found', 'blocks_differ', 'item_not_produced', 'already_approved']) assert.ok(codes.includes(code), `kept: ${code}`);
 });
 
+// ---- change after publish, import, total sections (2.18.0)
+test('comment-send: expectedVersion is optional, a non-negative integer, and nothing else was added (2.18.0)', () => {
+  expectValid('comment-send', example('comment-send'));
+  expectValid('comment-send', { expectedVersion: 0 });
+  expectValid('comment-send', { ids: ['rc-01hxk3m9a'] });
+  expectInvalid('comment-send', { expectedVersion: -1 }, 'minimum', '/expectedVersion');
+  expectInvalid('comment-send', { expectedVersion: '1' }, 'type', '/expectedVersion');
+  expectInvalid('comment-send', { bogus: true }, 'additionalProperties');
+});
+
+test('facet change, discard and take-down requests: expectedVersion optional on change and discard, required on take-down', () => {
+  expectValid('facet-change-request', example('facet-change-request'));
+  expectValid('facet-change-request', {});
+  expectInvalid('facet-change-request', { expectedVersion: 1.5 }, 'type', '/expectedVersion');
+  expectInvalid('facet-change-request', { expectedVersion: -1 }, 'minimum', '/expectedVersion');
+  expectValid('take-down-request', example('take-down-request'));
+  expectInvalid('take-down-request', {}, 'required', 'expectedVersion');
+});
+
+test('change-open, discard and take-down results: the Worker answers from its tests validate (2.18.0)', () => {
+  expectValid('change-open-result', example('change-open-result'));
+  // a second call joins the draft: opened false; a draft with no run yet; a state that is not set
+  expectValid('change-open-result', { facet: 'narration:simple:en', item: 'style-simple', opened: false, baseVersion: 1, draftVersion: 2, draftState: 'in-review', run: 'run-01hxk3ma' });
+  expectValid('change-open-result', { facet: 'narration:simple:en', item: 'style-simple', opened: true, baseVersion: 1, draftVersion: 2, draftState: null, run: null });
+  expectInvalid('change-open-result', { facet: 'narration:simple:en', item: 'style-simple', opened: true, baseVersion: 1 }, 'required', 'draftVersion');
+  expectInvalid('change-open-result', { ...example('change-open-result'), draftState: 'published' }, 'enum', '/draftState');
+  expectValid('discard-result', example('discard-result'));
+  expectValid('discard-result', { facet: 'narration:simple:en', discarded: false, noop: true, state: 'published' }); // a second Confirm
+  expectInvalid('discard-result', { discarded: true }, 'required', 'facet');
+  expectValid('take-down-result', example('take-down-result'));
+  expectInvalid('take-down-result', { ...example('take-down-result'), action: 'publish' }, 'enum', '/action');
+});
+
+test('facet-history: live, draft and versions; a draft needs its state and versions; unread and null before/after are allowed', () => {
+  expectValid('facet-history', example('facet-history'));
+  const none = example('facet-history'); delete none.draft; none.live = null; none.versions = [];
+  expectValid('facet-history', none);
+  const added = example('facet-history'); added.draft.changes.push({ key: 'simple:en:b9', before: null, after: 'A new line.' }, { key: 'simple:en:b3', before: 'Old.', after: null });
+  expectValid('facet-history', added);
+  const unread = example('facet-history'); delete unread.draft.changes; unread.draft.unread = true;
+  expectValid('facet-history', unread);
+  const state = example('facet-history'); state.draft.state = 'published';
+  expectInvalid('facet-history', state, 'enum', '/draft/state');
+  const noFirst = example('facet-history'); delete noFirst.versions[0].first;
+  expectInvalid('facet-history', noFirst, 'required', 'first');
+  const extra = example('facet-history'); extra.versions[0].secret = 1;
+  expectInvalid('facet-history', extra, 'additionalProperties');
+});
+
+test('master-history: kinds build, rewrite and change; an open change is optional', () => {
+  expectValid('master-history', example('master-history'));
+  const quiet = example('master-history'); delete quiet.change;
+  expectValid('master-history', quiet);
+  for (const kind of ['build', 'rewrite', 'change']) { const m = example('master-history'); m.versions[0].kind = kind; expectValid('master-history', m); }
+  const bad = example('master-history'); bad.versions[0].kind = 'delete';
+  expectInvalid('master-history', bad, 'enum', '/versions/0/kind');
+  const item = example('master-history'); item.item = 'style-simple';
+  expectInvalid('master-history', item, 'enum', '/item');
+});
+
+test('add-section-request: a title and notes or typed text; the afterSection is a section id or end; the answer is a review-comment', () => {
+  expectValid('add-section-request', example('add-section-request'));
+  expectValid('add-section-request', { title: 'Tides and the sun', text: 'The sun adds a little pull.' });
+  expectValid('add-section-request', { title: 'T', notes: 'x', afterSection: 'end' });
+  expectValid('add-section-request', { title: 'T', notes: 'x', afterSection: null }); // the Worker reads null as the end
+  expectValid('add-section-request', { title: 'T', notes: '', text: 'Typed.' });
+  expectInvalid('add-section-request', { title: 'Tides and the sun' }, 'anyOf');
+  expectInvalid('add-section-request', { notes: 'x' }, 'required', 'title');
+  expectInvalid('add-section-request', { title: '', notes: 'x' }, 'minLength', '/title');
+  expectInvalid('add-section-request', { title: 'T', notes: 'x', afterSection: '../x' }, undefined, '/afterSection');
+  expectInvalid('add-section-request', { title: 'x'.repeat(201), notes: 'x' }, 'maxLength', '/title');
+  // what the Worker's test saves (change1020.test.ts, "add a section to the master"): a plain comment view of kind add-section, with an empty anchorHash
+  expectValid('review-comment', {
+    id: 'rc-01hxk3mz', lessonId: 'trustworthy-friends', jobId: 'english-trustworthy-friends-6af0', item: 'master', kind: 'add-section', key: 'master:en:section:after-s1',
+    anchorText: 'Tides and the sun', anchorHash: '', body: 'Explain that the sun adds a little pull.\n\nSource pages: 12-13', state: 'open', origin: 'reviewer',
+    createdBy: 'u-content', createdAt: '2026-11-20T08:30:00.000Z',
+  });
+});
+
+test('import (AGB-1035): request needs a language; the result carries an ordinary edit run marked by inputRef.source', () => {
+  expectValid('import-request', example('import-request'));
+  expectValid('import-request', { language: 'kn' });
+  expectInvalid('import-request', {}, 'required', 'language');
+  expectInvalid('import-request', { language: 'english' }, 'pattern', '/language');
+  expectInvalid('import-request', { language: 'en', expectedSha256: 'abc' }, undefined, '/expectedSha256');
+  const ok = example('import-result');
+  expectValid('import-result', ok);
+  expectValid('run', ok.run);
+  assert.equal(ok.run.kind, 'edit'); assert.equal(ok.run.executor, 'external'); assert.equal(ok.run.inputRef.source, 'import');
+  // the same file again: 200, no new run, no block count
+  const noop = { imported: false, noop: true, lessonId: ok.lessonId, item: ok.item, facet: ok.facet, state: 'in-review', previewHash: ok.previewHash, run: ok.run };
+  expectValid('import-result', noop);
+  expectValid('import-result', { ...ok, replaced: true });
+  expectInvalid('import-result', { ...ok, state: 'approved' }, 'enum', '/state');
+  const noRun = { ...ok }; delete noRun.run;
+  expectInvalid('import-result', noRun, 'required', 'run');
+});
+
+test('run: inputRef and outputRef stay free-form objects (2.17.0 runs stay valid); a change run and an import run document their keys (2.18.0)', () => {
+  const base = example('run');
+  for (const ref of [null, {}, { facet: 'narration:simple:en', version: 2 }, { somethingNew: 1, source: 'later-kind' }]) { const r = { ...base, inputRef: ref }; expectValid('run', r); }
+  expectValid('run', { ...base, kind: 'edit', scope: ['s1'], inputRef: { source: 'change', facet: 'narration:simple:en', baseVersion: 1, changes: [{ id: 'rc-01hxk3m9a', key: 'simple:en:b2', kind: 'rewrite' }] } });
+  expectInvalid('run', { ...base, inputRef: { sha256: 'abc' } }, undefined, '/inputRef/sha256');
+  expectInvalid('run', { ...base, inputRef: { changes: [{ id: 'x', key: 'k', kind: 'delete' }] } }, 'enum', '/inputRef/changes/0/kind');
+  expectValid('run', { ...base, state: 'failed', outputRef: { failure: { code: 'checks_failed', message: 'The content checks failed.', at: '2026-11-20T08:00:00Z' } } });
+});
+
+test('approve-result: optional version and draft (2.18.0); the plain 2.17.0 answers the Worker sends still validate', () => {
+  expectValid('approve-result', example('approve-result'));
+  expectValid('approve-result', { ...example('approve-result'), version: 2, draft: true });
+  // draft approval (change1020.test.ts): the plain approve result, and the second Confirm with noop
+  expectValid('approve-result', { item: 'style-simple', facet: 'narration:simple:en', state: 'approved', previewHash: 'a'.repeat(64) });
+  expectValid('approve-result', { item: 'style-simple', facet: 'narration:simple:en', state: 'approved', previewHash: 'a'.repeat(64), noop: true });
+  expectValid('approve-result', { item: 'master', state: 'approved', previewHash: 'b'.repeat(64) });
+  expectInvalid('approve-result', { ...example('approve-result'), version: 0 }, 'minimum', '/version');
+  expectInvalid('approve-result', { ...example('approve-result'), draft: 'yes' }, 'type', '/draft');
+});
+
+test('job-item: totalSections is optional and a non-negative integer (2.18.0)', () => {
+  const ok = example('job-item'); assert.ok(Number.isInteger(ok.totalSections));
+  expectValid('job-item', ok);
+  const old = example('job-item'); delete old.totalSections; expectValid('job-item', old);
+  const bad = example('job-item'); bad.totalSections = -1;
+  expectInvalid('job-item', bad, 'minimum', '/totalSections');
+});
+
+test('studio-errors: every code the change-after-publish and import routes use is registered; none was removed', () => {
+  const codes = readJson(path.join(SCHEMA_DIR, 'studio-errors.json')).codes.map((c) => c.code);
+  for (const code of ['change_pending', 'nothing_to_edit', 'cannot_start', 'job_running', 'stage_busy', 'not_reviewable', 'text_changed_since_preview', 'draft_not_found', 'item_keys_missing', 'checks_failed', 'item_not_planned', 'wrong_circle', 'no_review_role', 'forbidden', 'bad_block_key', 'comment_required', 'bad_note', 'blocks_differ', 'not_approved', 'github_error']) assert.ok(codes.includes(code), code);
+});
+
 // ---- review records
 test('review-record: global and circle scope', () => {
   expectValid('review-record', example('review-record'));

@@ -11,5 +11,6 @@
   "checks": [],
   "approved": 7,
   "total": 24,
-  "stale": false
+  "stale": false,
+  "totalSections": 8
 }

@@ -95,6 +95,11 @@
     },
     "retryAfter": {
       "$ref": "common.schema.json#/definitions/Timestamp"
+    },
+    "totalSections": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optional (2.18.0, AGB-1028): the number of sections of the whole item. For a sample (only the first section is written) the app shows \"1 of N sections\"; `total` counts keys, not sections."
     }
   }
 }

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioImportResult",
+  "description": "The answer to the import route (2.18.0, AGB-1035): 201 when imported (`replaced: true` when it replaced other imported text of a version in review), 200 `{imported: false, noop: true}` when the same file was imported already. The run is an ordinary `run`: kind `edit`, executor `external`, `inputRef.source` `import`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "imported",
+    "lessonId",
+    "item",
+    "facet",
+    "state",
+    "previewHash",
+    "run"
+  ],
+  "properties": {
+    "imported": {
+      "type": "boolean"
+    },
+    "noop": {
+      "type": "boolean"
+    },
+    "replaced": {
+      "type": "boolean"
+    },
+    "lessonId": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "item": {
+      "$ref": "common.schema.json#/definitions/StudioId"
+    },
+    "facet": {
+      "$ref": "common.schema.json#/definitions/FacetKey"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "in-review"
+      ]
+    },
+    "previewHash": {
+      "$ref": "common.schema.json#/definitions/PreviewHash"
+    },
+    "blocks": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of blocks imported (absent on a noop)."
+    },
+    "run": {
+      "$ref": "run.schema.json"
+    }
+  }
+}

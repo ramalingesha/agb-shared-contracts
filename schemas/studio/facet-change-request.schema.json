@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioFacetChangeRequest",
+  "description": "Body of POST /lessons/:lessonId/facets/:facet/change and POST /lessons/:lessonId/facets/:facet/discard (2.18.0). Both are confirmed in the app and idempotent; every field is optional.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "expectedVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The live version number the page showed. Another number means the page is out of date (409 text_changed_since_preview, detail.version is the live one)."
+    }
+  }
+}
