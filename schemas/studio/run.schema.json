@@ -163,65 +163,7 @@
         "object",
         "null"
       ],
-      "description": "What the run was made from. Optional keys of known runs (other keys may appear): an import run (executor `external`) has `source: \"import\"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run has `source: \"change\"`, `facet`, `baseVersion`, `changes` (the comments it carries: `{id, key, kind}`); a voice run (reserved) has `facet` and `version`.",
-      "properties": {
-        "source": {
-          "type": "string",
-          "description": "How the run came about when it did not start from a plain Start: `import` or `change` today; other values may come later."
-        },
-        "from": {
-          "type": "string"
-        },
-        "branch": {
-          "type": "string"
-        },
-        "path": {
-          "type": "string"
-        },
-        "facet": {
-          "$ref": "common.schema.json#/definitions/FacetKey"
-        },
-        "language": {
-          "$ref": "common.schema.json#/definitions/LanguageTag"
-        },
-        "sha256": {
-          "$ref": "common.schema.json#/definitions/PreviewHash"
-        },
-        "baseVersion": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "version": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "changes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "id",
-              "key",
-              "kind"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "key": {
-                "type": "string"
-              },
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "edit",
-                  "rewrite"
-                ]
-              }
-            }
-          }
-        }
-      }
+      "description": "What the run was made from. Optional keys of known runs (other keys may appear): an import run (executor `external`) has `source: \"import\"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run has `source: \"change\"`, `facet`, `baseVersion`, `changes` (the comments it carries: `{id, key, kind}`); a voice run (reserved) has `facet` and `version`. None of these keys is validated: the object stays free-form, as in 2.17.0."
     },
     "outputRef": {
       "type": [

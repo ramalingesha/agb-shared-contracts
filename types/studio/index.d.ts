@@ -580,27 +580,9 @@ export interface StudioRun {
   startedAt?: Timestamp | null;
   finishedAt?: Timestamp | null;
   /**
-   * What the run was made from. Optional keys of known runs (other keys may appear): an import run (executor `external`) has `source: "import"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run has `source: "change"`, `facet`, `baseVersion`, `changes` (the comments it carries: `{id, key, kind}`); a voice run (reserved) has `facet` and `version`.
+   * What the run was made from. Optional keys of known runs (other keys may appear): an import run (executor `external`) has `source: "import"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run has `source: "change"`, `facet`, `baseVersion`, `changes` (the comments it carries: `{id, key, kind}`); a voice run (reserved) has `facet` and `version`. None of these keys is validated: the object stays free-form, as in 2.17.0.
    */
-  inputRef?: {
-    /**
-     * How the run came about when it did not start from a plain Start: `import` or `change` today; other values may come later.
-     */
-    source?: string;
-    from?: string;
-    branch?: string;
-    path?: string;
-    facet?: FacetKey;
-    language?: LanguageTag;
-    sha256?: PreviewHash;
-    baseVersion?: number;
-    version?: number;
-    changes?: {
-      id: string;
-      key: string;
-      kind: 'edit' | 'rewrite';
-    }[];
-  } | null;
+  inputRef?: {} | null;
   /**
    * What the run produced. An import run has `{facet, sha256, blocks}`; a failed run has `{failure: {code, message, at, checks?}}`; voice is reserved.
    */

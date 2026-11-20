@@ -474,6 +474,16 @@ test('facet-history: live, draft and versions; a draft needs its state and versi
   expectInvalid('facet-history', extra, 'additionalProperties');
 });
 
+test('facet-history: lines of 5000 and 8000 characters (the Worker clips at 8000) and a long block id are valid; 8001 is not', () => {
+  const h = example('facet-history');
+  const long5 = 'a'.repeat(5000), long8 = 'b'.repeat(8000);
+  h.draft.changes = [{ key: 'simple:en:' + 'x'.repeat(300), before: long5, after: long8 }];
+  h.versions[0].changes = [{ key: 'simple:en:b2', before: long8, after: long5 }];
+  expectValid('facet-history', h);
+  h.draft.changes[0].after = 'c'.repeat(8001);
+  expectInvalid('facet-history', h, 'maxLength', '/draft/changes/0/after');
+});
+
 test('master-history: kinds build, rewrite and change; an open change is optional', () => {
   expectValid('master-history', example('master-history'));
   const quiet = example('master-history'); delete quiet.change;
@@ -495,7 +505,7 @@ test('add-section-request: a title and notes or typed text; the afterSection is 
   expectInvalid('add-section-request', { notes: 'x' }, 'required', 'title');
   expectInvalid('add-section-request', { title: '', notes: 'x' }, 'minLength', '/title');
   expectInvalid('add-section-request', { title: 'T', notes: 'x', afterSection: '../x' }, undefined, '/afterSection');
-  expectInvalid('add-section-request', { title: 'x'.repeat(201), notes: 'x' }, 'maxLength', '/title');
+  expectValid('add-section-request', { title: 'x'.repeat(201), notes: 'x' }); // lengths are checked by the Worker after trimming, not by the schema
   // what the Worker's test saves (change1020.test.ts, "add a section to the master"): a plain comment view of kind add-section, with an empty anchorHash
   expectValid('review-comment', {
     id: 'rc-01hxk3mz', lessonId: 'trustworthy-friends', jobId: 'english-trustworthy-friends-6af0', item: 'master', kind: 'add-section', key: 'master:en:section:after-s1',
@@ -527,8 +537,7 @@ test('run: inputRef and outputRef stay free-form objects (2.17.0 runs stay valid
   const base = example('run');
   for (const ref of [null, {}, { facet: 'narration:simple:en', version: 2 }, { somethingNew: 1, source: 'later-kind' }]) { const r = { ...base, inputRef: ref }; expectValid('run', r); }
   expectValid('run', { ...base, kind: 'edit', scope: ['s1'], inputRef: { source: 'change', facet: 'narration:simple:en', baseVersion: 1, changes: [{ id: 'rc-01hxk3m9a', key: 'simple:en:b2', kind: 'rewrite' }] } });
-  expectInvalid('run', { ...base, inputRef: { sha256: 'abc' } }, undefined, '/inputRef/sha256');
-  expectInvalid('run', { ...base, inputRef: { changes: [{ id: 'x', key: 'k', kind: 'delete' }] } }, 'enum', '/inputRef/changes/0/kind');
+  expectValid('run', { ...base, inputRef: { sha256: 'abc', changes: 'anything', facet: 7 } }); // free-form: no typed keys, so no 2.17.0 inputRef can fail
   expectValid('run', { ...base, state: 'failed', outputRef: { failure: { code: 'checks_failed', message: 'The content checks failed.', at: '2026-11-20T08:00:00Z' } } });
 });
 

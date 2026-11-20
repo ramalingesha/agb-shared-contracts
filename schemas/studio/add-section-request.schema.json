@@ -23,7 +23,7 @@
     "title": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 200
+      "description": "1 to 200 characters after trimming (the Worker trims, then checks)."
     },
     "afterSection": {
       "type": [
@@ -39,12 +39,11 @@
     },
     "notes": {
       "type": "string",
-      "maxLength": 4000
+      "description": "Up to 4000 characters after trimming."
     },
     "text": {
       "type": "string",
-      "maxLength": 8000,
-      "description": "Typed text for the new section."
+      "description": "Typed text for the new section; up to 8000 characters after trimming."
     }
   }
 }

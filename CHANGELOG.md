@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`comment-send`** gains optional `expectedVersion` (the live version the page showed; stale answers `text_changed_since_preview`).
 - **`approve-result`** gains optional `version` and `draft` (not sent by the Worker yet; today approving a draft or a changed master answers the plain 2.17.0 result).
 - **Import** (AGB-1035): `import-request` (`POST /lessons/:id/items/:item/import`, `language`, optional `expectedSha256`) and `import-result` (201 imported / 200 `noop`, with an ordinary `run`).
-- **`run`**: `inputRef` and `outputRef` stay free-form objects but now document the keys of known runs (an import run: `source: "import"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run: `source: "change"`, `facet`, `baseVersion`, `changes`). Documentation plus optional typed keys; any older `inputRef` stays valid.
+- **`run`**: `inputRef` and `outputRef` stay free-form objects but now document the keys of known runs (an import run: `source: "import"`, `from`, `branch`, `path`, `facet`, `language`, `sha256`; a change run: `source: "change"`, `facet`, `baseVersion`, `changes`). Description only: the keys are not validated, so any older `inputRef` stays valid.
 - **`job-item`** gains optional `totalSections` (AGB-1028 item 11: the whole item's section count, for "1 of N sections" on a sample). Not sent by the Worker yet.
 - No new error codes: every code those routes use is already in `studio-errors.json` (a test now checks the list).
 

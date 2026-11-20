@@ -108,15 +108,14 @@
             ],
             "properties": {
               "key": {
-                "type": "string",
-                "maxLength": 240
+                "type": "string"
               },
               "before": {
                 "type": [
                   "string",
                   "null"
                 ],
-                "maxLength": 4000,
+                "maxLength": 8000,
                 "description": "The line before; null for a new line."
               },
               "after": {
@@ -124,7 +123,7 @@
                   "string",
                   "null"
                 ],
-                "maxLength": 4000,
+                "maxLength": 8000,
                 "description": "The line after; null for a removed line."
               }
             }
@@ -191,15 +190,14 @@
               ],
               "properties": {
                 "key": {
-                  "type": "string",
-                  "maxLength": 240
+                  "type": "string"
                 },
                 "before": {
                   "type": [
                     "string",
                     "null"
                   ],
-                  "maxLength": 4000,
+                  "maxLength": 8000,
                   "description": "The line before; null for a new line."
                 },
                 "after": {
@@ -207,7 +205,7 @@
                     "string",
                     "null"
                   ],
-                  "maxLength": 4000,
+                  "maxLength": 8000,
                   "description": "The line after; null for a removed line."
                 }
               }
