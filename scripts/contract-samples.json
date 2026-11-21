@@ -1952,6 +1952,81 @@
           ]
         ]
       }
+    },
+    {
+      "definition": "Narration",
+      "data": {
+        "knowledgeId": "trustworthy-friends",
+        "explanationId": "overview",
+        "language": "en",
+        "style": "favorite-teacher",
+        "voiceId": "favourite-teacher-f",
+        "version": 1,
+        "status": "ready",
+        "media": {
+          "kind": "audio",
+          "url": "favourite-teacher-1.mp3",
+          "mimeType": "audio/mpeg",
+          "durationSeconds": 1590.02
+        },
+        "marks": [
+          {
+            "blockId": "s5-title",
+            "startSeconds": 0,
+            "endSeconds": 1.38
+          },
+          {
+            "blockId": "x-q-21",
+            "part": "answer",
+            "startSeconds": 1574.05,
+            "endSeconds": 1589.97
+          }
+        ]
+      },
+      "note": "v1 single file (AGB-1009): still valid"
+    },
+    {
+      "definition": "Narration",
+      "data": {
+        "knowledgeId": "trustworthy-friends",
+        "explanationId": "overview",
+        "language": "en",
+        "style": "favorite-teacher",
+        "voiceId": "favourite-teacher-f",
+        "version": 1,
+        "status": "ready",
+        "parts": [
+          {
+            "url": "favourite-teacher-1.mp3",
+            "mimeType": "audio/mpeg",
+            "durationSeconds": 1590.02,
+            "startOffsetSeconds": 0,
+            "bytes": 25446642,
+            "sha256": "ab619f89a21637dd0e5d248d322d73ee8a7c59c82696a6e00a2cfe14c2d2de7a"
+          },
+          {
+            "url": "favourite-teacher-2.mp3",
+            "mimeType": "audio/mpeg",
+            "durationSeconds": 1395.62,
+            "startOffsetSeconds": 1590.02,
+            "bytes": 22335798,
+            "sha256": "890ae968d38020b13569268b94e1411092fe18489751a4a762f29f1da640b617"
+          }
+        ],
+        "marks": [
+          {
+            "blockId": "s5-title",
+            "startSeconds": 0,
+            "endSeconds": 1.38
+          },
+          {
+            "blockId": "s9-p1",
+            "startSeconds": 1592.3,
+            "endSeconds": 1606.57
+          }
+        ]
+      },
+      "note": "v2 parts (AGB-1009), trimmed real Favorite Teacher run"
     }
   ],
   "invalid": [
@@ -3657,6 +3732,126 @@
       },
       "why": "a Study Jam without its two speakers",
       "field": "speakers"
+    },
+    {
+      "definition": "Narration",
+      "why": "parts together with media (a v1-only player would play one file with the whole timeline's marks)",
+      "field": "media",
+      "data": {
+        "knowledgeId": "trustworthy-friends",
+        "explanationId": "overview",
+        "language": "en",
+        "style": "favorite-teacher",
+        "voiceId": "favourite-teacher-f",
+        "version": 1,
+        "status": "ready",
+        "parts": [
+          {
+            "url": "favourite-teacher-1.mp3",
+            "mimeType": "audio/mpeg",
+            "durationSeconds": 1590.02,
+            "startOffsetSeconds": 0,
+            "bytes": 25446642,
+            "sha256": "ab619f89a21637dd0e5d248d322d73ee8a7c59c82696a6e00a2cfe14c2d2de7a"
+          },
+          {
+            "url": "favourite-teacher-2.mp3",
+            "mimeType": "audio/mpeg",
+            "durationSeconds": 1395.62,
+            "startOffsetSeconds": 1590.02,
+            "bytes": 22335798,
+            "sha256": "890ae968d38020b13569268b94e1411092fe18489751a4a762f29f1da640b617"
+          }
+        ],
+        "marks": [
+          {
+            "blockId": "s5-title",
+            "startSeconds": 0,
+            "endSeconds": 1.38
+          },
+          {
+            "blockId": "s9-p1",
+            "startSeconds": 1592.3,
+            "endSeconds": 1606.57
+          }
+        ],
+        "media": {
+          "kind": "audio",
+          "url": "favourite-teacher-1.mp3",
+          "mimeType": "audio/mpeg",
+          "durationSeconds": 1590.02
+        }
+      }
+    },
+    {
+      "definition": "Narration",
+      "why": "a part without its start offset",
+      "field": "startOffsetSeconds",
+      "data": {
+        "knowledgeId": "trustworthy-friends",
+        "explanationId": "overview",
+        "language": "en",
+        "style": "favorite-teacher",
+        "voiceId": "favourite-teacher-f",
+        "version": 1,
+        "status": "ready",
+        "parts": [
+          {
+            "url": "favourite-teacher-1.mp3",
+            "mimeType": "audio/mpeg",
+            "durationSeconds": 1590.02,
+            "bytes": 25446642,
+            "sha256": "ab619f89a21637dd0e5d248d322d73ee8a7c59c82696a6e00a2cfe14c2d2de7a"
+          },
+          {
+            "url": "favourite-teacher-2.mp3",
+            "mimeType": "audio/mpeg",
+            "durationSeconds": 1395.62,
+            "startOffsetSeconds": 1590.02,
+            "bytes": 22335798,
+            "sha256": "890ae968d38020b13569268b94e1411092fe18489751a4a762f29f1da640b617"
+          }
+        ],
+        "marks": [
+          {
+            "blockId": "s5-title",
+            "startSeconds": 0,
+            "endSeconds": 1.38
+          },
+          {
+            "blockId": "s9-p1",
+            "startSeconds": 1592.3,
+            "endSeconds": 1606.57
+          }
+        ]
+      }
+    },
+    {
+      "definition": "Narration",
+      "why": "an empty parts list",
+      "field": "parts",
+      "data": {
+        "knowledgeId": "trustworthy-friends",
+        "explanationId": "overview",
+        "language": "en",
+        "style": "favorite-teacher",
+        "voiceId": "favourite-teacher-f",
+        "version": 1,
+        "status": "ready",
+        "parts": [],
+        "marks": [
+          {
+            "blockId": "s5-title",
+            "startSeconds": 0,
+            "endSeconds": 1.38
+          },
+          {
+            "blockId": "s9-p1",
+            "startSeconds": 1592.3,
+            "endSeconds": 1606.57
+          }
+        ]
+      }
     }
   ]
 }

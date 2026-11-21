@@ -1916,9 +1916,15 @@
         "version": { "type": "integer", "minimum": 1 },
         "status": { "$ref": "#/definitions/VariantStatus" },
         "media": { "$ref": "#/definitions/MediaRef" },
+        "parts": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Manifest v2 (AGB-1009): the narration as several audio files played one after the other as one continuous track. Present: `media` is absent, and every mark is in seconds on the WHOLE timeline (part 0 starts at 0; part n starts at `startOffsetSeconds`), so highlighting does not care which file is playing. Absent: the single-file manifest (v1), `media` plays alone and marks are seconds in that file. A player reads `parts` when it has it and falls back to `media`.",
+          "items": { "$ref": "#/definitions/NarrationPart" }
+        },
         "marks": {
           "type": "array",
-          "description": "Block-level time markers. Drives highlight-and-follow and shared read/listen position (G3, G7).",
+          "description": "Block-level time markers. Drives highlight-and-follow and shared read/listen position (G3, G7). With `parts` (v2) the seconds are on the whole timeline across all files.",
           "items": {
             "type": "object",
             "required": ["blockId", "startSeconds"],
@@ -1936,6 +1942,23 @@
           }
         },
         "retryAfterSeconds": { "type": "integer", "minimum": 0 }
+      },
+      "if": { "required": ["parts"] },
+      "then": { "properties": { "media": false } }
+    },
+
+    "NarrationPart": {
+      "type": "object",
+      "description": "One signed audio file of a v2 narration (AGB-1009). Files are played in array order; `startOffsetSeconds` is where the file starts on the whole timeline (the sum of the earlier files' `durationSeconds`, which a producer checks; the schema cannot).",
+      "required": ["url", "durationSeconds", "startOffsetSeconds"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri-reference", "description": "Like `MediaRef.url`: absolute, or a key relative to the corpus base. content-access answers it with a signed link." },
+        "mimeType": { "type": "string" },
+        "durationSeconds": { "type": "number", "exclusiveMinimum": 0 },
+        "startOffsetSeconds": { "type": "number", "minimum": 0 },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 of the file's bytes (lowercase hex): lets a player or a publisher check the file is the one signed." }
       }
     },
 

@@ -107,7 +107,7 @@ const GROUPS = {
     'StudyJamChallenge',
     'StudyJamSection',
   ],
-  narration: ['Narration'],
+  narration: ['Narration', 'NarrationPart'],
   // AGB-672: the Curious Buddy's prepared content, served only by the Buddy service.
   buddy: ['BuddyBank', 'BuddyTerm', 'BuddyQuestion'],
 };
