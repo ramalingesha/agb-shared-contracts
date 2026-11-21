@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.19.0] - 2026-11-21
+
+### Added (AGB-1009 narration audio in several files; additive, everything valid before still is)
+- **`Narration.parts`** (manifest v2): an array of `NarrationPart` `{url, durationSeconds, startOffsetSeconds, mimeType?, bytes?, sha256?}`, played in order as one continuous track. With `parts`, `media` must be absent (a v1-only player then finds no audio instead of playing one file against the whole timeline's marks) and every `marks[]` entry is in seconds on the WHOLE timeline, so highlighting is independent of the file playing. Without `parts` nothing changes: the v1 single-file manifest (`media`) stays valid, byte for byte.
+- New `NarrationPart` definition and generated type. Samples: a real v1 manifest and a trimmed real v2 (two Favorite Teacher files) are accepted; parts with media, a part without `startOffsetSeconds` and an empty `parts` are rejected.
+- Not in the schema (a producer checks it): part 0 starts at 0 and each `startOffsetSeconds` equals the earlier parts' durations added up. gnanora-narration-service `speech:publish-manifest` does.
+- Publish order once this is released: contracts, then narration-service (consumes it), content-access, then the Reader library and the app.
+
 ## [2.18.0] - 2026-11-20
 
 ### Added (AGB-1020 change after publish, AGB-1035 import, AGB-1028 total sections; all new or optional, so everything valid before still is)
