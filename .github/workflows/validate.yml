@@ -16,7 +16,12 @@ on:
       - "schemas/studio/**"
       - "examples/studio/**"
       - "types/studio/**"
+      - "schemas/dashboard/**"
+      - "examples/dashboard/**"
+      - "types/dashboard/**"
+      - "dashboard/**"
       - "scripts/*studio*.js"
+      - "scripts/*dashboard*.js"
       - ".github/workflows/validate.yml"
   workflow_dispatch:
 
@@ -55,11 +60,12 @@ jobs:
         run: |
           npm run generate:types
           npm run generate:studio-types
-          if ! git diff --exit-code -- types/knowledge-api/ types/studio/; then
+          npm run generate:dashboard-types
+          if ! git diff --exit-code -- types/knowledge-api/ types/studio/ types/dashboard/; then
             echo "❌ types/knowledge-api/ is stale — run 'npm run generate:types' and commit the result"
             exit 1
           fi
-          if [ -n "$(git status --porcelain -- types/knowledge-api/ types/studio/)" ]; then
+          if [ -n "$(git status --porcelain -- types/knowledge-api/ types/studio/ types/dashboard/)" ]; then
             echo "❌ types/knowledge-api/ has untracked files after regeneration — commit the result"
             exit 1
           fi

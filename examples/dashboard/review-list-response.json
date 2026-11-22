@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": "rev_01",
+      "guardianId": "usr_parent_01",
+      "profileId": "usr_student_01",
+      "type": "help-request",
+      "refKey": "k-its-all-a-cycle/s2",
+      "createdAt": "2026-11-22T09:30:00+05:30",
+      "dueAt": "2026-11-22T09:30:00+05:30",
+      "doneAt": null,
+      "priority": 1
+    }
+  ],
+  "counts": {
+    "help-request": 1
+  },
+  "lastReviewAt": null
+}

@@ -1,0 +1,46 @@
+{
+  "_about": "Error codes of the guardian API (user-management) and the progress service (AGB-1084). Same envelope as the shared registry: { code, message }. Never removed, only deprecated.",
+  "version": 1,
+  "codes": [
+    {
+      "code": "PIN_LOCKED",
+      "httpStatus": 429,
+      "description": "Five wrong parent PINs: the account and the device are locked for 15 minutes."
+    },
+    {
+      "code": "CONSENT_REQUIRED",
+      "httpStatus": 403,
+      "description": "The action needs the profile's consent, which has not been given for the current version."
+    },
+    {
+      "code": "STUDENT_SCOPE_ONLY",
+      "httpStatus": 403,
+      "description": "A student-scoped token called an adult endpoint."
+    },
+    {
+      "code": "CONSENT_NOT_ACTIVE",
+      "httpStatus": 409,
+      "description": "Events are refused: consent for the profile is not active."
+    },
+    {
+      "code": "NOT_GUARDIAN",
+      "httpStatus": 403,
+      "description": "The caller is not the guardian of this student."
+    },
+    {
+      "code": "EVENT_INVALID",
+      "httpStatus": 400,
+      "description": "The event failed validation (unknown kind, wrong detail, profile mismatch). Per event inside a batch answer."
+    },
+    {
+      "code": "BATCH_TOO_LARGE",
+      "httpStatus": 400,
+      "description": "More than BATCH_MAX (50) events in one request."
+    },
+    {
+      "code": "CURSOR_EXPIRED",
+      "httpStatus": 410,
+      "description": "The changes cursor is older than the service keeps; the device must reload positions."
+    }
+  ]
+}

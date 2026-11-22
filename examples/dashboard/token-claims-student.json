@@ -1,0 +1,7 @@
+{
+  "sub": "usr_student_01",
+  "profile": "student",
+  "guardian": "usr_parent_01",
+  "consent_v": 1,
+  "scope": "content:read progress:write"
+}

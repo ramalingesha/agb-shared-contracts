@@ -1,0 +1,1620 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DashboardLearningEvent",
+  "description": "The learning event (bahuvani-progress-service, AGB-1067 section 6): one append-only record of what a student or a parent did. `LearningEvent` is a union discriminated by `kind`; each kind has its own `detail` shape.",
+  "definitions": {
+    "EventKind": {
+      "title": "EventKind",
+      "type": "string",
+      "enum": [
+        "read",
+        "listen",
+        "revisit",
+        "answer",
+        "reveal",
+        "self-check",
+        "teach-back",
+        "revision",
+        "round-start",
+        "round-complete",
+        "note",
+        "buddy-question",
+        "switch",
+        "help-request",
+        "review-done",
+        "correction"
+      ]
+    },
+    "ReviewItemType": {
+      "title": "ReviewItemType",
+      "type": "string",
+      "enum": [
+        "help-request",
+        "teach-back-request",
+        "question-note",
+        "new-weak-spot",
+        "round-finished",
+        "weekly-plan-check",
+        "new-notes"
+      ]
+    },
+    "LadderStep": {
+      "title": "LadderStep",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6,
+      "description": "1 Met, 2 Tried, 3 Gets it, 4 Can explain, 5 Remembers, 6 Can use it (labels: LADDER_LABELS in dashboard/index.js)."
+    },
+    "LadderLabel": {
+      "title": "LadderLabel",
+      "type": "string",
+      "enum": [
+        "Met",
+        "Tried",
+        "Gets it",
+        "Can explain",
+        "Remembers",
+        "Can use it"
+      ]
+    },
+    "WeakSpotCause": {
+      "title": "WeakSpotCause",
+      "type": "string",
+      "enum": [
+        "missing-foundation",
+        "misconception",
+        "gap",
+        "words-without-meaning",
+        "language-barrier",
+        "forgot",
+        "rushed-or-peeked"
+      ]
+    },
+    "NextStep": {
+      "title": "NextStep",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the dashboard suggests doing next.",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "read-section",
+            "mix-up-card",
+            "another-way",
+            "clip",
+            "switch-style",
+            "switch-language",
+            "teach-back",
+            "revision",
+            "stretch-question",
+            "activity",
+            "next-chapter",
+            "try-question",
+            "ask-help"
+          ]
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Target style or language code for switch-style and switch-language."
+        }
+      }
+    },
+    "EventRead": {
+      "title": "EventRead",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "read"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "imported": {
+              "type": "boolean"
+            },
+            "seconds": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "description": "A `read` event."
+    },
+    "EventListen": {
+      "title": "EventListen",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "listen"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fromSeconds",
+            "toSeconds"
+          ],
+          "properties": {
+            "fromSeconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "toSeconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "speed": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      },
+      "description": "A `listen` event."
+    },
+    "EventRevisit": {
+      "title": "EventRevisit",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "revisit"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "via": {
+              "type": "string",
+              "enum": [
+                "revision",
+                "map",
+                "link",
+                "search"
+              ]
+            }
+          }
+        }
+      },
+      "description": "A `revisit` event."
+    },
+    "EventAnswer": {
+      "title": "EventAnswer",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "answer"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "questionId",
+            "attempt"
+          ],
+          "properties": {
+            "questionId": {
+              "$ref": "common.schema.json#/definitions/DashboardId"
+            },
+            "questionType": {
+              "type": "string",
+              "enum": [
+                "mcq",
+                "text",
+                "match",
+                "order",
+                "true-false"
+              ]
+            },
+            "response": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "maxItems": 50
+                }
+              ]
+            },
+            "correct": {
+              "type": "boolean"
+            },
+            "attempt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "seconds": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "openedFirst": {
+              "type": "boolean",
+              "description": "The answer was opened before the child tried."
+            }
+          }
+        }
+      },
+      "description": "A `answer` event."
+    },
+    "EventReveal": {
+      "title": "EventReveal",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "reveal"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "what"
+          ],
+          "properties": {
+            "what": {
+              "type": "string",
+              "enum": [
+                "answer",
+                "hint",
+                "explanation"
+              ]
+            },
+            "questionId": {
+              "$ref": "common.schema.json#/definitions/DashboardId"
+            },
+            "beforeAttempt": {
+              "type": "boolean",
+              "description": "True when the answer was shown before the child tried."
+            }
+          }
+        }
+      },
+      "description": "A `reveal` event."
+    },
+    "EventSelfCheck": {
+      "title": "EventSelfCheck",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "self-check"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rating"
+          ],
+          "properties": {
+            "rating": {
+              "type": "string",
+              "enum": [
+                "got-it",
+                "not-sure",
+                "not-yet"
+              ]
+            }
+          }
+        }
+      },
+      "description": "A `self-check` event."
+    },
+    "EventTeachBack": {
+      "title": "EventTeachBack",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "teach-back"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "requested",
+                "done"
+              ]
+            },
+            "checklist": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "itemId",
+                  "met"
+                ],
+                "properties": {
+                  "itemId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "met": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "maxItems": 20
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "understood",
+                "words-only",
+                "gap",
+                "misconception"
+              ]
+            },
+            "keyWordsInEnglish": {
+              "type": "boolean",
+              "description": "The child used the key words in English only (language-barrier signal)."
+            }
+          }
+        }
+      },
+      "description": "A `teach-back` event."
+    },
+    "EventRevision": {
+      "title": "EventRevision",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "revision"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome"
+          ],
+          "properties": {
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "remembered",
+                "partly",
+                "forgot"
+              ]
+            },
+            "dueAt": {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            }
+          }
+        }
+      },
+      "description": "A `revision` event."
+    },
+    "EventRoundStart": {
+      "title": "EventRoundStart",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "round-start"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {}
+        }
+      },
+      "description": "A `round-start` event."
+    },
+    "EventRoundComplete": {
+      "title": "EventRoundComplete",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "round-complete"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sectionsRead"
+          ],
+          "properties": {
+            "sectionsRead": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sectionsTotal": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "description": "A `round-complete` event."
+    },
+    "EventNote": {
+      "title": "EventNote",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "note"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "noteId",
+            "action"
+          ],
+          "properties": {
+            "noteId": {
+              "$ref": "common.schema.json#/definitions/DashboardId"
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "create",
+                "edit",
+                "delete"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "tag": {
+              "type": "string",
+              "enum": [
+                "Rough note",
+                "Remember this",
+                "My example",
+                "I have a question",
+                "I don't get this"
+              ]
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "quote": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        }
+      },
+      "description": "A `note` event."
+    },
+    "EventBuddyQuestion": {
+      "title": "EventBuddyQuestion",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "buddy-question"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text"
+          ],
+          "properties": {
+            "threadId": {
+              "$ref": "common.schema.json#/definitions/DashboardId"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "description": "The child's own question words, shown to the parent; repeats of the same question show confusion."
+            },
+            "characters": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "description": "A `buddy-question` event."
+    },
+    "EventSwitch": {
+      "title": "EventSwitch",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "switch"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "what",
+            "to"
+          ],
+          "properties": {
+            "what": {
+              "type": "string",
+              "enum": [
+                "language",
+                "style"
+              ]
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          }
+        }
+      },
+      "description": "A `switch` event."
+    },
+    "EventHelpRequest": {
+      "title": "EventHelpRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "help-request"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "message": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        }
+      },
+      "description": "A `help-request` event."
+    },
+    "EventReviewDone": {
+      "title": "EventReviewDone",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "review-done"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reviewItemId"
+          ],
+          "properties": {
+            "reviewItemId": {
+              "$ref": "common.schema.json#/definitions/DashboardId"
+            },
+            "reviewType": {
+              "$ref": "#/definitions/ReviewItemType"
+            }
+          }
+        }
+      },
+      "description": "A `review-done` event."
+    },
+    "EventCorrection": {
+      "title": "EventCorrection",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "const": "correction"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "student",
+            "parent"
+          ]
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "correctsEventId",
+            "reason"
+          ],
+          "properties": {
+            "correctsEventId": {
+              "$ref": "common.schema.json#/definitions/DashboardId"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      },
+      "description": "A `correction` event."
+    },
+    "LearningEvent": {
+      "title": "LearningEvent",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/EventRead"
+        },
+        {
+          "$ref": "#/definitions/EventListen"
+        },
+        {
+          "$ref": "#/definitions/EventRevisit"
+        },
+        {
+          "$ref": "#/definitions/EventAnswer"
+        },
+        {
+          "$ref": "#/definitions/EventReveal"
+        },
+        {
+          "$ref": "#/definitions/EventSelfCheck"
+        },
+        {
+          "$ref": "#/definitions/EventTeachBack"
+        },
+        {
+          "$ref": "#/definitions/EventRevision"
+        },
+        {
+          "$ref": "#/definitions/EventRoundStart"
+        },
+        {
+          "$ref": "#/definitions/EventRoundComplete"
+        },
+        {
+          "$ref": "#/definitions/EventNote"
+        },
+        {
+          "$ref": "#/definitions/EventBuddyQuestion"
+        },
+        {
+          "$ref": "#/definitions/EventSwitch"
+        },
+        {
+          "$ref": "#/definitions/EventHelpRequest"
+        },
+        {
+          "$ref": "#/definitions/EventReviewDone"
+        },
+        {
+          "$ref": "#/definitions/EventCorrection"
+        }
+      ],
+      "description": "Discriminated by `kind`."
+    }
+  }
+}

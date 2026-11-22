@@ -1,0 +1,30 @@
+{
+  "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0006",
+  "profileId": "usr_student_01",
+  "knowledgeId": "k-its-all-a-cycle",
+  "contentVersion": "2026-11-20.1",
+  "round": 1,
+  "sectionId": "s2",
+  "blockId": "s2-n1",
+  "kind": "teach-back",
+  "language": "en",
+  "style": "simple",
+  "actor": "parent",
+  "actorId": "usr_parent_01",
+  "at": "2026-11-22T09:30:00+05:30",
+  "detail": {
+    "mode": "done",
+    "checklist": [
+      {
+        "itemId": "tb1",
+        "met": true
+      },
+      {
+        "itemId": "tb2",
+        "met": false
+      }
+    ],
+    "outcome": "words-only",
+    "keyWordsInEnglish": true
+  }
+}
