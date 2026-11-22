@@ -3,9 +3,10 @@
 set -e
 npm run --silent generate:types
 npm run --silent generate:studio-types >/dev/null
-if ! git diff --exit-code --quiet -- types/knowledge-api/ types/studio/; then
+npm run --silent generate:dashboard-types >/dev/null
+if ! git diff --exit-code --quiet -- types/knowledge-api/ types/studio/ types/dashboard/; then
   echo "types/ is stale: run 'npm run generate:types' and commit the result" >&2; exit 1
 fi
-if git status --porcelain -- types/knowledge-api/ types/studio/ | grep -q '^??'; then
+if git status --porcelain -- types/knowledge-api/ types/studio/ types/dashboard/ | grep -q '^??'; then
   echo "types/ has untracked files after regeneration: commit them" >&2; exit 1
 fi

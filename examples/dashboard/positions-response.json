@@ -1,0 +1,20 @@
+{
+  "studentId": "usr_student_01",
+  "positions": [
+    {
+      "knowledgeId": "k-its-all-a-cycle",
+      "round": 1,
+      "furthestIndex": 3,
+      "furthestSectionId": "s4",
+      "lastSectionId": "s2",
+      "readSections": [
+        "s1",
+        "s2",
+        "s3",
+        "s4"
+      ],
+      "total": 8,
+      "lastOpenedAt": "2026-11-22T09:30:00+05:30"
+    }
+  ]
+}

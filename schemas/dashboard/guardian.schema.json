@@ -1,0 +1,374 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DashboardGuardian",
+  "description": "Guardian API (user-management service, AGB-904 section 4): student profiles, the parent gate and profile consent. All endpoints need an adult token; none is reachable from a student token (STUDENT_SCOPE_ONLY).",
+  "definitions": {
+    "ProfileConsent": {
+      "title": "ProfileConsent",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Current consent for one profile (GET /guardians/me/students/{studentId}/consent).",
+      "required": [
+        "version",
+        "purposes",
+        "status"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "givenAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "withdrawn",
+            "none"
+          ]
+        }
+      }
+    },
+    "StudentProfile": {
+      "title": "StudentProfile",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A student profile (a User row with kind = student).",
+      "required": [
+        "id",
+        "name",
+        "language",
+        "guardianId"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "ageBand": {
+          "type": "string",
+          "enum": [
+            "5-7",
+            "8-10",
+            "11-13",
+            "14-17"
+          ]
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "avatar": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "guardianId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "consent": {
+          "$ref": "#/definitions/ProfileConsent"
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        }
+      }
+    },
+    "CreateStudentProfileRequest": {
+      "title": "CreateStudentProfileRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /guardians/me/students: the profile and the consent in one call.",
+      "required": [
+        "name",
+        "ageBand",
+        "language",
+        "consent"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "ageBand": {
+          "type": "string",
+          "enum": [
+            "5-7",
+            "8-10",
+            "11-13",
+            "14-17"
+          ]
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "avatar": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purposes"
+          ],
+          "properties": {
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "purposes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            }
+          }
+        }
+      }
+    },
+    "CreateStudentProfileResponse": {
+      "title": "CreateStudentProfileResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "consentId"
+      ],
+      "properties": {
+        "profile": {
+          "$ref": "#/definitions/StudentProfile"
+        },
+        "consentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        }
+      }
+    },
+    "UpdateStudentProfileRequest": {
+      "title": "UpdateStudentProfileRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "avatar": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "minProperties": 1,
+      "description": "PATCH /guardians/me/students/{studentId}: name, language, avatar only."
+    },
+    "StudentProfileList": {
+      "title": "StudentProfileList",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /guardians/me/students.",
+      "required": [
+        "students"
+      ],
+      "properties": {
+        "students": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StudentProfile"
+          }
+        }
+      }
+    },
+    "GiveConsentRequest": {
+      "title": "GiveConsentRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /guardians/me/students/{studentId}/consent.",
+      "required": [
+        "version",
+        "purposes"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "SetParentPinRequest": {
+      "title": "SetParentPinRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "PUT /guardians/me/gate/pin. 4 to 6 digits. `currentPin` is required when changing an existing PIN.",
+      "required": [
+        "pin"
+      ],
+      "properties": {
+        "pin": {
+          "type": "string",
+          "pattern": "^[0-9]{4,6}$"
+        },
+        "currentPin": {
+          "type": "string",
+          "pattern": "^[0-9]{4,6}$"
+        }
+      }
+    },
+    "ParentGateVerifyRequest": {
+      "title": "ParentGateVerifyRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /guardians/me/gate/verify and /gate/switch-to-parent. 5 wrong tries lock the account and the device for 15 minutes (PIN_LOCKED).",
+      "required": [
+        "pin",
+        "deviceId"
+      ],
+      "properties": {
+        "pin": {
+          "type": "string",
+          "pattern": "^[0-9]{4,6}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "ParentGateVerifyResponse": {
+      "title": "ParentGateVerifyResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A short-lived (at most 5 minutes) parent-elevation token.",
+      "required": [
+        "elevationToken",
+        "expiresInSeconds"
+      ],
+      "properties": {
+        "elevationToken": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresInSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300
+        }
+      }
+    },
+    "SwitchStudentResponse": {
+      "title": "SwitchStudentResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /guardians/me/students/{studentId}/switch: a student-scoped token set.",
+      "required": [
+        "accessToken",
+        "refreshToken",
+        "expiresInSeconds",
+        "profile"
+      ],
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refreshToken": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresInSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "profile": {
+          "$ref": "#/definitions/StudentProfile"
+        }
+      }
+    },
+    "SwitchToParentResponse": {
+      "title": "SwitchToParentResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /guardians/me/gate/switch-to-parent: an adult-scoped token set.",
+      "required": [
+        "accessToken",
+        "refreshToken",
+        "expiresInSeconds"
+      ],
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refreshToken": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresInSeconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "DataRequestResult": {
+      "title": "DataRequestResult",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Answer of POST .../export and .../erase.",
+      "required": [
+        "requestId",
+        "status"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "completed"
+          ]
+        }
+      }
+    }
+  }
+}

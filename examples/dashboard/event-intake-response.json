@@ -1,0 +1,12 @@
+{
+  "results": [
+    {
+      "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0000",
+      "result": "accepted"
+    },
+    {
+      "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0003",
+      "result": "duplicate"
+    }
+  ]
+}

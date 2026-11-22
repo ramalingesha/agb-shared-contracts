@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "purposes": [
+    "reading-progress",
+    "learning-events"
+  ],
+  "givenAt": "2026-11-20T18:00:00+05:30",
+  "status": "active"
+}

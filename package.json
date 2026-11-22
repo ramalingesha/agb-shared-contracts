@@ -1,6 +1,6 @@
 {
   "name": "@ramalingesha/shared-contracts",
-  "version": "2.19.0",
+  "version": "2.20.0",
   "description": "Shared contracts and types for AGB microservices ecosystem - language-agnostic data structures",
   "main": "error-codes.json",
   "files": [
@@ -8,6 +8,10 @@
     "api-response-schema.json",
     "knowledge-api.schema.json",
     "schemas/studio",
+    "schemas/dashboard",
+    "examples/dashboard",
+    "dashboard",
+    "types/dashboard",
     "examples/studio",
     "types/knowledge-api",
     "types/studio",
@@ -16,11 +20,12 @@
   ],
   "scripts": {
     "generate:types": "node scripts/generate-knowledge-types.js",
-    "validate": "node scripts/validate-error-codes.js && node scripts/validate-knowledge-api-schema.js && node scripts/validate-studio-schemas.js",
+    "validate": "node scripts/validate-error-codes.js && node scripts/validate-knowledge-api-schema.js && node scripts/validate-studio-schemas.js && node scripts/validate-dashboard-schemas.js",
     "test": "npm run validate",
     "build": "echo \"agb-shared-contracts: nothing to build (error-codes.json, api-response-schema.json, knowledge-api.schema.json, and types/knowledge-api are committed source, not build output)\"",
     "prepare": "husky",
-    "generate:studio-types": "node scripts/generate-studio-types.js"
+    "generate:studio-types": "node scripts/generate-studio-types.js",
+    "generate:dashboard-types": "node scripts/generate-dashboard-types.js"
   },
   "devDependencies": {
     "ajv": "^8.20.0",

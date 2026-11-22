@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DashboardTokenClaims",
+  "description": "Claims AGB-904 adds to the access token. All optional and additive: a token issued before the change has none of them and is an adult token. Consumers use profileOf / isStudentToken from dashboard/index.js, never read `profile` directly.",
+  "definitions": {
+    "ProfileKind": {
+      "title": "ProfileKind",
+      "type": "string",
+      "enum": [
+        "adult",
+        "student"
+      ]
+    },
+    "ProfileTokenClaims": {
+      "title": "ProfileTokenClaims",
+      "type": "object",
+      "additionalProperties": true,
+      "description": "The additional claims only; the token carries its other claims (sub, scope, exp, ...) unchanged. For a student token `sub` is the student's own subject id, `guardian` the parent's subject id.",
+      "properties": {
+        "profile": {
+          "$ref": "#/definitions/ProfileKind"
+        },
+        "guardian": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "The parent's subject id. Present on student tokens."
+        },
+        "consent_v": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The consent version the profile was switched in under."
+        }
+      }
+    }
+  }
+}

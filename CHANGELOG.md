@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.20.0] - 2026-11-22
+
+### Added (AGB-1084 dashboard contracts for AGB-904 guardian profiles and AGB-1067 progress service; all new or optional, nothing removed, so everything valid before still is)
+- **Token claims** (`schemas/dashboard/token-claims.schema.json`): optional `profile` (`adult` | `student`), `guardian` (the parent's subject id) and `consent_v`. A token issued before the change has none of them and is an adult token; use `profileOf(claims)` / `isStudentToken(claims)` from `@ramalingesha/shared-contracts/dashboard`, which treat an absent `profile` as adult.
+- **Guardian API** (`guardian.schema.json`): `StudentProfile`, `CreateStudentProfileRequest` / `Response`, `UpdateStudentProfileRequest`, `StudentProfileList`, `ProfileConsent`, `GiveConsentRequest`, `SetParentPinRequest`, `ParentGateVerifyRequest` / `Response`, `SwitchStudentResponse`, `SwitchToParentResponse`, `DataRequestResult`.
+- **Learning events** (`learning-event.schema.json`): `LearningEvent`, a union discriminated by `kind` with a `detail` shape per kind (16 kinds: read, listen, revisit, answer, reveal, self-check, teach-back, revision, round-start, round-complete, note, buddy-question, switch, help-request, review-done, correction), plus `EventKind`, `LadderStep` (1..6, labels Met, Tried, Gets it, Can explain, Remembers, Can use it), `WeakSpotCause`, `NextStep`, `ReviewItemType`.
+- **Progress API** (`progress-api.schema.json`): event intake (`EventIntakeRequest` of 1 to 50 events, `EventIntakeResponse` with per-event `accepted` | `duplicate` | `error`), positions, changes (`?since`), notes (create, edit, list, reply) and reviews (list, done, rhythm, catch-up).
+- **`schemas/dashboard/dashboard-errors.json`**: `PIN_LOCKED`, `CONSENT_REQUIRED`, `STUDENT_SCOPE_ONLY`, `CONSENT_NOT_ACTIVE`, `NOT_GUARDIAN`, `EVENT_INVALID`, `BATCH_TOO_LARGE`, `CURSOR_EXPIRED`, each with its HTTP status. A separate file, like `studio-errors.json`; the numbered registry in `error-codes.json` is unchanged.
+- **`dashboard/index.js`** (runtime, no dependencies): `BATCH_MAX = 50`, Kong forwarded header names `HEADER_PROFILE_ID = 'x-profile-id'` and `HEADER_GUARDIAN_ID = 'x-guardian-id'`, `LADDER_LABELS`, `profileOf`, `isStudentToken`.
+- Generated types in `types/dashboard/index.d.ts` (`npm run generate:dashboard-types`, checked by `scripts/check-types-fresh.sh` and CI); one example per contract and one valid fixture per event kind in `examples/dashboard/`; tests in `scripts/validate-dashboard-schemas.js` (part of `npm run validate`): unknown kind, detail of another kind, batch of 51 and of 0, ladder out of range and more are rejected.
+- Publish order once this is released: contracts, then user-management (AGB-904), progress service (AGB-1067), Kong, then the app.
+
 ## [2.19.0] - 2026-11-21
 
 ### Added (AGB-1009 narration audio in several files; additive, everything valid before still is)

@@ -1,0 +1,571 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DashboardProgressApi",
+  "description": "Request and response shapes of the progress service (AGB-1067 section 4), under /api/v1/progress. Identity is taken from the token headers Kong forwards (x-user-id, x-profile-id, x-guardian-id), never from a body.",
+  "definitions": {
+    "EventIntakeRequest": {
+      "title": "EventIntakeRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /events (student token) and POST /events/parent (parent token). At most BATCH_MAX = 50 events; more is BATCH_TOO_LARGE.",
+      "required": [
+        "events"
+      ],
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "learning-event.schema.json#/definitions/LearningEvent"
+          },
+          "minItems": 1,
+          "maxItems": 50
+        }
+      }
+    },
+    "EventResult": {
+      "title": "EventResult",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Per-event outcome. `error` is present only when result is error (for example EVENT_INVALID).",
+      "required": [
+        "eventId",
+        "result"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "duplicate",
+            "error"
+          ]
+        },
+        "error": {
+          "$ref": "common.schema.json#/definitions/DashboardApiError"
+        }
+      }
+    },
+    "EventIntakeResponse": {
+      "title": "EventIntakeResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One result per event, in request order.",
+      "required": [
+        "results"
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EventResult"
+          },
+          "minItems": 1,
+          "maxItems": 50
+        }
+      }
+    },
+    "PositionEntry": {
+      "title": "PositionEntry",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "knowledgeId",
+        "round",
+        "furthestIndex",
+        "furthestSectionId",
+        "readSections",
+        "lastOpenedAt"
+      ],
+      "properties": {
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "furthestIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "furthestSectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "lastSectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "readSections": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/DashboardId"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastOpenedAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        }
+      }
+    },
+    "PositionsResponse": {
+      "title": "PositionsResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /students/{studentId}/positions.",
+      "required": [
+        "studentId",
+        "positions"
+      ],
+      "properties": {
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "positions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PositionEntry"
+          }
+        }
+      }
+    },
+    "ChangeEntry": {
+      "title": "ChangeEntry",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seq",
+        "event"
+      ],
+      "properties": {
+        "seq": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "event": {
+          "$ref": "learning-event.schema.json#/definitions/LearningEvent"
+        }
+      }
+    },
+    "ChangesResponse": {
+      "title": "ChangesResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /students/{studentId}/changes?since={cursor}. An old cursor answers CURSOR_EXPIRED.",
+      "required": [
+        "changes",
+        "cursor",
+        "hasMore"
+      ],
+      "properties": {
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChangeEntry"
+          }
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Pass as ?since= next time."
+        },
+        "hasMore": {
+          "type": "boolean"
+        }
+      }
+    },
+    "NoteVersion": {
+      "title": "NoteVersion",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "text",
+        "tag",
+        "at"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        }
+      }
+    },
+    "NoteReply": {
+      "title": "NoteReply",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "noteId",
+        "guardianId",
+        "at"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "noteId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "guardianId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "reaction": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        }
+      }
+    },
+    "Note": {
+      "title": "Note",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "knowledgeId",
+        "sectionId",
+        "tag",
+        "text",
+        "createdAt",
+        "latestVersion"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "quote": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "latestVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "replies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NoteReply"
+          }
+        }
+      }
+    },
+    "CreateNoteRequest": {
+      "title": "CreateNoteRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /students/{id}/notes.",
+      "required": [
+        "knowledgeId",
+        "sectionId",
+        "tag",
+        "text"
+      ],
+      "properties": {
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "quote": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "EditNoteRequest": {
+      "title": "EditNoteRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "minProperties": 1,
+      "description": "PATCH /students/{id}/notes/{noteId}: makes a new version. DELETE has no body."
+    },
+    "NoteListResponse": {
+      "title": "NoteListResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /students/{id}/notes (filters: chapter, tag).",
+      "required": [
+        "notes"
+      ],
+      "properties": {
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Note"
+          }
+        }
+      }
+    },
+    "NoteReplyRequest": {
+      "title": "NoteReplyRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "reaction": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16
+        }
+      },
+      "minProperties": 1,
+      "description": "POST /students/{id}/notes/{noteId}/replies: text, a reaction, or both."
+    },
+    "ReviewItem": {
+      "title": "ReviewItem",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "guardianId",
+        "profileId",
+        "type",
+        "refKey",
+        "createdAt",
+        "dueAt",
+        "priority"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "guardianId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "type": {
+          "$ref": "learning-event.schema.json#/definitions/ReviewItemType"
+        },
+        "refKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "dueAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "doneAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "priority": {
+          "type": "integer"
+        }
+      }
+    },
+    "ReviewListResponse": {
+      "title": "ReviewListResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /guardians/me/reviews?student=: oldest first.",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReviewItem"
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "lastReviewAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ReviewDoneRequest": {
+      "title": "ReviewDoneRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /guardians/me/reviews/{itemId}/done.",
+      "required": [],
+      "properties": {
+        "note": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "ReviewDoneResponse": {
+      "title": "ReviewDoneResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Marks done and writes a review-done event.",
+      "required": [
+        "item",
+        "eventId"
+      ],
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/ReviewItem"
+        },
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        }
+      }
+    },
+    "ReviewRhythm": {
+      "title": "ReviewRhythm",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "PUT /guardians/me/review-rhythm (days 0 = Sunday).",
+      "required": [
+        "days",
+        "minuteOfDay",
+        "channel",
+        "timezone"
+      ],
+      "properties": {
+        "days": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "uniqueItems": true,
+          "maxItems": 7
+        },
+        "minuteOfDay": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1439
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "push",
+            "email",
+            "none"
+          ]
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "CatchUpResponse": {
+      "title": "CatchUpResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /guardians/me/catch-up: the three that matter most.",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReviewItem"
+          },
+          "maxItems": 3
+        }
+      }
+    }
+  }
+}

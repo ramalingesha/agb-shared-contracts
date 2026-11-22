@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DashboardCommon",
+  "description": "Shared building blocks of the dashboard contracts (AGB-1084): ids, time, language and the error envelope. No OS or path style is assumed.",
+  "definitions": {
+    "DashboardId": {
+      "title": "DashboardId",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "An opaque id: a user subject (usr_...), a client-made event id, a note id."
+    },
+    "DashboardTime": {
+      "title": "DashboardTime",
+      "type": "string",
+      "format": "date-time",
+      "description": "An ISO 8601 date-time with an offset."
+    },
+    "DashboardLanguage": {
+      "title": "DashboardLanguage",
+      "type": "string",
+      "enum": [
+        "en",
+        "kn",
+        "ta",
+        "te",
+        "hi"
+      ],
+      "description": "The five platform languages, in presentation order."
+    },
+    "DashboardApiError": {
+      "title": "DashboardApiError",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Error body. `code` is one of dashboard-errors.json or a shared registry code. No child data and no PIN ever appears in `message` or `details`.",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}
