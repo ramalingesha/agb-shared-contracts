@@ -131,6 +131,21 @@ test('events: the detail must belong to the kind', () => {
   invalidEvent(badOutcome);
 });
 
+test('events: buddy-question carries the text; teach-back uses the four judgements; answer openedFirst; note tags', () => {
+  const noText = event('buddy-question'); delete noText.detail.text; invalidEvent(noText);
+  const long = event('buddy-question'); long.detail.text = 'x'.repeat(501); invalidEvent(long);
+  const empty = event('buddy-question'); empty.detail.text = ''; invalidEvent(empty);
+  for (const outcome of ['understood', 'words-only', 'gap', 'misconception']) { const e = event('teach-back'); e.detail.outcome = outcome; validEvent(e); }
+  const old = event('teach-back'); old.detail.outcome = 'explained'; invalidEvent(old);
+  const kw = event('teach-back'); kw.detail.keyWordsInEnglish = 'yes'; invalidEvent(kw);
+  const opened = event('answer'); opened.detail.openedFirst = true; validEvent(opened);
+  const badOpened = event('answer'); badOpened.detail.openedFirst = 'yes'; invalidEvent(badOpened);
+  for (const tag of ['Rough note', 'Remember this', 'My example', 'I have a question', "I don't get this"]) { const e = event('note'); e.detail.tag = tag; validEvent(e); }
+  const badTag = event('note'); badTag.detail.tag = 'question'; invalidEvent(badTag);
+  const name = example('student-profile'); name.name = ''; invalid('guardian', 'StudentProfile', name, 'minLength');
+  name.name = 'x'.repeat(61); invalid('guardian', 'StudentProfile', name, 'maxLength');
+});
+
 test('events: required fields, actor values and unknown fields', () => {
   for (const field of ['eventId', 'profileId', 'actor', 'actorId', 'at', 'detail']) {
     const e = event('read'); delete e[field]; invalidEvent(e);
@@ -176,7 +191,11 @@ test('ladder, weak-spot causes, review item types and next steps', () => {
   assert.deepEqual(defs.WeakSpotCause.enum, ['missing-foundation', 'misconception', 'gap', 'words-without-meaning', 'language-barrier', 'forgot', 'rushed-or-peeked']);
   assert.deepEqual(defs.ReviewItemType.enum, ['help-request', 'teach-back-request', 'question-note', 'new-weak-spot', 'round-finished', 'weekly-plan-check', 'new-notes']);
   invalid('learning-event', 'WeakSpotCause', 'lazy', 'enum');
-  valid('learning-event', 'NextStep', 'revise');
+  valid('learning-event', 'NextStep', { kind: 'revision', knowledgeId: 'k1', sectionId: 's2' });
+  valid('learning-event', 'NextStep', { kind: 'switch-language', to: 'kn' });
+  invalid('learning-event', 'NextStep', { kind: 'give-up' }, 'enum');
+  invalid('learning-event', 'NextStep', { sectionId: 's2' }, 'required', 'kind');
+  invalid('learning-event', 'NextStep', 'revise', 'type');
 });
 
 test('token claims: all optional, student example valid, bad profile or consent_v rejected', () => {

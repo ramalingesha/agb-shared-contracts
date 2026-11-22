@@ -72,16 +72,47 @@
     },
     "NextStep": {
       "title": "NextStep",
-      "type": "string",
-      "enum": [
-        "continue",
-        "read-again",
-        "try-a-question",
-        "explain-it",
-        "revise",
-        "ask-for-help"
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the dashboard suggests doing next.",
+      "required": [
+        "kind"
       ],
-      "description": "What the dashboard suggests doing next for a section."
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "read-section",
+            "mix-up-card",
+            "another-way",
+            "clip",
+            "switch-style",
+            "switch-language",
+            "teach-back",
+            "revision",
+            "stretch-question",
+            "activity",
+            "next-chapter",
+            "try-question",
+            "ask-help"
+          ]
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Target style or language code for switch-style and switch-language."
+        }
+      }
     },
     "EventRead": {
       "title": "EventRead",
@@ -447,6 +478,10 @@
             "seconds": {
               "type": "integer",
               "minimum": 0
+            },
+            "openedFirst": {
+              "type": "boolean",
+              "description": "The answer was opened before the child tried."
             }
           }
         }
@@ -730,10 +765,15 @@
             "outcome": {
               "type": "string",
               "enum": [
-                "explained",
-                "partly",
-                "needs-help"
+                "understood",
+                "words-only",
+                "gap",
+                "misconception"
               ]
+            },
+            "keyWordsInEnglish": {
+              "type": "boolean",
+              "description": "The child used the key words in English only (language-barrier signal)."
             }
           }
         }
@@ -1073,8 +1113,13 @@
             },
             "tag": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 40
+              "enum": [
+                "Rough note",
+                "Remember this",
+                "My example",
+                "I have a question",
+                "I don't get this"
+              ]
             },
             "text": {
               "type": "string",
@@ -1157,16 +1202,21 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "characters"
+            "text"
           ],
           "properties": {
             "threadId": {
               "$ref": "common.schema.json#/definitions/DashboardId"
             },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "description": "The child's own question words, shown to the parent; repeats of the same question show confusion."
+            },
             "characters": {
               "type": "integer",
-              "minimum": 0,
-              "description": "Length of the question only; the text is not stored in the event."
+              "minimum": 0
             }
           }
         }

@@ -24,6 +24,7 @@
         "met": false
       }
     ],
-    "outcome": "partly"
+    "outcome": "words-only",
+    "keyWordsInEnglish": true
   }
 }

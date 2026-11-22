@@ -38,7 +38,8 @@
         "response": "Cow",
         "correct": true,
         "attempt": 1,
-        "seconds": 12
+        "seconds": 12,
+        "openedFirst": false
       }
     }
   ]

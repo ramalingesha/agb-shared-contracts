@@ -194,10 +194,6 @@ export type LearningEvent =
   | EventHelpRequest
   | EventReviewDone
   | EventCorrection;
-/**
- * What the dashboard suggests doing next for a section.
- */
-export type NextStep = 'continue' | 'read-again' | 'try-a-question' | 'explain-it' | 'revise' | 'ask-for-help';
 export type WeakSpotCause =
   | 'missing-foundation'
   | 'misconception'
@@ -406,6 +402,10 @@ export interface EventAnswer {
     correct?: boolean;
     attempt: number;
     seconds?: number;
+    /**
+     * The answer was opened before the child tried.
+     */
+    openedFirst?: boolean;
   };
 }
 /**
@@ -428,9 +428,10 @@ export interface EventBuddyQuestion {
   detail: {
     threadId?: DashboardId;
     /**
-     * Length of the question only; the text is not stored in the event.
+     * The child's own question words, shown to the parent; repeats of the same question show confusion.
      */
-    characters: number;
+    text: string;
+    characters?: number;
   };
 }
 /**
@@ -520,7 +521,7 @@ export interface EventNote {
     noteId: DashboardId;
     action: 'create' | 'edit' | 'delete';
     version?: number;
-    tag?: string;
+    tag?: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
     text?: string;
     quote?: string;
   };
@@ -1627,8 +1628,38 @@ export interface EventTeachBack {
             met: boolean;
           }
         ];
-    outcome?: 'explained' | 'partly' | 'needs-help';
+    outcome?: 'understood' | 'words-only' | 'gap' | 'misconception';
+    /**
+     * The child used the key words in English only (language-barrier signal).
+     */
+    keyWordsInEnglish?: boolean;
   };
+}
+/**
+ * What the dashboard suggests doing next.
+ */
+export interface NextStep {
+  kind:
+    | 'read-section'
+    | 'mix-up-card'
+    | 'another-way'
+    | 'clip'
+    | 'switch-style'
+    | 'switch-language'
+    | 'teach-back'
+    | 'revision'
+    | 'stretch-question'
+    | 'activity'
+    | 'next-chapter'
+    | 'try-question'
+    | 'ask-help';
+  knowledgeId?: DashboardId;
+  sectionId?: DashboardId;
+  blockId?: DashboardId;
+  /**
+   * Target style or language code for switch-style and switch-language.
+   */
+  to?: string;
 }
 /**
  * GET /guardians/me/catch-up: the three that matter most.
@@ -1673,14 +1704,14 @@ export interface CreateNoteRequest {
   sectionId: DashboardId;
   blockId?: DashboardId;
   quote?: string;
-  tag: string;
+  tag: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   text: string;
 }
 /**
  * PATCH /students/{id}/notes/{noteId}: makes a new version. DELETE has no body.
  */
 export interface EditNoteRequest {
-  tag?: string;
+  tag?: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   text?: string;
 }
 /**
@@ -1725,7 +1756,7 @@ export interface Note {
   sectionId: DashboardId;
   blockId?: DashboardId;
   quote?: string;
-  tag: string;
+  tag: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   text: string;
   createdAt: DashboardTime;
   latestVersion: number;
@@ -1755,7 +1786,7 @@ export interface NoteReplyRequest {
 export interface NoteVersion {
   version: number;
   text: string;
-  tag: string;
+  tag: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   at: DashboardTime;
 }
 export interface PositionEntry {

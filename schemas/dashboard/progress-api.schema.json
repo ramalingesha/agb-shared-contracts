@@ -200,8 +200,13 @@
         },
         "tag": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 40
+          "enum": [
+            "Rough note",
+            "Remember this",
+            "My example",
+            "I have a question",
+            "I don't get this"
+          ]
         },
         "at": {
           "$ref": "common.schema.json#/definitions/DashboardTime"
@@ -274,8 +279,13 @@
         },
         "tag": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 40
+          "enum": [
+            "Rough note",
+            "Remember this",
+            "My example",
+            "I have a question",
+            "I don't get this"
+          ]
         },
         "text": {
           "type": "string",
@@ -323,8 +333,13 @@
         },
         "tag": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 40
+          "enum": [
+            "Rough note",
+            "Remember this",
+            "My example",
+            "I have a question",
+            "I don't get this"
+          ]
         },
         "text": {
           "type": "string",
@@ -341,8 +356,13 @@
       "properties": {
         "tag": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 40
+          "enum": [
+            "Rough note",
+            "Remember this",
+            "My example",
+            "I have a question",
+            "I don't get this"
+          ]
         },
         "text": {
           "type": "string",
