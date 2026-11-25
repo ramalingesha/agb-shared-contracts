@@ -11,6 +11,7 @@
 
 import type { LanguageCode, StyleId } from './primitives';
 import type { MediaRef, VoiceSummary } from './media';
+import type { Block } from './content-blocks';
 import type { ExplanationSummary } from './explanation';
 
 /**
@@ -62,6 +63,14 @@ export interface Knowledge {
    * What this Knowledge builds on, in plain words (AGB-672), e.g. 'Living and non-living things'. Its 'Before you start' check questions test these.
    */
   prerequisites?: string[];
+  /**
+   * 2.22.0 (AGB-1099): ids of the earlier Knowledge (chapters) this one builds on; may cross classes. Stored once on the later chapter; the inverse (`unlocks`) is computed, never kept by hand. `prerequisites` stays as it is and still drives the check questions. Absent means no prerequisite signal; it never blocks publishing. A content gate (planned) rejects unknown ids, itself and cycles; this schema checks only the shape.
+   */
+  buildsOn?: string[];
+  /**
+   * 2.22.0 (AGB-1099): the chapter's sections in order, with facts such as `expectedSeconds`. Optional.
+   */
+  sections?: SectionSummary[];
 }
 /**
  * Card payload for Discover and search results. Deliberately excludes view counts and popularity (G1 principle 6).
@@ -128,4 +137,21 @@ export interface CatalogRef {
    * The user-management BookChapter id.
    */
   chapterId: string;
+}
+/**
+ * 2.22.0 (AGB-1099): per-section facts of a chapter, in the order of the spine.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "SectionSummary".
+ */
+export interface SectionSummary {
+  /**
+   * The section id used by `Block.sectionId`.
+   */
+  id: string;
+  title?: string;
+  /**
+   * Reading time of the section in the base style, computed by the content pipeline (never hand-written); replaced by the real narration length once narration exists. A guide for the dashboard's 'far under expected' signal, not a promise. The progress service does not read it yet.
+   */
+  expectedSeconds?: number;
 }

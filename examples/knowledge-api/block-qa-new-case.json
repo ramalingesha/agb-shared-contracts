@@ -1,0 +1,12 @@
+{
+  "id": "s2-bank5",
+  "type": "qa",
+  "sectionId": "s2",
+  "kind": "explain-back",
+  "text": "A mosquito lays its eggs on still water, and the eggs hatch into larvae that live in the water. The larva then becomes a pupa and then a flying mosquito. Which stage of the cycle is the larva, and how do you know?",
+  "answer": "The larva is the young stage after the egg, like the caterpillar in the butterfly cycle.",
+  "listenFor": ["names the egg, larva, pupa and adult in order", "says the larva is the young stage"],
+  "newCase": true,
+  "tests": "can-use",
+  "sectionRefs": ["s2"]
+}

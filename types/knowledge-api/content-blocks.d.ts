@@ -9,7 +9,7 @@
  * index.d.ts barrel) rather than from an individual file.
  */
 
-import type { Audience, BlockType, CalloutVariant, Depth, LanguageCode, QaKind } from './primitives';
+import type { Audience, BlockType, CalloutVariant, Depth, LanguageCode, QaKind, QuestionTest } from './primitives';
 import type { MediaRef } from './media';
 
 /**
@@ -107,6 +107,22 @@ export interface Block {
    */
   optionNotes?: string[];
   depth?: Depth;
+  /**
+   * `activity` blocks only (2.22.0, AGB-1099): the activity card. Required when `type` is `activity`.
+   */
+  activity?: Activity;
+  /**
+   * `qa` blocks only (2.22.0, AGB-1099): which wrong options are a known mix-up (see `MixUpMatch`). Optional; content tag only, the progress service does not read it yet.
+   */
+  mixUpMatches?: MixUpMatch[];
+  /**
+   * `qa` blocks only (2.22.0, AGB-1099): true marks a new-case question (ladder step 6): the idea applied to a case not in the chapter. The stem states every new fact it needs. The block keeps its `kind` (mcq, true-false, explain-back), so older readers render it as before. Absent means false.
+   */
+  newCase?: boolean;
+  /**
+   * `qa` blocks only (2.22.0, AGB-1099): what the question tests (`gets-it`, `remembers` or `can-use`). Optional; content tag only, the progress service does not read it yet.
+   */
+  tests?: QuestionTest;
 }
 /**
  * A presentation slide. The speaker notes are the text spine (G19).
@@ -130,4 +146,110 @@ export interface Slide {
    * Blocks of the spine that narrate this slide.
    */
   notesBlockIds?: string[];
+}
+/**
+ * 2.22.0 (AGB-1099): says that one wrong option of a `qa` block is a known mix-up. `mixUpId` is the block id of the `callout` with `variant: mix-up` that explains it, so no new id space exists. Content tag only: the progress service does not read it yet; the content gate (planned) checks that the id names a mix-up callout of the same chapter.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "MixUpMatch".
+ */
+export interface MixUpMatch {
+  /**
+   * The 0-based index into `options` (for `mcq` and `odd-one-out`), or the string `true` or `false` for a `true-false` question that has no options.
+   */
+  option: number | ('true' | 'false');
+  /**
+   * The block id of the mix-up callout, e.g. `s1-mix1`.
+   */
+  mixUpId: string;
+}
+/**
+ * 2.22.0 (AGB-1099): a hands-on home activity, carried by a `type: activity` block. Everyday items only, complete steps, a safety line, and credits. Children stay out of photos: there is deliberately no image, photo or media field anywhere in an activity, and no field about the child. Copied verbatim in every style; ids, `deepens`, `minutes` and `verification` are not translated. A parent confirming the activity is done is the `activity-done` learning event, which carries ids only.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "Activity".
+ */
+export interface Activity {
+  /**
+   * Stable activity id, e.g. `act-s2-incubator`. The `activity-done` event's `activityId`.
+   */
+  id: string;
+  title: string;
+  /**
+   * The id of the section this activity deepens.
+   */
+  deepens: string;
+  /**
+   * How long it takes the family, in minutes.
+   */
+  minutes?: number;
+  /**
+   * Everyday items from a typical home.
+   *
+   * @minItems 1
+   */
+  materials: [string, ...string[]];
+  /**
+   * Complete steps, in order.
+   *
+   * @minItems 2
+   */
+  steps: [string, string, ...string[]];
+  /**
+   * What to notice, 1 to 3 sentences.
+   */
+  observe: string;
+  /**
+   * Safety notes. At least one.
+   *
+   * @minItems 1
+   */
+  safety: [string, ...string[]];
+  /**
+   * What the parent can listen for when the child explains it.
+   */
+  listenFor?: string[];
+  /**
+   * Credits. At least one.
+   *
+   * @minItems 1
+   */
+  source: [ActivitySource, ...ActivitySource[]];
+  verification?: ActivityVerification;
+}
+/**
+ * 2.22.0 (AGB-1099): where an activity comes from, credited.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "ActivitySource".
+ */
+export interface ActivitySource {
+  name: string;
+  kind: 'book' | 'teacher' | 'own';
+  /**
+   * Page, unit or other pointer into the source.
+   */
+  ref?: string;
+}
+/**
+ * 2.22.0 (AGB-1099): editorial record that a person did the activity for real. `verifiedBy` is a display name or role label (no contact details) and is removed from what the app is served (the app sees only `status`). With `status: verified`, both `verifiedAt` and `verifiedBy` (a named person) are required; `unverified` needs neither. The plan is that an unverified activity is never published or shown; that gate belongs to the content gate and the Studio (planned), not to this schema.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "ActivityVerification".
+ */
+export interface ActivityVerification {
+  status: 'unverified' | 'verified';
+  /**
+   * Date (YYYY-MM-DD).
+   */
+  verifiedAt?: string;
+  /**
+   * Who tried the activity for real: a display name or role label only (for example `Class 4 teacher`). Never an email address or any contact detail. Required when `status` is `verified`. Editorial only; stripped from served content.
+   */
+  verifiedBy?: string;
+  /**
+   * The items actually used when it was tried.
+   */
+  triedWith?: string[];
+  minutesActual?: number;
 }

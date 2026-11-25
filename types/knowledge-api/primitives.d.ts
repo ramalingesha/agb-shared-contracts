@@ -59,6 +59,8 @@ export type VariantStatus = 'ready' | 'generating' | 'unavailable';
  */
 export type Visibility = 'private' | 'circle' | 'public';
 /**
+ * `activity` (2.22.0, AGB-1099): a hands-on home activity card, carried in the block's `activity` object. An older reader that does not know the type must ignore or hide the block (not yet verified in the reader, see the 2.22.0 changelog).
+ *
  * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
  * via the `definition` "BlockType".
  */
@@ -76,7 +78,8 @@ export type BlockType =
   | 'callout'
   | 'qa'
   | 'takeaways'
-  | 'code';
+  | 'code'
+  | 'activity';
 /**
  * What a `callout` block is (AGB-672). `did-you-know`: a surprising fact. `book-note`: the source book's words kept as they are, with what is more accurate (never a silent fix). `mix-up`: a common misunderstanding and the correction. `another-way`: an everyday comparison for a hard idea. `example`: a worked example. The app shows the label for the variant; the text itself is plain. `summary` (AGB-720): a section's Quick-track "In one breath" summary. `pattern` (AGB-720): a pattern card (intent, use when, smell, avoid when, as text); its template code is the `code` block that follows.
  *
@@ -123,3 +126,10 @@ export type Depth = 'core' | 'deep';
  * via the `definition` "RenditionQuality".
  */
 export type RenditionQuality = 'phone' | 'tablet' | 'desktop';
+/**
+ * 2.22.0 (AGB-1099): what a question tests, in the ladder's words. `gets-it` feeds step 3, `remembers` feeds step 5 (asked again after a gap), `can-use` feeds step 6. Content tag only: the progress service does not read it yet.
+ *
+ * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
+ * via the `definition` "QuestionTest".
+ */
+export type QuestionTest = 'gets-it' | 'remembers' | 'can-use';

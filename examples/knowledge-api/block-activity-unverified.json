@@ -1,0 +1,15 @@
+{
+  "id": "s5-act1",
+  "type": "activity",
+  "activity": {
+    "id": "act-s5-seed",
+    "title": "Watch a bean seed sprout",
+    "deepens": "s5",
+    "materials": ["a bean seed", "wet cotton wool", "a clear glass"],
+    "steps": ["Put the wet cotton wool in the glass.", "Press the bean seed against the glass, between the cotton and the wall.", "Look at it each morning for a week."],
+    "observe": "A root comes out first, then a shoot.",
+    "safety": ["Wash hands after touching the soil or cotton."],
+    "source": [{ "name": "Our own trial at home", "kind": "own" }],
+    "verification": { "status": "unverified" }
+  }
+}

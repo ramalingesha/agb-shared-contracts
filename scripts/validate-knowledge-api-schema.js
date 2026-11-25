@@ -156,9 +156,80 @@ function validateStudyJamIsLanguageNeutral(schema) {
   else logSuccess(`${names.length} StudyJam definitions mention no language`);
 }
 
+/**
+ * 2.22.0 (AGB-1099): examples of the activity block, mix-up matching, new-case and `tests` tags,
+ * `buildsOn` and section `expectedSeconds` validate; each deliberately invalid example is rejected
+ * for its own field; every older valid sample (scripts/contract-samples.json, which holds the real
+ * 2.20.0 and 2.21.0 content shapes) still validates under the new schema; the schema stays free of
+ * any image or photo field on an activity.
+ */
+function validateExamples222(schema) {
+  const ajv = new Ajv({ strict: false, logger: false, allErrors: true });
+  ajv.addSchema(schema, 'knowledge-api');
+  const dir = path.join(__dirname, '..', 'examples', 'knowledge-api');
+  const read = (file) => loadJSON(path.join(dir, file));
+  const check = (definition, data) => ajv.validate(`knowledge-api#/definitions/${definition}`, data);
+  const valid = {
+    'block-activity.json': 'Block',
+    'block-activity-unverified.json': 'Block',
+    'block-qa-mixup.json': 'Block',
+    'block-qa-true-false-mixup.json': 'Block',
+    'block-qa-new-case.json': 'Block',
+    'knowledge-builds-on.json': 'Knowledge',
+  };
+  for (const [file, definition] of Object.entries(valid)) {
+    if (check(definition, read(file))) logSuccess(`2.22.0 example accepted: ${file}`);
+    else logError(`2.22.0 example ${file} rejected: ${ajv.errorsText(ajv.errors)}`);
+  }
+  // invalid example -> [definition, the field it must be rejected for]
+  const invalid = {
+    'activity-no-safety.json': ['Block', 'safety'],
+    'activity-empty-safety.json': ['Block', 'safety'],
+    'activity-one-step.json': ['Block', 'steps'],
+    'activity-no-source.json': ['Block', 'source'],
+    'activity-photo-field.json': ['Block', 'activity'],
+    'activity-verified-without-date.json': ['Block', 'verifiedAt'],
+    'activity-verified-without-name.json': ['Block', 'verifiedBy'],
+    'activity-block-without-activity.json': ['Block', 'activity'],
+    'qa-bad-tests.json': ['Block', 'tests'],
+    'qa-mixup-id-not-string.json': ['Block', 'mixUpId'],
+    'qa-mixup-negative-option.json': ['Block', 'option'],
+    'qa-newcase-not-boolean.json': ['Block', 'newCase'],
+    'knowledge-builds-on-not-list.json': ['Knowledge', 'buildsOn'],
+    'section-expected-seconds-zero.json': ['Knowledge', 'expectedSeconds'],
+  };
+  const onDisk = fs.readdirSync(path.join(dir, 'invalid')).filter((f) => f.endsWith('.json')).sort();
+  if (JSON.stringify(onDisk) !== JSON.stringify(Object.keys(invalid).sort())) logError(`examples/knowledge-api/invalid does not match the test list: ${onDisk.join(', ')}`);
+  for (const [file, [definition, field]] of Object.entries(invalid)) {
+    const data = loadJSON(path.join(dir, 'invalid', file));
+    if (check(definition, data)) logError(`2.22.0 invalid example ${file} was accepted`);
+    else if (!ajv.errors.some((e) => e.instancePath.split('/').includes(field) || e.params?.missingProperty === field || e.params?.additionalProperty === field))
+      logError(`2.22.0 invalid example ${file} rejected, but not for "${field}": ${ajv.errorsText(ajv.errors)}`);
+    else logSuccess(`2.22.0 invalid example rejected for ${field}: ${file}`);
+  }
+  // all-optional: a plain qa, a plain callout and a Knowledge with none of the new fields stay valid
+  const plain = [
+    ['Block', { id: 'q1', type: 'qa', kind: 'mcq', text: 'Which?', options: ['a', 'b'], answer: 'a' }],
+    ['Block', { id: 'c1', type: 'callout', variant: 'mix-up', text: 'A common mix-up.' }],
+    ['Block', { id: 'q2', type: 'qa', kind: 'check', text: 'Before you start?', answer: 'Read s1.', sectionRefs: ['s1'] }],
+  ];
+  for (const [definition, data] of plain) {
+    if (check(definition, data)) logSuccess(`older shape still valid: ${data.id}`);
+    else logError(`older shape ${data.id} rejected: ${ajv.errorsText(ajv.errors)}`);
+  }
+  for (const t of ['gets-it', 'remembers', 'can-use']) {
+    if (!check('QuestionTest', t)) logError(`QuestionTest rejects ${t}`);
+  }
+  if (check('QuestionTest', 'understands')) logError('QuestionTest accepts an unknown value');
+  const activityProps = Object.keys(schema.definitions.Activity.properties);
+  const photoLike = activityProps.filter((p) => /image|photo|picture|media|child|video/i.test(p));
+  if (photoLike.length) logError(`Activity has image-like fields: ${photoLike.join(', ')}`);
+  else logSuccess('Activity has no image, photo or child field');
+}
+
 function validatePackageFilesAllowlist(packageJson) {
   const files = packageJson.files || [];
-  const required = ['knowledge-api.schema.json', 'types/knowledge-api'];
+  const required = ['knowledge-api.schema.json', 'types/knowledge-api', 'examples/knowledge-api'];
 
   for (const entry of required) {
     if (files.includes(entry)) {
@@ -222,6 +293,7 @@ function validateKnowledgeApiSchema() {
   validateAjvCompiles(schema);
   validateSamples(schema, loadJSON(path.join(__dirname, 'contract-samples.json')));
   validateStudyJamIsLanguageNeutral(schema);
+  validateExamples222(schema);
   validatePackageFilesAllowlist(packageJson);
   validateGeneratedTypesExist(typesPath);
 

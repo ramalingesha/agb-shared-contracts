@@ -205,7 +205,7 @@ existing consumers get every type they did before with no import changes. CI fai
 the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
-### schemas/dashboard (parent dashboard, 2.21.0)
+### schemas/dashboard (parent dashboard, 2.22.0)
 
 Contracts for guardian profiles (AGB-904) and the progress service (AGB-1067): token claims
 (`profile`, `guardian`, `consent_v`), the guardian API, `LearningEvent` with a `detail` per kind,
@@ -229,6 +229,13 @@ response shapes for `map`, `topic`, `home`, `my-learning` and `export` in `progr
 (`ChangesResponse` is in `progress-api.schema.json`); `EXPORT_TOO_LARGE` and `INVALID_PARAMETER`; the two-band
 `GuardianAgeBand` (`under13` | `13to17`) with `guardianAgeBandOf()` and the claim shapes. Valid examples are in
 `examples/dashboard/`, deliberately invalid ones in `examples/dashboard/invalid/`.
+
+2.22.0 (all additive, AGB-1099): the `activity-done` event kind (parent actor only, ids only, idempotent by
+`eventId`), optional `mixUpId` and `newCase` on the `answer` detail, and on the content side (`knowledge-api.schema.json`)
+the `activity` block, `mixUpMatches`, `newCase` and `tests` on `qa` blocks, `Knowledge.buildsOn` and
+`Knowledge.sections[].expectedSeconds`; examples in `examples/knowledge-api/`. The progress service does not read any of
+these yet. Deployment order: publish contracts, upgrade the progress service to 2.22, then ship an app and content that
+send them (a service on 2.21 rejects the new kind and fields with `EVENT_INVALID`). Details: `CHANGELOG.md`.
 
 ### schemas/studio (Content Studio, 2.13.0)
 

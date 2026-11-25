@@ -1,0 +1,22 @@
+{
+  "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0017",
+  "profileId": "usr_student_01",
+  "knowledgeId": "k-its-all-a-cycle",
+  "contentVersion": "2026-11-20.1",
+  "round": 1,
+  "sectionId": "s2",
+  "blockId": "s2-act1",
+  "kind": "activity-done",
+  "language": "kn",
+  "style": "simple",
+  "actor": "student",
+  "actorId": "usr_student_01",
+  "at": "2026-11-26T18:30:00+05:30",
+  "detail": {
+    "activityId": "act-s2-incubator",
+    "languages": [
+      "kn",
+      "en"
+    ]
+  }
+}

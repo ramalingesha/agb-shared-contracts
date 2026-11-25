@@ -22,6 +22,7 @@
         "switch",
         "help-request",
         "review-done",
+        "activity-done",
         "correction"
       ]
     },
@@ -492,6 +493,14 @@
             "openedFirst": {
               "type": "boolean",
               "description": "The answer was opened before the child tried."
+            },
+            "mixUpId": {
+              "$ref": "common.schema.json#/definitions/DashboardId",
+              "description": "The id of the mix-up (the block id of the `callout` with `variant: mix-up`) that the picked option matches, from the question's `mixUpMatches`. Optional. PLANNED: the progress service does not read it yet (rules v1.1 will). Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field."
+            },
+            "newCase": {
+              "type": "boolean",
+              "description": "The question is a new-case question (ladder step 6), copied from the question block's `newCase`. Optional and redundant with the chapter context; it never decides alone. PLANNED: the progress service does not read it yet. Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field."
             }
           }
         }
@@ -1493,6 +1502,98 @@
       },
       "description": "A `review-done` event."
     },
+    "EventActivityDone": {
+      "title": "EventActivityDone",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "round",
+        "sectionId",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID. Idempotency key within a profile: sending the same eventId again is a `duplicate`, never a second completion."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Required for this kind: the learning round the parent confirmed it in."
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Required for this kind: the section the activity deepens (the activity's `deepens`)."
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The id of the `activity` block."
+        },
+        "kind": {
+          "const": "activity-done"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "const": "parent",
+          "description": "Parent actor only. The progress service refuses this kind from a student actor or a student token (the same rule it applies to teach-back and review-done). The child cannot confirm."
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "activityId"
+          ],
+          "properties": {
+            "activityId": {
+              "$ref": "common.schema.json#/definitions/DashboardId",
+              "description": "The activity's `id` (`Activity.id` in knowledge-api.schema.json)."
+            },
+            "languages": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 5,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "common.schema.json#/definitions/DashboardLanguage"
+              },
+              "description": "Optional: the language(s) the family used for the activity. Never free text."
+            }
+          }
+        }
+      },
+      "description": "An `activity-done` event (2.22.0, AGB-1099): the parent confirms the family did a home activity (\"We did it\", behind the parent gate). Rules: PARENT actor only (`actor` is the constant `parent`; the server also refuses a student token); ids only, no photo, no free text and no field about the child (additionalProperties is false); idempotent by `eventId`; `sectionId` and `round` are required. The date is the event's `at`. A mistaken tap is fixed with a `correction` event. PLANNED: the progress service up to 2.21 rejects this kind (EVENT_INVALID); rules v1.1 will count it as step 6 evidence once the child is at step 4 or more, and the server will check `activityId` against the chapter context. Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field."
+    },
     "EventCorrection": {
       "title": "EventCorrection",
       "type": "object",
@@ -1733,6 +1834,14 @@
                         "openedFirst": {
                           "type": "boolean",
                           "description": "The answer was opened before the child tried."
+                        },
+                        "mixUpId": {
+                          "$ref": "common.schema.json#/definitions/DashboardId",
+                          "description": "The id of the mix-up (the block id of the `callout` with `variant: mix-up`) that the picked option matches, from the question's `mixUpMatches`. Optional. PLANNED: the progress service does not read it yet (rules v1.1 will). Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field."
+                        },
+                        "newCase": {
+                          "type": "boolean",
+                          "description": "The question is a new-case question (ladder step 6), copied from the question block's `newCase`. Optional and redundant with the chapter context; it never decides alone. PLANNED: the progress service does not read it yet. Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field."
                         }
                       }
                     }
@@ -2118,6 +2227,38 @@
                       }
                     }
                   }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "targetKind",
+                    "detail"
+                  ],
+                  "properties": {
+                    "targetKind": {
+                      "const": "activity-done"
+                    },
+                    "detail": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [],
+                      "properties": {
+                        "activityId": {
+                          "$ref": "common.schema.json#/definitions/DashboardId"
+                        },
+                        "languages": {
+                          "type": "array",
+                          "minItems": 1,
+                          "maxItems": 5,
+                          "uniqueItems": true,
+                          "items": {
+                            "$ref": "common.schema.json#/definitions/DashboardLanguage"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               ]
             }
@@ -2173,6 +2314,9 @@
         },
         {
           "$ref": "#/definitions/EventReviewDone"
+        },
+        {
+          "$ref": "#/definitions/EventActivityDone"
         },
         {
           "$ref": "#/definitions/EventCorrection"
