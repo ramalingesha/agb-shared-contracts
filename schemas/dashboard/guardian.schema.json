@@ -50,7 +50,7 @@
       "title": "StudentProfile",
       "type": "object",
       "additionalProperties": false,
-      "description": "A student profile (a User row with kind = student). `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`.",
+      "description": "A student profile (a User row with kind = student). `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`. Drift today: user-management sends and accepts the two-band value (under13 or 13to17) IN `ageBand` and does not use `ageBandGuardian`; this four-band `ageBand` and the alias are the contract's side. Convergence is tracked as a follow-up.",
       "required": [
         "id",
         "name",
@@ -101,7 +101,7 @@
       "title": "CreateStudentProfileRequest",
       "type": "object",
       "additionalProperties": false,
-      "description": "POST /guardians/me/students: the profile and the consent in one call. `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`.",
+      "description": "POST /guardians/me/students: the profile and the consent in one call. `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`. Drift today: user-management sends and accepts the two-band value (under13 or 13to17) IN `ageBand` and does not use `ageBandGuardian`; this four-band `ageBand` and the alias are the contract's side. Convergence is tracked as a follow-up.",
       "required": [
         "name",
         "ageBand",
@@ -283,7 +283,7 @@
       "title": "ParentGateVerifyResponse",
       "type": "object",
       "additionalProperties": false,
-      "description": "A short-lived (at most 5 minutes) parent-elevation token.",
+      "description": "A short-lived (at most 5 minutes) parent-elevation token. See also `ParentGateVerifyResult`, what user-management answers today.",
       "required": [
         "elevationToken",
         "expiresInSeconds"
@@ -383,7 +383,7 @@
         "under13",
         "13to17"
       ],
-      "description": "The two age bands the user-management service stores and the guardian API uses today. Mapping from the four contract bands (`ageBand`): 5-7 -> under13, 8-10 -> under13, 11-13 -> under13 (the band can hold 13-year-olds; the consent flow treats it as under 13), 14-17 -> 13to17. The mapping is one way: a two-band value does not say which four-band value it came from. `guardianAgeBandOf` in dashboard/index.js applies it."
+      "description": "The two age bands the user-management service stores and the guardian API uses today. Mapping from the four contract bands (`ageBand`): 5-7 -> under13, 8-10 -> under13, 11-13 -> under13 (the band can hold 13-year-olds; the consent flow treats it as under 13), 14-17 -> 13to17. The mapping is one way: a two-band value does not say which four-band value it came from. `guardianAgeBandOf` in dashboard/index.js applies it. user-management puts this value in its `ageBand` field (not in `ageBandGuardian`)."
     },
     "ClaimStudentRequest": {
       "title": "ClaimStudentRequest",
@@ -508,7 +508,7 @@
       "title": "ParentGateVerifyResult",
       "type": "object",
       "additionalProperties": false,
-      "description": "What user-management answers to POST /guardians/me/gate/verify today: `ok` and the time until which the guardian acts as the parent (5 minutes). The 2.20.0 `ParentGateVerifyResponse` (elevationToken, expiresInSeconds) is kept unchanged; apps accept either until the two are merged.",
+      "description": "What user-management answers to POST /guardians/me/gate/verify today: `ok` and the time until which the guardian acts as the parent (5 minutes). The 2.20.0 `ParentGateVerifyResponse` (elevationToken, expiresInSeconds) is kept unchanged; apps accept either until the two are merged. See also `ParentGateVerifyResponse`.",
       "required": [
         "ok",
         "elevatedUntil"

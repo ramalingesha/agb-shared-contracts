@@ -193,7 +193,7 @@
             "sectionIndex": {
               "type": "integer",
               "minimum": 1,
-              "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point."
+              "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID)."
             }
           }
         }
@@ -287,7 +287,7 @@
             "sectionIndex": {
               "type": "integer",
               "minimum": 1,
-              "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point."
+              "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID)."
             }
           }
         }
@@ -1028,12 +1028,12 @@
             "sectionsTotal": {
               "type": "integer",
               "minimum": 0,
-              "description": "Number of sections of the chapter the child read this round. The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted."
+              "description": "Total number of sections in the chapter (sectionsRead is the number read this round). The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted."
             },
             "practiceTotal": {
               "type": "integer",
               "minimum": 0,
-              "description": "Number of practice questions of the chapter that the child answered this round (0 when the chapter has none). Recorded; verified by the server once the chapter's practice count is known."
+              "description": "Total number of practice questions in the chapter (0 when none). Recorded; the practice half is verified by the server once the chapter's practice count is known. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends practiceTotal. The app must not send practiceTotal to a service still on 2.20 (it rejects the event, EVENT_INVALID)."
             }
           }
         }
@@ -1574,7 +1574,7 @@
               "maxLength": 500
             },
             "replacement": {
-              "description": "Optional corrected detail values for the event named by correctsEventId. `targetKind` is the kind of that event (any kind except `correction`); `detail` holds only fields that the kind's own `detail` allows, and only the fields to change (the others keep their value). A field the target kind does not allow is rejected. Without `replacement` the correction voids the event.",
+              "description": "PLANNED: not applied by the service yet (it only voids events), but accepted at intake. Optional corrected detail values for the event named by correctsEventId. `targetKind` is the kind of that event (any kind except `correction`) and must equal the real kind of the corrected event (checked by the server, not by this schema); `detail` holds only fields that the kind's own `detail` allows, and only the fields to change (the others keep their value). A field the target kind does not allow is rejected. Without `replacement` the correction voids the event.",
               "oneOf": [
                 {
                   "type": "object",
@@ -1602,7 +1602,7 @@
                         "sectionIndex": {
                           "type": "integer",
                           "minimum": 1,
-                          "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point."
+                          "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID)."
                         }
                       }
                     }
@@ -1639,7 +1639,7 @@
                         "sectionIndex": {
                           "type": "integer",
                           "minimum": 1,
-                          "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point."
+                          "description": "1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID)."
                         }
                       }
                     }
@@ -1856,7 +1856,7 @@
                         },
                         "keyWordsInEnglish": {
                           "type": "boolean",
-                          "description": "The child used the key words in English only (language-barrier signal)."
+                          "description": "Whether the child said the key English words while explaining. true: the child said the key English words (understanding shown in the home language counts as understood). false: the child did NOT say the key English words (a language-barrier signal when the explanation was in a non-English language: right idea, key words missing). Absent: unknown, counts as understood. Field name kept from 2.20.0; only the description is corrected."
                         }
                       }
                     }
@@ -1935,12 +1935,12 @@
                         "sectionsTotal": {
                           "type": "integer",
                           "minimum": 0,
-                          "description": "Number of sections of the chapter the child read this round. The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted."
+                          "description": "Total number of sections in the chapter (sectionsRead is the number read this round). The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted."
                         },
                         "practiceTotal": {
                           "type": "integer",
                           "minimum": 0,
-                          "description": "Number of practice questions of the chapter that the child answered this round (0 when the chapter has none). Recorded; verified by the server once the chapter's practice count is known."
+                          "description": "Total number of practice questions in the chapter (0 when none). Recorded; the practice half is verified by the server once the chapter's practice count is known. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends practiceTotal. The app must not send practiceTotal to a service still on 2.20 (it rejects the event, EVENT_INVALID)."
                         }
                       }
                     }
@@ -2124,7 +2124,7 @@
           }
         }
       },
-      "description": "A `correction` event. Rules (all enforced by the server, so every consumer agrees): (1) it may only name an earlier event of the same profile (lower seq). (2) Who may correct what: a student may not correct a read, listen, revisit, round-start or round-complete event (the correction is ignored and counted: a child cannot lower their own furthest point or round progress); a student may correct answer, reveal, self-check, note and buddy-question events; only a parent (or the system, server-side) may correct any kind, including teach-back, revision and review-done. (3) Chains: corrections are judged from the latest seq down. A correction is active unless a later active correction names it, so correcting a correction restores the original and correcting that voids it again. Arrival order never matters. (4) With `replacement`, the active correction with the highest seq naming an event decides that event's detail (its fields overwrite the original's; the original stays in the log); no merging of several corrections. Without `replacement` an active correction voids the event for derived state."
+      "description": "A `correction` event. Rules the progress service applies today: (1) it may only name an earlier event of the same profile (lower seq). (2) A student may not correct a read, listen, revisit, round-start or round-complete event (the correction is ignored and counted: a child cannot lower their own furthest point or round progress); any other kind may be corrected by anyone with access. (3) Chains: corrections are judged from the latest seq down. A correction is active unless a later active correction names it, so correcting a correction restores the original and correcting that voids it again. Arrival order never matters. An active correction voids the named event for derived state (the original stays in the log). PLANNED, not applied by the service yet (it only voids): a narrower per-actor rule (a student may correct only answer, reveal, self-check, note and buddy-question; teach-back, revision and review-done only by a parent), and `replacement` (below); when applied, the active correction with the highest seq naming an event decides its detail, with no merging of several corrections."
     },
     "LearningEvent": {
       "title": "LearningEvent",

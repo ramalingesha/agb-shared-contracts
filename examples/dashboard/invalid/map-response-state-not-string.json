@@ -20,7 +20,7 @@
           "step": 4,
           "stepKey": "ladder.step.4",
           "reasonKey": "ladder.can_explain.reason",
-          "stateKey": "state.excellent",
+          "stateKey": 5,
           "strength": true,
           "needsHelp": false,
           "noteKeys": [],

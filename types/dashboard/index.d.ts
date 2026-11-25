@@ -23,7 +23,7 @@ export type DashboardId = string;
  */
 export type DashboardLanguage = 'en' | 'kn' | 'ta' | 'te' | 'hi';
 /**
- * The two age bands the user-management service stores and the guardian API uses today. Mapping from the four contract bands (`ageBand`): 5-7 -> under13, 8-10 -> under13, 11-13 -> under13 (the band can hold 13-year-olds; the consent flow treats it as under 13), 14-17 -> 13to17. The mapping is one way: a two-band value does not say which four-band value it came from. `guardianAgeBandOf` in dashboard/index.js applies it.
+ * The two age bands the user-management service stores and the guardian API uses today. Mapping from the four contract bands (`ageBand`): 5-7 -> under13, 8-10 -> under13, 11-13 -> under13 (the band can hold 13-year-olds; the consent flow treats it as under 13), 14-17 -> 13to17. The mapping is one way: a two-band value does not say which four-band value it came from. `guardianAgeBandOf` in dashboard/index.js applies it. user-management puts this value in its `ageBand` field (not in `ageBandGuardian`).
  */
 export type GuardianAgeBand = 'under13' | '13to17';
 /**
@@ -317,7 +317,7 @@ export interface ClaimableStudentsResponse {
   }[];
 }
 /**
- * POST /guardians/me/students: the profile and the consent in one call. `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`.
+ * POST /guardians/me/students: the profile and the consent in one call. `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`. Drift today: user-management sends and accepts the two-band value (under13 or 13to17) IN `ageBand` and does not use `ageBandGuardian`; this four-band `ageBand` and the alias are the contract's side. Convergence is tracked as a follow-up.
  */
 export interface CreateStudentProfileRequest {
   name: string;
@@ -338,7 +338,7 @@ export interface CreateStudentProfileResponse {
   consentId: DashboardId;
 }
 /**
- * A student profile (a User row with kind = student). `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`.
+ * A student profile (a User row with kind = student). `ageBandGuardian` is the same age in the two-band form user-management stores (under13 or 13to17), an optional alias next to the unchanged `ageBand`. Drift today: user-management sends and accepts the two-band value (under13 or 13to17) IN `ageBand` and does not use `ageBandGuardian`; this four-band `ageBand` and the alias are the contract's side. Convergence is tracked as a follow-up.
  */
 export interface StudentProfile {
   id: DashboardId;
@@ -388,14 +388,14 @@ export interface ParentGateVerifyRequest {
   deviceId: string;
 }
 /**
- * A short-lived (at most 5 minutes) parent-elevation token.
+ * A short-lived (at most 5 minutes) parent-elevation token. See also `ParentGateVerifyResult`, what user-management answers today.
  */
 export interface ParentGateVerifyResponse {
   elevationToken: string;
   expiresInSeconds: number;
 }
 /**
- * What user-management answers to POST /guardians/me/gate/verify today: `ok` and the time until which the guardian acts as the parent (5 minutes). The 2.20.0 `ParentGateVerifyResponse` (elevationToken, expiresInSeconds) is kept unchanged; apps accept either until the two are merged.
+ * What user-management answers to POST /guardians/me/gate/verify today: `ok` and the time until which the guardian acts as the parent (5 minutes). The 2.20.0 `ParentGateVerifyResponse` (elevationToken, expiresInSeconds) is kept unchanged; apps accept either until the two are merged. See also `ParentGateVerifyResponse`.
  */
 export interface ParentGateVerifyResult {
   ok: true;
@@ -496,7 +496,7 @@ export interface EventBuddyQuestion {
   };
 }
 /**
- * A `correction` event. Rules (all enforced by the server, so every consumer agrees): (1) it may only name an earlier event of the same profile (lower seq). (2) Who may correct what: a student may not correct a read, listen, revisit, round-start or round-complete event (the correction is ignored and counted: a child cannot lower their own furthest point or round progress); a student may correct answer, reveal, self-check, note and buddy-question events; only a parent (or the system, server-side) may correct any kind, including teach-back, revision and review-done. (3) Chains: corrections are judged from the latest seq down. A correction is active unless a later active correction names it, so correcting a correction restores the original and correcting that voids it again. Arrival order never matters. (4) With `replacement`, the active correction with the highest seq naming an event decides that event's detail (its fields overwrite the original's; the original stays in the log); no merging of several corrections. Without `replacement` an active correction voids the event for derived state.
+ * A `correction` event. Rules the progress service applies today: (1) it may only name an earlier event of the same profile (lower seq). (2) A student may not correct a read, listen, revisit, round-start or round-complete event (the correction is ignored and counted: a child cannot lower their own furthest point or round progress); any other kind may be corrected by anyone with access. (3) Chains: corrections are judged from the latest seq down. A correction is active unless a later active correction names it, so correcting a correction restores the original and correcting that voids it again. Arrival order never matters. An active correction voids the named event for derived state (the original stays in the log). PLANNED, not applied by the service yet (it only voids): a narrower per-actor rule (a student may correct only answer, reveal, self-check, note and buddy-question; teach-back, revision and review-done only by a parent), and `replacement` (below); when applied, the active correction with the highest seq naming an event decides its detail, with no merging of several corrections.
  */
 export interface EventCorrection {
   eventId: DashboardId5;
@@ -516,7 +516,7 @@ export interface EventCorrection {
     correctsEventId: DashboardId;
     reason: string;
     /**
-     * Optional corrected detail values for the event named by correctsEventId. `targetKind` is the kind of that event (any kind except `correction`); `detail` holds only fields that the kind's own `detail` allows, and only the fields to change (the others keep their value). A field the target kind does not allow is rejected. Without `replacement` the correction voids the event.
+     * PLANNED: not applied by the service yet (it only voids events), but accepted at intake. Optional corrected detail values for the event named by correctsEventId. `targetKind` is the kind of that event (any kind except `correction`) and must equal the real kind of the corrected event (checked by the server, not by this schema); `detail` holds only fields that the kind's own `detail` allows, and only the fields to change (the others keep their value). A field the target kind does not allow is rejected. Without `replacement` the correction voids the event.
      */
     replacement?:
       | {
@@ -525,7 +525,7 @@ export interface EventCorrection {
             imported?: boolean;
             seconds?: number;
             /**
-             * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point.
+             * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID).
              */
             sectionIndex?: number;
           };
@@ -537,7 +537,7 @@ export interface EventCorrection {
             toSeconds?: number;
             speed?: number;
             /**
-             * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point.
+             * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID).
              */
             sectionIndex?: number;
           };
@@ -1471,7 +1471,7 @@ export interface EventCorrection {
                 ];
             outcome?: 'understood' | 'words-only' | 'gap' | 'misconception';
             /**
-             * The child used the key words in English only (language-barrier signal).
+             * Whether the child said the key English words while explaining. true: the child said the key English words (understanding shown in the home language counts as understood). false: the child did NOT say the key English words (a language-barrier signal when the explanation was in a non-English language: right idea, key words missing). Absent: unknown, counts as understood. Field name kept from 2.20.0; only the description is corrected.
              */
             keyWordsInEnglish?: boolean;
           };
@@ -1492,11 +1492,11 @@ export interface EventCorrection {
           detail: {
             sectionsRead?: number;
             /**
-             * Number of sections of the chapter the child read this round. The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted.
+             * Total number of sections in the chapter (sectionsRead is the number read this round). The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted.
              */
             sectionsTotal?: number;
             /**
-             * Number of practice questions of the chapter that the child answered this round (0 when the chapter has none). Recorded; verified by the server once the chapter's practice count is known.
+             * Total number of practice questions in the chapter (0 when none). Recorded; the practice half is verified by the server once the chapter's practice count is known. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends practiceTotal. The app must not send practiceTotal to a service still on 2.20 (it rejects the event, EVENT_INVALID).
              */
             practiceTotal?: number;
           };
@@ -1589,7 +1589,7 @@ export interface EventListen {
     toSeconds: number;
     speed?: number;
     /**
-     * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point.
+     * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID).
      */
     sectionIndex?: number;
   };
@@ -1641,7 +1641,7 @@ export interface EventRead {
     imported?: boolean;
     seconds?: number;
     /**
-     * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point.
+     * 1-based position of the section in its chapter (section 1 is the first). Optional: when absent the server derives it from a sectionId of exactly s<number> (s7 is index 7). When present it wins. Only a read or listen with an index moves the chapter's furthest point. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends sectionIndex. The app must not send sectionIndex to a service still on 2.20 (it rejects the event, EVENT_INVALID).
      */
     sectionIndex?: number;
   };
@@ -1757,11 +1757,11 @@ export interface EventRoundComplete {
   detail: {
     sectionsRead: number;
     /**
-     * Number of sections of the chapter the child read this round. The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted.
+     * Total number of sections in the chapter (sectionsRead is the number read this round). The server checks the reading half itself: the round counts as complete only when at least this many distinct sections were read, otherwise the event is ignored and counted.
      */
     sectionsTotal?: number;
     /**
-     * Number of practice questions of the chapter that the child answered this round (0 when the chapter has none). Recorded; verified by the server once the chapter's practice count is known.
+     * Total number of practice questions in the chapter (0 when none). Recorded; the practice half is verified by the server once the chapter's practice count is known. Deployment order: publish contracts, then upgrade the progress service to 2.21, then ship an app that sends practiceTotal. The app must not send practiceTotal to a service still on 2.20 (it rejects the event, EVENT_INVALID).
      */
     practiceTotal?: number;
   };
@@ -2969,8 +2969,14 @@ export interface ChildRoundSummary {
  */
 export interface Evidence {
   eventId: DashboardId;
-  kind: EventKind;
-  actor: 'student' | 'parent';
+  /**
+   * The kind of the event (an EventKind such as `answer`, `teach-back`, `revision`). A string: a newer server may send a kind not listed in EventKind.
+   */
+  kind: string;
+  /**
+   * `student` or `parent` today. A string: a newer server may send another actor.
+   */
+  actor: string;
   at: DashboardTime;
   /**
    * The server's round (the last round that started at or before the event), not the event's own tag.
@@ -3065,20 +3071,10 @@ export interface HomeResponse {
  * A next step with the minutes it takes (tonight's plan).
  */
 export interface PlanItem {
-  kind:
-    | 'read-section'
-    | 'mix-up-card'
-    | 'another-way'
-    | 'clip'
-    | 'switch-style'
-    | 'switch-language'
-    | 'teach-back'
-    | 'revision'
-    | 'stretch-question'
-    | 'activity'
-    | 'next-chapter'
-    | 'try-question'
-    | 'ask-help';
+  /**
+   * A NextStep kind (read-section, mix-up-card, another-way, clip, switch-style, switch-language, teach-back, revision, stretch-question, activity, next-chapter, try-question, ask-help today). A string: a newer server may send another.
+   */
+  kind: string;
   knowledgeId?: DashboardId;
   sectionId?: DashboardId;
   blockId?: DashboardId;
@@ -3125,7 +3121,7 @@ export interface MapSection {
   sectionId: DashboardId;
   step: UnderstandingStep;
   /**
-   * `ladder.step.<n>`: the name of the step.
+   * `ladder.step.<n>`: the name of the step. A string; known today: ladder.step.0 to ladder.step.6.
    */
   stepKey: string;
   /**
@@ -3133,9 +3129,9 @@ export interface MapSection {
    */
   reasonKey: string;
   /**
-   * i18n key of the section's state (parent view).
+   * i18n key of the section's state (parent view). A string: a newer server may send a value not listed. Known today: state.not_started, state.in_progress, state.needs_help, state.strength.
    */
-  stateKey: 'state.not_started' | 'state.in_progress' | 'state.needs_help' | 'state.strength';
+  stateKey: string;
   strength: boolean;
   needsHelp: boolean;
   /**
@@ -3171,18 +3167,13 @@ export interface MyLearningSection {
   sectionId: DashboardId;
   step: UnderstandingStep;
   /**
-   * `learning.step.<n>`: "I've met it" to "I can use it", in the child's words.
+   * `learning.step.<n>`: "I've met it" to "I can use it", in the child's words. A string; known today: learning.step.0 to learning.step.6.
    */
   stepKey: string;
   /**
-   * Child-friendly state. `not_yet` is the strongest negative and is used only where the child's own self-check said not-yet or a wrong answer came after a retry; every other reason is the gentler `look_again`.
+   * Child-friendly state. `not_yet` is the strongest negative and is used only where the child's own self-check said not-yet or a wrong answer came after a retry; every other reason is the gentler `look_again`. A string: a newer server may send a value not listed. Known today: learning.state.not_started, learning.state.climbing, learning.state.look_again, learning.state.not_yet, learning.state.going_well.
    */
-  stateKey:
-    | 'learning.state.not_started'
-    | 'learning.state.climbing'
-    | 'learning.state.look_again'
-    | 'learning.state.not_yet'
-    | 'learning.state.going_well';
+  stateKey: string;
   /**
    * @maxItems 3
    */
@@ -3206,7 +3197,7 @@ export interface TopicResponse {
   rulesVersion: string;
   step: UnderstandingStep;
   /**
-   * `ladder.step.<n>`: the name of the step.
+   * `ladder.step.<n>`: the name of the step. A string; known today: ladder.step.0 to ladder.step.6.
    */
   stepKey: string;
   /**
@@ -3214,9 +3205,9 @@ export interface TopicResponse {
    */
   reasonKey: string;
   /**
-   * i18n key of the section's state (parent view).
+   * i18n key of the section's state (parent view). A string: a newer server may send a value not listed. Known today: state.not_started, state.in_progress, state.needs_help, state.strength.
    */
-  stateKey: 'state.not_started' | 'state.in_progress' | 'state.needs_help' | 'state.strength';
+  stateKey: string;
   cause: WeakSpotCause | null;
   causeReasonKey: string | null;
   strength: boolean;

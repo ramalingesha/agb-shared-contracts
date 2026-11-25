@@ -312,6 +312,10 @@ test('events: round-complete sectionsTotal and practiceTotal are integers of at 
   invalidEvent(invalidExample('round-complete-negative-total'));
   const description = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventRoundComplete.description;
   assert.match(description, /student actor only/);
+  const total = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventRoundComplete.properties.detail.properties;
+  assert.match(total.sectionsTotal.description, /Total number of sections in the chapter/);
+  assert.match(total.practiceTotal.description, /Total number of practice questions in the chapter/);
+  assert.match(total.practiceTotal.description, /Deployment order/);
 });
 
 test('events: correction replacement allows only the target kind\'s detail fields', () => {
@@ -328,7 +332,8 @@ test('events: correction replacement allows only the target kind\'s detail field
   const partial = base(); partial.detail.replacement = { targetKind: 'answer', detail: { correct: true } }; validEvent(partial);
   const read = base(); read.detail.replacement = { targetKind: 'read', detail: { sectionIndex: 3 } }; validEvent(read);
   const description = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventCorrection.description;
-  assert.match(description, /a student may not correct a read, listen, revisit, round-start or round-complete/);
+  assert.match(description, /A student may not correct a read, listen, revisit, round-start or round-complete/);
+  assert.match(description, /PLANNED, not applied by the service yet/);
   assert.match(description, /latest seq down/);
 });
 
@@ -342,11 +347,17 @@ test('teach-back keyWordsInEnglish: the field is kept and the description follow
 
 test('progress reads: map, topic, home, my-learning and export reject wrong keys and states', () => {
   const map = example('map-response'); map.chapters[0].sections[0].step = 7; invalid('progress-reads', 'MapResponse', map, 'maximum');
-  const state = invalidExample('map-response-bad-state'); invalid('progress-reads', 'MapResponse', state, 'enum');
+  const state = invalidExample('map-response-state-not-string'); invalid('progress-reads', 'MapResponse', state, 'type');
+  // keys are open strings: a state, kind or actor a newer server adds must not fail a strict client
+  const newer = example('map-response'); newer.chapters[0].sections[0].stateKey = 'state.paused'; valid('progress-reads', 'MapResponse', newer);
+  const newTopic = example('topic-response'); newTopic.stateKey = 'state.paused'; newTopic.evidence[0].kind = 'activity-done'; newTopic.evidence[0].actor = 'teacher'; valid('progress-reads', 'TopicResponse', newTopic);
+  const newPlan = example('home-response'); newPlan.tonightPlan[0].kind = 'mock-exam'; valid('progress-reads', 'HomeResponse', newPlan);
+  const emptyKey = example('map-response'); emptyKey.chapters[0].sections[0].stateKey = ''; invalid('progress-reads', 'MapResponse', emptyKey, 'minLength');
   const topic = example('topic-response'); delete topic.stretchRight; invalid('progress-reads', 'TopicResponse', topic, 'required', 'stretchRight');
   const cause = example('topic-response'); cause.cause = 'lazy'; invalid('progress-reads', 'TopicResponse', cause);
   const home = example('home-response'); home.tonightPlan[0].minutes = 0; invalid('progress-reads', 'HomeResponse', home, 'minimum');
-  const mine = example('my-learning-response'); mine.chapters[0].sections[0].stateKey = 'state.strength'; invalid('progress-reads', 'MyLearningResponse', mine, 'enum');
+  const mine = example('my-learning-response'); mine.chapters[0].sections[0].stateKey = 'learning.state.new'; valid('progress-reads', 'MyLearningResponse', mine);
+  mine.chapters[0].sections[0].cause = 'gap'; invalid('progress-reads', 'MyLearningResponse', mine, 'additionalProperties');
   const child = example('my-learning-response'); child.chapters[0].rounds[0].teachBacksUnderstood = 1; invalid('progress-reads', 'MyLearningResponse', child, 'additionalProperties');
   const exp = example('export-response'); delete exp.summaries; invalid('progress-reads', 'ExportResponse', exp, 'required', 'summaries');
   const states = new Set(example('my-learning-response').chapters[0].sections.map((x) => x.stateKey));
