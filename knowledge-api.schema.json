@@ -109,18 +109,18 @@
 
     "ActivityVerification": {
       "type": "object",
-      "description": "2.22.0 (AGB-1099): editorial record that a person did the activity for real. `verifiedBy` is a Studio person id and is removed from what the app is served (the app sees only `status`). With `status: verified`, `verifiedAt` is required. The plan is that an unverified activity is never published or shown; that gate belongs to the content gate and the Studio (planned), not to this schema.",
+      "description": "2.22.0 (AGB-1099): editorial record that a person did the activity for real. `verifiedBy` is a display name or role label (no contact details) and is removed from what the app is served (the app sees only `status`). With `status: verified`, both `verifiedAt` and `verifiedBy` (a named person) are required; `unverified` needs neither. The plan is that an unverified activity is never published or shown; that gate belongs to the content gate and the Studio (planned), not to this schema.",
       "required": ["status"],
       "additionalProperties": false,
       "properties": {
         "status": { "type": "string", "enum": ["unverified", "verified"] },
         "verifiedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "Date (YYYY-MM-DD)." },
-        "verifiedBy": { "type": "string", "minLength": 1, "description": "Studio person id. Editorial only; stripped from served content." },
+        "verifiedBy": { "type": "string", "minLength": 1, "maxLength": 120, "description": "Who tried the activity for real: a display name or role label only (for example `Class 4 teacher`). Never an email address or any contact detail. Required when `status` is `verified`. Editorial only; stripped from served content." },
         "triedWith": { "type": "array", "items": { "type": "string" }, "description": "The items actually used when it was tried." },
         "minutesActual": { "type": "integer", "minimum": 1 }
       },
       "if": { "properties": { "status": { "const": "verified" } }, "required": ["status"] },
-      "then": { "required": ["verifiedAt"] }
+      "then": { "required": ["verifiedAt", "verifiedBy"] }
     },
 
     "Activity": {

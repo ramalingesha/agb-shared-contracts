@@ -232,7 +232,7 @@ export interface ActivitySource {
   ref?: string;
 }
 /**
- * 2.22.0 (AGB-1099): editorial record that a person did the activity for real. `verifiedBy` is a Studio person id and is removed from what the app is served (the app sees only `status`). With `status: verified`, `verifiedAt` is required. The plan is that an unverified activity is never published or shown; that gate belongs to the content gate and the Studio (planned), not to this schema.
+ * 2.22.0 (AGB-1099): editorial record that a person did the activity for real. `verifiedBy` is a display name or role label (no contact details) and is removed from what the app is served (the app sees only `status`). With `status: verified`, both `verifiedAt` and `verifiedBy` (a named person) are required; `unverified` needs neither. The plan is that an unverified activity is never published or shown; that gate belongs to the content gate and the Studio (planned), not to this schema.
  *
  * This interface was referenced by `GnanoraKnowledgeAPIContract`'s JSON-Schema
  * via the `definition` "ActivityVerification".
@@ -244,7 +244,7 @@ export interface ActivityVerification {
    */
   verifiedAt?: string;
   /**
-   * Studio person id. Editorial only; stripped from served content.
+   * Who tried the activity for real: a display name or role label only (for example `Class 4 teacher`). Never an email address or any contact detail. Required when `status` is `verified`. Editorial only; stripped from served content.
    */
   verifiedBy?: string;
   /**

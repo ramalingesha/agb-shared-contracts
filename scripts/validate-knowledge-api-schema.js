@@ -189,6 +189,7 @@ function validateExamples222(schema) {
     'activity-no-source.json': ['Block', 'source'],
     'activity-photo-field.json': ['Block', 'activity'],
     'activity-verified-without-date.json': ['Block', 'verifiedAt'],
+    'activity-verified-without-name.json': ['Block', 'verifiedBy'],
     'activity-block-without-activity.json': ['Block', 'activity'],
     'qa-bad-tests.json': ['Block', 'tests'],
     'qa-mixup-id-not-string.json': ['Block', 'mixUpId'],
