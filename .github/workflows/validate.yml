@@ -9,6 +9,7 @@ on:
       - "api-response-schema.json"
       - "knowledge-api.schema.json"
       - "package.json"
+      - "package-lock.json"
       - "scripts/validate-error-codes.js"
       - "scripts/validate-knowledge-api-schema.js"
       - "scripts/generate-knowledge-types.js"
@@ -43,6 +44,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high --omit=dev
 
       - name: Validate JSON syntax
         run: |
