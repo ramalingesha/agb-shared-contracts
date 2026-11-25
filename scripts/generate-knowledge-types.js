@@ -67,9 +67,11 @@ const GROUPS = {
     'Audience',
     'Depth',
     'RenditionQuality',
+    'QuestionTest',
   ],
   media: ['MediaRef', 'Author', 'VoiceSummary'],
-  'content-blocks': ['Block', 'Slide'],
+  // AGB-1099 (2.22.0): the activity block and mix-up matching are part of the block.
+  'content-blocks': ['Block', 'Slide', 'MixUpMatch', 'Activity', 'ActivitySource', 'ActivityVerification'],
   explanation: ['ExplanationSummary', 'ExplanationContent'],
   knowledge: [
     'GnanoraKnowledgeAPIContract',
@@ -79,6 +81,7 @@ const GROUPS = {
     'DiscoverIndex',
     'Availability',
     'CatalogRef',
+    'SectionSummary',
   ],
   // AGB-855: the Study Jam presentation of the Friend style.
   'study-jam': [

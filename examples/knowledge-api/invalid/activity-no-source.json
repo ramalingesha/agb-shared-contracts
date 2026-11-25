@@ -1,0 +1,44 @@
+{
+  "id": "s2-act1",
+  "type": "activity",
+  "sectionId": "s2",
+  "activity": {
+    "id": "act-s2-incubator",
+    "title": "Keep a stone warm in a box",
+    "deepens": "s2",
+    "minutes": 20,
+    "materials": [
+      "a steel box with a lid",
+      "a small stone",
+      "a towel",
+      "a bottle of room-temperature water"
+    ],
+    "steps": [
+      "Hold the stone in your hands for two minutes so that it feels a little warm.",
+      "Put the warm stone in the steel box and wrap the closed box in the towel.",
+      "Put the bottle of water beside it, not wrapped.",
+      "After ten minutes, touch the stone and the bottle and say which one feels warmer."
+    ],
+    "observe": "The wrapped stone stays warmer than the bottle left in the open. Notice what the towel did.",
+    "safety": [
+      "No hot water, no flame and no electric heater.",
+      "An adult stays with the child."
+    ],
+    "listenFor": [
+      "says the covered box keeps the warmth in",
+      "uses the word incubation"
+    ],
+    "verification": {
+      "status": "verified",
+      "verifiedAt": "2026-11-24",
+      "verifiedBy": "person-01",
+      "triedWith": [
+        "steel lunch box",
+        "stone",
+        "bath towel",
+        "water bottle"
+      ],
+      "minutesActual": 22
+    }
+  }
+}

@@ -62,8 +62,97 @@
         "callout",
         "qa",
         "takeaways",
-        "code"
-      ]
+        "code",
+        "activity"
+      ],
+      "description": "`activity` (2.22.0, AGB-1099): a hands-on home activity card, carried in the block's `activity` object. An older reader that does not know the type must ignore or hide the block (not yet verified in the reader, see the 2.22.0 changelog)."
+    },
+
+    "QuestionTest": {
+      "type": "string",
+      "enum": ["gets-it", "remembers", "can-use"],
+      "description": "2.22.0 (AGB-1099): what a question tests, in the ladder's words. `gets-it` feeds step 3, `remembers` feeds step 5 (asked again after a gap), `can-use` feeds step 6. Content tag only: the progress service does not read it yet."
+    },
+
+    "MixUpMatch": {
+      "type": "object",
+      "description": "2.22.0 (AGB-1099): says that one wrong option of a `qa` block is a known mix-up. `mixUpId` is the block id of the `callout` with `variant: mix-up` that explains it, so no new id space exists. Content tag only: the progress service does not read it yet; the content gate (planned) checks that the id names a mix-up callout of the same chapter.",
+      "required": ["option", "mixUpId"],
+      "additionalProperties": false,
+      "properties": {
+        "option": {
+          "oneOf": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "string", "enum": ["true", "false"] }
+          ],
+          "description": "The 0-based index into `options` (for `mcq` and `odd-one-out`), or the string `true` or `false` for a `true-false` question that has no options."
+        },
+        "mixUpId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+          "description": "The block id of the mix-up callout, e.g. `s1-mix1`."
+        }
+      }
+    },
+
+    "ActivitySource": {
+      "type": "object",
+      "description": "2.22.0 (AGB-1099): where an activity comes from, credited.",
+      "required": ["name", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "enum": ["book", "teacher", "own"] },
+        "ref": { "type": "string", "description": "Page, unit or other pointer into the source." }
+      }
+    },
+
+    "ActivityVerification": {
+      "type": "object",
+      "description": "2.22.0 (AGB-1099): editorial record that a person did the activity for real. `verifiedBy` is a Studio person id and is removed from what the app is served (the app sees only `status`). With `status: verified`, `verifiedAt` is required. The plan is that an unverified activity is never published or shown; that gate belongs to the content gate and the Studio (planned), not to this schema.",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "type": "string", "enum": ["unverified", "verified"] },
+        "verifiedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "Date (YYYY-MM-DD)." },
+        "verifiedBy": { "type": "string", "minLength": 1, "description": "Studio person id. Editorial only; stripped from served content." },
+        "triedWith": { "type": "array", "items": { "type": "string" }, "description": "The items actually used when it was tried." },
+        "minutesActual": { "type": "integer", "minimum": 1 }
+      },
+      "if": { "properties": { "status": { "const": "verified" } }, "required": ["status"] },
+      "then": { "required": ["verifiedAt"] }
+    },
+
+    "Activity": {
+      "type": "object",
+      "description": "2.22.0 (AGB-1099): a hands-on home activity, carried by a `type: activity` block. Everyday items only, complete steps, a safety line, and credits. Children stay out of photos: there is deliberately no image, photo or media field anywhere in an activity, and no field about the child. Copied verbatim in every style; ids, `deepens`, `minutes` and `verification` are not translated. A parent confirming the activity is done is the `activity-done` learning event, which carries ids only.",
+      "required": ["id", "title", "deepens", "materials", "steps", "observe", "safety", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", "description": "Stable activity id, e.g. `act-s2-incubator`. The `activity-done` event's `activityId`." },
+        "title": { "type": "string", "minLength": 1 },
+        "deepens": { "type": "string", "minLength": 1, "description": "The id of the section this activity deepens." },
+        "minutes": { "type": "integer", "minimum": 1, "description": "How long it takes the family, in minutes." },
+        "materials": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "description": "Everyday items from a typical home." },
+        "steps": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 }, "description": "Complete steps, in order." },
+        "observe": { "type": "string", "minLength": 1, "description": "What to notice, 1 to 3 sentences." },
+        "safety": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "description": "Safety notes. At least one." },
+        "listenFor": { "type": "array", "items": { "type": "string" }, "description": "What the parent can listen for when the child explains it." },
+        "source": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/ActivitySource" }, "description": "Credits. At least one." },
+        "verification": { "$ref": "#/definitions/ActivityVerification" }
+      }
+    },
+
+    "SectionSummary": {
+      "type": "object",
+      "description": "2.22.0 (AGB-1099): per-section facts of a chapter, in the order of the spine.",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "The section id used by `Block.sectionId`." },
+        "title": { "type": "string" },
+        "expectedSeconds": { "type": "integer", "minimum": 1, "description": "Reading time of the section in the base style, computed by the content pipeline (never hand-written); replaced by the real narration length once narration exists. A guide for the dashboard's 'far under expected' signal, not a promise. The progress service does not read it yet." }
+      }
     },
 
     "CalloutVariant": {
@@ -247,8 +336,27 @@
           "items": { "type": "string" },
           "description": "`qa` blocks only (AGB-720): one reason per option, right or wrong, in the same order as `options`."
         },
-        "depth": { "allOf": [{ "$ref": "#/definitions/Depth" }] }
-      }
+        "depth": { "allOf": [{ "$ref": "#/definitions/Depth" }] },
+        "activity": {
+          "allOf": [{ "$ref": "#/definitions/Activity" }],
+          "description": "`activity` blocks only (2.22.0, AGB-1099): the activity card. Required when `type` is `activity`."
+        },
+        "mixUpMatches": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/MixUpMatch" },
+          "description": "`qa` blocks only (2.22.0, AGB-1099): which wrong options are a known mix-up (see `MixUpMatch`). Optional; content tag only, the progress service does not read it yet."
+        },
+        "newCase": {
+          "type": "boolean",
+          "description": "`qa` blocks only (2.22.0, AGB-1099): true marks a new-case question (ladder step 6): the idea applied to a case not in the chapter. The stem states every new fact it needs. The block keeps its `kind` (mcq, true-false, explain-back), so older readers render it as before. Absent means false."
+        },
+        "tests": {
+          "allOf": [{ "$ref": "#/definitions/QuestionTest" }],
+          "description": "`qa` blocks only (2.22.0, AGB-1099): what the question tests (`gets-it`, `remembers` or `can-use`). Optional; content tag only, the progress service does not read it yet."
+        }
+      },
+      "if": { "properties": { "type": { "const": "activity" } }, "required": ["type"] },
+      "then": { "required": ["activity"] }
     },
 
     "MediaRef": {
@@ -553,6 +661,16 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "What this Knowledge builds on, in plain words (AGB-672), e.g. 'Living and non-living things'. Its 'Before you start' check questions test these."
+        },
+        "buildsOn": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "2.22.0 (AGB-1099): ids of the earlier Knowledge (chapters) this one builds on; may cross classes. Stored once on the later chapter; the inverse (`unlocks`) is computed, never kept by hand. `prerequisites` stays as it is and still drives the check questions. Absent means no prerequisite signal; it never blocks publishing. A content gate (planned) rejects unknown ids, itself and cycles; this schema checks only the shape."
+        },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SectionSummary" },
+          "description": "2.22.0 (AGB-1099): the chapter's sections in order, with facts such as `expectedSeconds`. Optional."
         }
       }
     },

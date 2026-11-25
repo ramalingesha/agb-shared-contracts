@@ -55,7 +55,7 @@ function invalid(file, name, doc, keyword, where) {
   }
 }
 
-const KINDS = ['read', 'listen', 'revisit', 'answer', 'reveal', 'self-check', 'teach-back', 'revision', 'round-start', 'round-complete', 'note', 'buddy-question', 'switch', 'help-request', 'review-done', 'correction'];
+const KINDS = ['read', 'listen', 'revisit', 'answer', 'reveal', 'self-check', 'teach-back', 'revision', 'round-start', 'round-complete', 'note', 'buddy-question', 'switch', 'help-request', 'review-done', 'activity-done', 'correction'];
 // example file -> [schema file, definition]
 const EXAMPLES = {
   'token-claims-student': ['token-claims', 'ProfileTokenClaims'],
@@ -94,6 +94,8 @@ const EXAMPLES_2_21 = {
   'create-student-profile-request-guardian-band': ['guardian', 'CreateStudentProfileRequest'],
 };
 const NEW_EVENT_EXAMPLES = ['event-read-section-index', 'event-listen-section-index', 'event-round-complete-totals', 'event-correction-replacement', 'event-teach-back-no-key-words'];
+// 2.22.0 (AGB-1099): the answer with a mix-up id; the activity-done event is the 17th kind.
+const NEW_EVENT_EXAMPLES_2_22 = ['event-answer-mixup'];
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
 const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
 const event = (kind) => example(`event-${kind}`);
@@ -117,17 +119,17 @@ test('every schema compiles, declares draft-07 and every definition has a title'
 test('every listed example validates against its definition', () => {
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
   for (const [name, [file, def]] of Object.entries(EXAMPLES_2_21)) valid(file, def, example(name));
-  for (const name of NEW_EVENT_EXAMPLES) validEvent(example(name));
-  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...NEW_EVENT_EXAMPLES, ...KINDS.map((k) => `event-${k}`)]);
+  for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22]) validEvent(example(name));
+  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...KINDS.map((k) => `event-${k}`)]);
   const onDisk = jsonFiles(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
   assert.deepEqual(onDisk.filter((n) => !listed.has(n)), [], 'example without a test mapping');
   assert.deepEqual([...listed].filter((n) => !onDisk.includes(n)), [], 'mapping without an example');
 });
 
-test('one valid fixture per event kind, and the kinds list matches the union (16 kinds)', () => {
+test('one valid fixture per event kind, and the kinds list matches the union (17 kinds)', () => {
   const schema = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json'));
   assert.deepEqual(schema.definitions.EventKind.enum, KINDS);
-  assert.equal(KINDS.length, 16);
+  assert.equal(KINDS.length, 17);
   for (const kind of KINDS) {
     const e = event(kind);
     assert.equal(e.kind, kind, `event-${kind}.json has kind ${e.kind}`);
@@ -282,7 +284,7 @@ test('dashboard-errors: unique codes cover the spec and carry an HTTP status', (
 
 const invalidExample = (name) => structuredClone(readJson(path.join(INVALID_DIR, `${name}.json`)));
 
-test('2.21.0 back-compat: every 2.20.0 example (all 18 shapes and 16 event kinds) still validates', () => {
+test('2.21.0 back-compat: every 2.20.0 example (all 18 shapes and 16 event kinds) still validates under 2.22.0', () => {
   assert.equal(Object.keys(EXAMPLES).length, 18);
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
   for (const kind of KINDS) validEvent(event(kind));
@@ -290,6 +292,59 @@ test('2.21.0 back-compat: every 2.20.0 example (all 18 shapes and 16 event kinds
   validEvent({ ...event('read'), detail: {} });
   validEvent({ ...event('round-complete'), detail: { sectionsRead: 3 } });
   validEvent({ ...event('correction'), detail: { correctsEventId: 'e0', reason: 'tap' } });
+});
+
+test('2.22.0 back-compat: every 2.20.0 and 2.21.0 example and event still validates, with none of the new fields', () => {
+  assert.equal(Object.keys(EXAMPLES_2_21).length, 13);
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES, ...EXAMPLES_2_21 })) valid(file, def, example(name));
+  for (const name of NEW_EVENT_EXAMPLES) validEvent(example(name));
+  for (const kind of KINDS.filter((k) => k !== 'activity-done')) validEvent(event(kind));
+  // an answer with none of the new detail fields, the minimal 2.20.0 shape
+  validEvent({ ...event('answer'), detail: { questionId: 'q1', attempt: 1 } });
+});
+
+test('2.22.0 events: answer carries optional mixUpId and newCase', () => {
+  validEvent(example('event-answer-mixup'));
+  const e = example('event-answer-mixup');
+  assert.equal(e.detail.mixUpId, 's2-mix1');
+  for (const bad of [7, '', ['s2-mix1']]) { const x = event('answer'); x.detail.mixUpId = bad; invalidEvent(x); }
+  const nc = event('answer'); nc.detail.newCase = 'yes'; invalidEvent(nc);
+  const nc2 = event('answer'); nc2.detail.newCase = false; validEvent(nc2);
+  const props = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventAnswer.properties.detail.properties;
+  assert.match(props.mixUpId.description, /Deployment order/);
+  assert.match(props.mixUpId.description, /does not read it yet/);
+  invalidEvent(invalidExample('answer-mixup-id-not-string'));
+  // a correction may replace an answer's mix-up id
+  const c = example('event-correction-replacement'); c.detail.replacement = { targetKind: 'answer', detail: { mixUpId: 's2-mix1' } }; validEvent(c);
+});
+
+test('2.22.0 events: activity-done is the parent actor only, ids only, idempotent by eventId', () => {
+  const e = example('event-activity-done');
+  assert.equal(e.kind, 'activity-done');
+  validEvent(e);
+  const noLanguages = example('event-activity-done'); delete noLanguages.detail.languages; validEvent(noLanguages);
+  // the student actor, and a free-text or photo field, are rejected
+  invalidEvent(invalidExample('activity-done-student-actor'));
+  invalidEvent(invalidExample('activity-done-extra-fields'));
+  invalidEvent(invalidExample('activity-done-no-round'));
+  const student = example('event-activity-done'); student.actor = 'student'; invalidEvent(student);
+  const teacher = example('event-activity-done'); teacher.actor = 'teacher'; invalidEvent(teacher);
+  for (const field of ['activityId']) { const x = example('event-activity-done'); delete x.detail[field]; invalidEvent(x); }
+  const noSection = example('event-activity-done'); delete noSection.sectionId; invalidEvent(noSection);
+  for (const extra of ['photo', 'text', 'note', 'doneOn']) { const x = example('event-activity-done'); x.detail[extra] = 'x'; invalidEvent(x); }
+  const badLang = example('event-activity-done'); badLang.detail.languages = ['fr']; invalidEvent(badLang);
+  const dup = example('event-activity-done'); dup.detail.languages = ['kn', 'kn']; invalidEvent(dup);
+  const emptyLang = example('event-activity-done'); emptyLang.detail.languages = []; invalidEvent(emptyLang);
+  const wrongDetail = example('event-activity-done'); wrongDetail.detail = event('review-done').detail; invalidEvent(wrongDetail);
+  const description = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventActivityDone.description;
+  assert.match(description, /PARENT actor only/);
+  assert.match(description, /idempotent by `eventId`/);
+  assert.match(description, /Deployment order/);
+  assert.match(description, /rejects this kind/);
+  // intake accepts it inside a batch
+  valid('progress-api', 'EventIntakeRequest', { events: [event('read'), example('event-activity-done')] });
+  // a correction may replace an activity-done's languages
+  const c = example('event-correction-replacement'); c.detail.replacement = { targetKind: 'activity-done', detail: { languages: ['en'] } }; validEvent(c);
 });
 
 test('events: sectionIndex is an integer of at least 1 on read and listen only', () => {

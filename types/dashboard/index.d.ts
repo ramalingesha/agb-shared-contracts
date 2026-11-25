@@ -50,14 +50,6 @@ export type DashboardId5 = string;
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
 export type DashboardId6 = string;
-export type ReviewItemType =
-  | 'help-request'
-  | 'teach-back-request'
-  | 'question-note'
-  | 'new-weak-spot'
-  | 'round-finished'
-  | 'weekly-plan-check'
-  | 'new-notes';
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
@@ -66,23 +58,6 @@ export type DashboardId7 = string;
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
 export type DashboardId8 = string;
-export type EventKind =
-  | 'read'
-  | 'listen'
-  | 'revisit'
-  | 'answer'
-  | 'reveal'
-  | 'self-check'
-  | 'teach-back'
-  | 'revision'
-  | 'round-start'
-  | 'round-complete'
-  | 'note'
-  | 'buddy-question'
-  | 'switch'
-  | 'help-request'
-  | 'review-done'
-  | 'correction';
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
@@ -103,6 +78,14 @@ export type DashboardId12 = string;
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
 export type DashboardId13 = string;
+export type ReviewItemType =
+  | 'help-request'
+  | 'teach-back-request'
+  | 'question-note'
+  | 'new-weak-spot'
+  | 'round-finished'
+  | 'weekly-plan-check'
+  | 'new-notes';
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
@@ -111,6 +94,24 @@ export type DashboardId14 = string;
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
 export type DashboardId15 = string;
+export type EventKind =
+  | 'read'
+  | 'listen'
+  | 'revisit'
+  | 'answer'
+  | 'reveal'
+  | 'self-check'
+  | 'teach-back'
+  | 'revision'
+  | 'round-start'
+  | 'round-complete'
+  | 'note'
+  | 'buddy-question'
+  | 'switch'
+  | 'help-request'
+  | 'review-done'
+  | 'activity-done'
+  | 'correction';
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
@@ -179,6 +180,34 @@ export type DashboardId31 = string;
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
 export type DashboardId32 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId33 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId34 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId35 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId36 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId37 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId38 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId39 = string;
 export type LadderLabel = 'Met' | 'Tried' | 'Gets it' | 'Can explain' | 'Remembers' | 'Can use it';
 /**
  * 1 Met, 2 Tried, 3 Gets it, 4 Can explain, 5 Remembers, 6 Can use it (labels: LADDER_LABELS in dashboard/index.js).
@@ -203,6 +232,7 @@ export type LearningEvent =
   | EventSwitch
   | EventHelpRequest
   | EventReviewDone
+  | EventActivityDone
   | EventCorrection;
 export type WeakSpotCause =
   | 'missing-foundation'
@@ -237,6 +267,7 @@ export interface DashboardContracts {
   SwitchStudentResponse?: SwitchStudentResponse;
   SwitchToParentResponse?: SwitchToParentResponse;
   UpdateStudentProfileRequest?: UpdateStudentProfileRequest;
+  EventActivityDone?: EventActivityDone;
   EventAnswer?: EventAnswer;
   EventBuddyQuestion?: EventBuddyQuestion;
   EventCorrection?: EventCorrection;
@@ -440,11 +471,50 @@ export interface UpdateStudentProfileRequest {
   avatar?: string;
 }
 /**
+ * An `activity-done` event (2.22.0, AGB-1099): the parent confirms the family did a home activity ("We did it", behind the parent gate). Rules: PARENT actor only (`actor` is the constant `parent`; the server also refuses a student token); ids only, no photo, no free text and no field about the child (additionalProperties is false); idempotent by `eventId`; `sectionId` and `round` are required. The date is the event's `at`. A mistaken tap is fixed with a `correction` event. PLANNED: the progress service up to 2.21 rejects this kind (EVENT_INVALID); rules v1.1 will count it as step 6 evidence once the child is at step 4 or more, and the server will check `activityId` against the chapter context. Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field.
+ */
+export interface EventActivityDone {
+  eventId: DashboardId1;
+  profileId: DashboardId2;
+  knowledgeId?: DashboardId;
+  contentVersion?: string;
+  /**
+   * Required for this kind: the learning round the parent confirmed it in.
+   */
+  round: number;
+  sectionId: DashboardId3;
+  blockId?: DashboardId4;
+  kind: 'activity-done';
+  language?: DashboardLanguage;
+  style?: string;
+  /**
+   * Parent actor only. The progress service refuses this kind from a student actor or a student token (the same rule it applies to teach-back and review-done). The child cannot confirm.
+   */
+  actor: 'parent';
+  actorId: DashboardId;
+  at: DashboardTime;
+  detail: {
+    activityId: DashboardId5;
+    /**
+     * Optional: the language(s) the family used for the activity. Never free text.
+     *
+     * @minItems 1
+     * @maxItems 5
+     */
+    languages?:
+      | [DashboardLanguage]
+      | [DashboardLanguage, DashboardLanguage]
+      | [DashboardLanguage, DashboardLanguage, DashboardLanguage]
+      | [DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage]
+      | [DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage];
+  };
+}
+/**
  * A `answer` event.
  */
 export interface EventAnswer {
-  eventId: DashboardId1;
-  profileId: DashboardId2;
+  eventId: DashboardId6;
+  profileId: DashboardId7;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -467,14 +537,19 @@ export interface EventAnswer {
      * The answer was opened before the child tried.
      */
     openedFirst?: boolean;
+    mixUpId?: DashboardId8;
+    /**
+     * The question is a new-case question (ladder step 6), copied from the question block's `newCase`. Optional and redundant with the chapter context; it never decides alone. PLANNED: the progress service does not read it yet. Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field.
+     */
+    newCase?: boolean;
   };
 }
 /**
  * A `buddy-question` event.
  */
 export interface EventBuddyQuestion {
-  eventId: DashboardId3;
-  profileId: DashboardId4;
+  eventId: DashboardId9;
+  profileId: DashboardId10;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -499,8 +574,8 @@ export interface EventBuddyQuestion {
  * A `correction` event. Rules the progress service applies today: (1) it may only name an earlier event of the same profile (lower seq). (2) A student may not correct a read, listen, revisit, round-start or round-complete event (the correction is ignored and counted: a child cannot lower their own furthest point or round progress); any other kind may be corrected by anyone with access. (3) Chains: corrections are judged from the latest seq down. A correction is active unless a later active correction names it, so correcting a correction restores the original and correcting that voids it again. Arrival order never matters. An active correction voids the named event for derived state (the original stays in the log). PLANNED, not applied by the service yet (it only voids): a narrower per-actor rule (a student may correct only answer, reveal, self-check, note and buddy-question; teach-back, revision and review-done only by a parent), and `replacement` (below); when applied, the active correction with the highest seq naming an event decides its detail, with no merging of several corrections.
  */
 export interface EventCorrection {
-  eventId: DashboardId5;
-  profileId: DashboardId6;
+  eventId: DashboardId11;
+  profileId: DashboardId12;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -561,6 +636,11 @@ export interface EventCorrection {
              * The answer was opened before the child tried.
              */
             openedFirst?: boolean;
+            mixUpId?: DashboardId13;
+            /**
+             * The question is a new-case question (ladder step 6), copied from the question block's `newCase`. Optional and redundant with the chapter context; it never decides alone. PLANNED: the progress service does not read it yet. Deployment order: publish contracts, then upgrade the progress service to 2.22, then ship an app that sends it. The progress service up to 2.21 rejects an unknown detail field (EVENT_INVALID). From 2.22 the schema accepts it; whether the service reads it is stated per field.
+             */
+            newCase?: boolean;
           };
         }
       | {
@@ -1543,6 +1623,22 @@ export interface EventCorrection {
             reviewItemId?: DashboardId;
             reviewType?: ReviewItemType;
           };
+        }
+      | {
+          targetKind: 'activity-done';
+          detail: {
+            activityId?: DashboardId;
+            /**
+             * @minItems 1
+             * @maxItems 5
+             */
+            languages?:
+              | [DashboardLanguage]
+              | [DashboardLanguage, DashboardLanguage]
+              | [DashboardLanguage, DashboardLanguage, DashboardLanguage]
+              | [DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage]
+              | [DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage];
+          };
         };
   };
 }
@@ -1550,8 +1646,8 @@ export interface EventCorrection {
  * A `help-request` event.
  */
 export interface EventHelpRequest {
-  eventId: DashboardId7;
-  profileId: DashboardId8;
+  eventId: DashboardId14;
+  profileId: DashboardId15;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1571,8 +1667,8 @@ export interface EventHelpRequest {
  * A `listen` event.
  */
 export interface EventListen {
-  eventId: DashboardId9;
-  profileId: DashboardId10;
+  eventId: DashboardId16;
+  profileId: DashboardId17;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1598,8 +1694,8 @@ export interface EventListen {
  * A `note` event.
  */
 export interface EventNote {
-  eventId: DashboardId11;
-  profileId: DashboardId12;
+  eventId: DashboardId18;
+  profileId: DashboardId19;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1624,8 +1720,8 @@ export interface EventNote {
  * A `read` event.
  */
 export interface EventRead {
-  eventId: DashboardId13;
-  profileId: DashboardId14;
+  eventId: DashboardId20;
+  profileId: DashboardId21;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1650,8 +1746,8 @@ export interface EventRead {
  * A `reveal` event.
  */
 export interface EventReveal {
-  eventId: DashboardId15;
-  profileId: DashboardId16;
+  eventId: DashboardId22;
+  profileId: DashboardId23;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1676,8 +1772,8 @@ export interface EventReveal {
  * A `review-done` event.
  */
 export interface EventReviewDone {
-  eventId: DashboardId17;
-  profileId: DashboardId18;
+  eventId: DashboardId24;
+  profileId: DashboardId25;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1698,8 +1794,8 @@ export interface EventReviewDone {
  * A `revision` event.
  */
 export interface EventRevision {
-  eventId: DashboardId19;
-  profileId: DashboardId20;
+  eventId: DashboardId26;
+  profileId: DashboardId27;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1720,8 +1816,8 @@ export interface EventRevision {
  * A `revisit` event.
  */
 export interface EventRevisit {
-  eventId: DashboardId21;
-  profileId: DashboardId22;
+  eventId: DashboardId28;
+  profileId: DashboardId29;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1741,8 +1837,8 @@ export interface EventRevisit {
  * A `round-complete` event. Who may send it: the student actor only (`actor` = student, with the student's own token). The server verifies the claim (sections read, and practice when known) and ignores and counts a round-complete from any other actor or that fails the check; a parent or the system never completes a round for the child.
  */
 export interface EventRoundComplete {
-  eventId: DashboardId23;
-  profileId: DashboardId24;
+  eventId: DashboardId30;
+  profileId: DashboardId31;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1770,8 +1866,8 @@ export interface EventRoundComplete {
  * A `round-start` event.
  */
 export interface EventRoundStart {
-  eventId: DashboardId25;
-  profileId: DashboardId26;
+  eventId: DashboardId32;
+  profileId: DashboardId33;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1789,8 +1885,8 @@ export interface EventRoundStart {
  * A `self-check` event.
  */
 export interface EventSelfCheck {
-  eventId: DashboardId27;
-  profileId: DashboardId28;
+  eventId: DashboardId34;
+  profileId: DashboardId35;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1810,8 +1906,8 @@ export interface EventSelfCheck {
  * A `switch` event.
  */
 export interface EventSwitch {
-  eventId: DashboardId29;
-  profileId: DashboardId30;
+  eventId: DashboardId36;
+  profileId: DashboardId37;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1833,8 +1929,8 @@ export interface EventSwitch {
  * A `teach-back` event.
  */
 export interface EventTeachBack {
-  eventId: DashboardId31;
-  profileId: DashboardId32;
+  eventId: DashboardId38;
+  profileId: DashboardId39;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;

@@ -1,0 +1,26 @@
+{
+  "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0018",
+  "profileId": "usr_student_01",
+  "knowledgeId": "k-its-all-a-cycle",
+  "contentVersion": "2026-11-20.1",
+  "round": 1,
+  "sectionId": "s2",
+  "blockId": "s2-n1",
+  "kind": "answer",
+  "language": "en",
+  "style": "simple",
+  "actor": "student",
+  "actorId": "usr_student_01",
+  "at": "2026-11-22T09:30:00+05:30",
+  "detail": {
+    "questionId": "s2-bank3",
+    "questionType": "mcq",
+    "response": "Eggs hatch only in water",
+    "correct": false,
+    "attempt": 1,
+    "seconds": 12,
+    "openedFirst": false,
+    "mixUpId": 7,
+    "newCase": true
+  }
+}

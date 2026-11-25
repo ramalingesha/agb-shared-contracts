@@ -1,0 +1,10 @@
+{
+  "id": "s2-bank4",
+  "type": "qa",
+  "sectionId": "s2",
+  "kind": "true-false",
+  "text": "True or false: an egg needs a mother's body to hatch.",
+  "answer": "False. It needs steady warmth; a warm box can give it.",
+  "mixUpMatches": [{ "option": "true", "mixUpId": "s2-mix1" }],
+  "tests": "remembers"
+}

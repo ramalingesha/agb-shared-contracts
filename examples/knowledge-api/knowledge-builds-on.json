@@ -1,0 +1,44 @@
+{
+  "id": "c5-science-life-cycles",
+  "title": "Life cycles",
+  "version": 3,
+  "sourceLanguage": "en",
+  "explanations": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "form": "text",
+      "origin": "master",
+      "author": {
+        "id": "gnanora",
+        "name": "Gnanora",
+        "kind": "platform"
+      },
+      "anchoring": "full",
+      "languages": [
+        "en"
+      ],
+      "styles": [
+        "simple"
+      ]
+    }
+  ],
+  "prerequisites": [
+    "Living and non-living things"
+  ],
+  "buildsOn": [
+    "c4-science-its-all-a-cycle",
+    "c3-science-living-things"
+  ],
+  "sections": [
+    {
+      "id": "s1",
+      "title": "The egg",
+      "expectedSeconds": 95
+    },
+    {
+      "id": "s2",
+      "expectedSeconds": 140
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "s2-bank3",
+  "type": "qa",
+  "sectionId": "s2",
+  "kind": "mcq",
+  "text": "A bird keeps its eggs under its body. What is the main reason?",
+  "options": ["To hide them from other birds", "To keep them warm until they hatch", "To make the shells harder", "To keep them dry in the rain"],
+  "answer": "To keep them warm until they hatch.",
+  "mixUpMatches": [{ "option": 0, "mixUpId": "s2-mix1" }, { "option": 2, "mixUpId": "s2-mix1" }],
+  "tests": "gets-it",
+  "sectionRefs": ["s2"]
+}
