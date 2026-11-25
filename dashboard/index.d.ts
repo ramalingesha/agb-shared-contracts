@@ -1,4 +1,4 @@
-import type { ProfileKind, ProfileTokenClaims } from '../types/dashboard';
+import type { GuardianAgeBand, ProfileKind, ProfileTokenClaims } from '../types/dashboard';
 
 /** Largest number of events accepted in one POST /events request. */
 export const BATCH_MAX: 50;
@@ -12,3 +12,5 @@ export const LADDER_LABELS: readonly ['Met', 'Tried', 'Gets it', 'Can explain', 
 export function profileOf(claims: ProfileTokenClaims | null | undefined): ProfileKind;
 /** True only when the token carries profile = 'student'. */
 export function isStudentToken(claims: ProfileTokenClaims | null | undefined): boolean;
+/** The two-band age group (under13 | 13to17) for a four-band `ageBand`; 11-13 maps to under13. */
+export function guardianAgeBandOf(ageBand: string | null | undefined): GuardianAgeBand | undefined;

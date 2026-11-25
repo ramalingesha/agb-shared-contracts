@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.0] - 2026-11-25
+
+### Added (AGB-1096 contracts follow-ups of the progress service, epic AGB-1066; every new field is optional and nothing is removed or renamed, so every 2.20.0 event, request and response still validates)
+- **`read` / `listen` detail**: optional `sectionIndex` (integer >= 1, 1-based position of the section in its chapter). When absent the server derives it from a `sectionId` of exactly `s<number>`; when present it wins.
+- **`round-complete` detail**: `practiceTotal` (integer >= 0) next to the existing `sectionsTotal`, and the rule for who may send it: the student actor only; the server verifies the claim and ignores and counts any other.
+- **`correction` detail**: optional `replacement` = `{ targetKind, detail }`, where `detail` holds only fields the target kind's own detail allows (partial; any kind except `correction`). Documented rules: an earlier event only; a student may not correct read, listen, revisit, round-start or round-complete (only a parent, or the system server-side, may correct those); chains judged from the latest seq down (correcting a correction restores the original); the highest-seq active correction naming an event decides its detail.
+- **Response shapes** (new `schemas/dashboard/progress-reads.schema.json`): `MapResponse`, `TopicResponse`, `HomeResponse`, `MyLearningResponse` (with `noteKeys`, `rememberedWithoutExplanation`, `stretchRight`, the `learning.state.*` keys, steps 0 to 6 as `UnderstandingStep`) and `ExportResponse`. `ChangesResponse` (`{ changes, cursor, hasMore }`) already existed in `progress-api.schema.json` and is unchanged.
+- **`dashboard-errors.json`**: `EXPORT_TOO_LARGE` (413) and `INVALID_PARAMETER` (400).
+- **Guardians**: `GuardianAgeBand` (`under13` | `13to17`, what user-management stores), optional `ageBandGuardian` on `StudentProfile` and `CreateStudentProfileRequest`, `guardianAgeBandOf(ageBand)` in `dashboard/index.js` (5-7, 8-10, 11-13 -> under13; 14-17 -> 13to17), and the claim shapes `ClaimStudentRequest`, `ClaimableStudentsResponse`, `ClaimCodeResponse`, plus `ParentGateVerifyResult` (`{ ok, elevatedUntil }`, what user-management answers to gate/verify today).
+- Examples for every new field and shape in `examples/dashboard/`, invalid examples in `examples/dashboard/invalid/`, and tests (including a back-compat test that every 2.20.0 example still validates).
+
+### Changed (documentation only)
+- `teach-back.detail.keyWordsInEnglish` description now says what the plan and the server mean: true = the child said the key English words (understanding in the home language counts), false = the child did NOT say them (a language-barrier signal when explaining in a non-English language), absent = unknown (counts as understood). The field name and type are unchanged; the 2.20.0 text said the opposite.
+
 ## [2.20.0] - 2026-11-22
 
 ### Added (AGB-1084 dashboard contracts for AGB-904 guardian profiles and AGB-1067 progress service; all new or optional, nothing removed, so everything valid before still is)

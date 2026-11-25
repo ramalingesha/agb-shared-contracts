@@ -1,0 +1,77 @@
+{
+  "studentId": "usr_student_01",
+  "rulesVersion": "understanding-v1",
+  "chapters": [
+    {
+      "knowledgeId": "k-its-all-a-cycle",
+      "rounds": [
+        {
+          "round": 1,
+          "sectionsRead": 8,
+          "sectionsTotal": 8,
+          "questionsAnswered": 12,
+          "rightFirstTime": 9
+        }
+      ],
+      "sections": [
+        {
+          "sectionId": "s1",
+          "step": 4,
+          "stepKey": "learning.step.4",
+          "stateKey": "learning.state.going_well",
+          "nextSteps": [
+            {
+              "kind": "stretch-question",
+              "knowledgeId": "k-its-all-a-cycle",
+              "sectionId": "s1"
+            }
+          ]
+        },
+        {
+          "sectionId": "s2",
+          "step": 3,
+          "stepKey": "learning.step.3",
+          "stateKey": "learning.state.climbing",
+          "nextSteps": [
+            {
+              "kind": "teach-back"
+            }
+          ]
+        },
+        {
+          "sectionId": "s3",
+          "step": 2,
+          "stepKey": "learning.step.2",
+          "stateKey": "learning.state.look_again",
+          "nextSteps": [
+            {
+              "kind": "read-section",
+              "knowledgeId": "k-its-all-a-cycle",
+              "sectionId": "s3"
+            }
+          ]
+        },
+        {
+          "sectionId": "s4",
+          "step": 2,
+          "stepKey": "learning.step.2",
+          "stateKey": "learning.state.not_yet",
+          "nextSteps": [
+            {
+              "kind": "another-way",
+              "knowledgeId": "k-its-all-a-cycle",
+              "sectionId": "s4"
+            }
+          ]
+        },
+        {
+          "sectionId": "s5",
+          "step": 0,
+          "stepKey": "learning.step.0",
+          "stateKey": "learning.state.not_started",
+          "nextSteps": []
+        }
+      ]
+    }
+  ]
+}

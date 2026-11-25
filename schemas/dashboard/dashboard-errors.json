@@ -41,6 +41,16 @@
       "code": "CURSOR_EXPIRED",
       "httpStatus": 410,
       "description": "The changes cursor is older than the service keeps; the device must reload positions."
+    },
+    {
+      "code": "EXPORT_TOO_LARGE",
+      "httpStatus": 413,
+      "description": "The parent's data export is larger than the service builds in one request (more than 20,000 events); ask support for a file."
+    },
+    {
+      "code": "INVALID_PARAMETER",
+      "httpStatus": 400,
+      "description": "A path or query parameter is malformed (knowledgeId, sectionId, studentId or tz). Checked after access; the value is never echoed."
     }
   ]
 }

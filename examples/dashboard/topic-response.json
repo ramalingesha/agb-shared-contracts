@@ -1,0 +1,75 @@
+{
+  "studentId": "usr_student_01",
+  "knowledgeId": "k-its-all-a-cycle",
+  "sectionId": "s2",
+  "rulesVersion": "understanding-v1",
+  "step": 4,
+  "stepKey": "ladder.step.4",
+  "reasonKey": "ladder.can_explain.reason",
+  "stateKey": "state.strength",
+  "cause": null,
+  "causeReasonKey": null,
+  "strength": true,
+  "difficulty": false,
+  "rememberedWithoutExplanation": false,
+  "stretchRight": true,
+  "noteKeys": [
+    "progress.stretch_right_not_counted_yet"
+  ],
+  "evidence": [
+    {
+      "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0010",
+      "kind": "answer",
+      "actor": "student",
+      "at": "2026-11-22T09:30:00+05:30",
+      "round": 1,
+      "labelKey": "evidence.answer.right_first_time"
+    },
+    {
+      "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0011",
+      "kind": "teach-back",
+      "actor": "parent",
+      "at": "2026-11-22T20:10:00+05:30",
+      "round": 1,
+      "labelKey": "evidence.teach_back.understood"
+    }
+  ],
+  "nextSteps": [
+    {
+      "kind": "stretch-question",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2"
+    },
+    {
+      "kind": "revision",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2"
+    }
+  ],
+  "nextCheckAt": "2026-11-30T09:00:00+05:30",
+  "intervalDays": 7,
+  "understoodAt": "2026-11-22T20:10:00+05:30",
+  "habits": {
+    "retriesEndedRight": 1,
+    "revisits": 2,
+    "revisionsKept": 1,
+    "revisionsOnTime": 1,
+    "buddyQuestions": 1,
+    "repeatedBuddyQuestions": 0,
+    "helpRequests": 0,
+    "switches": 1,
+    "notes": 2,
+    "selfChecks": 1,
+    "peeks": 0
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "sectionsRead": 8,
+      "sectionsTotal": 8,
+      "questionsAnswered": 12,
+      "rightFirstTime": 9,
+      "teachBacksUnderstood": 2
+    }
+  ]
+}

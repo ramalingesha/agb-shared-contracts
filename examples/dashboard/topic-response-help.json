@@ -1,0 +1,64 @@
+{
+  "studentId": "usr_student_01",
+  "knowledgeId": "k-its-all-a-cycle",
+  "sectionId": "s3",
+  "rulesVersion": "understanding-v1",
+  "step": 3,
+  "stepKey": "ladder.step.3",
+  "reasonKey": "cause.language_barrier.reason",
+  "stateKey": "state.needs_help",
+  "cause": "language-barrier",
+  "causeReasonKey": "cause.language_barrier.reason",
+  "strength": false,
+  "difficulty": true,
+  "rememberedWithoutExplanation": true,
+  "stretchRight": false,
+  "noteKeys": [
+    "progress.remembered_not_explained"
+  ],
+  "evidence": [
+    {
+      "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0011",
+      "kind": "teach-back",
+      "actor": "parent",
+      "at": "2026-11-22T20:10:00+05:30",
+      "round": 1,
+      "labelKey": "evidence.teach_back.understood"
+    }
+  ],
+  "nextSteps": [
+    {
+      "kind": "switch-language",
+      "to": "en"
+    },
+    {
+      "kind": "teach-back"
+    }
+  ],
+  "nextCheckAt": null,
+  "intervalDays": null,
+  "understoodAt": null,
+  "habits": {
+    "retriesEndedRight": 0,
+    "revisits": 1,
+    "revisionsKept": 0,
+    "revisionsOnTime": 0,
+    "buddyQuestions": 2,
+    "repeatedBuddyQuestions": 1,
+    "helpRequests": 1,
+    "switches": 0,
+    "notes": 1,
+    "selfChecks": 0,
+    "peeks": 1
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "sectionsRead": 8,
+      "sectionsTotal": 8,
+      "questionsAnswered": 12,
+      "rightFirstTime": 9,
+      "teachBacksUnderstood": 2
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "studentId": "usr_student_01",
+  "rulesVersion": "understanding-v1",
+  "win": {
+    "knowledgeId": "k-its-all-a-cycle",
+    "sectionId": "s1",
+    "step": 4,
+    "reasonKey": "ladder.can_explain.reason",
+    "cause": null,
+    "causeReasonKey": null,
+    "nextStep": {
+      "kind": "stretch-question",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s1"
+    },
+    "evidenceCount": 3
+  },
+  "helpWith": {
+    "knowledgeId": "k-its-all-a-cycle",
+    "sectionId": "s3",
+    "step": 3,
+    "reasonKey": "cause.language_barrier.reason",
+    "cause": "language-barrier",
+    "causeReasonKey": "cause.language_barrier.reason",
+    "nextStep": {
+      "kind": "switch-language",
+      "to": "en"
+    },
+    "evidenceCount": 2
+  },
+  "next": {
+    "kind": "revision",
+    "knowledgeId": "k-its-all-a-cycle",
+    "sectionId": "s2"
+  },
+  "revisionDueToday": 1,
+  "tonightPlan": [
+    {
+      "kind": "revision",
+      "minutes": 5,
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2"
+    },
+    {
+      "kind": "switch-language",
+      "minutes": 10,
+      "to": "en"
+    },
+    {
+      "kind": "stretch-question",
+      "minutes": 5,
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s1"
+    }
+  ],
+  "pendingReviews": {
+    "available": false,
+    "count": 0,
+    "oldestDueAt": null
+  }
+}

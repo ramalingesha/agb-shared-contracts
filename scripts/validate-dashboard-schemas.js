@@ -77,6 +77,25 @@ const EXAMPLES = {
   'review-rhythm': ['progress-api', 'ReviewRhythm'],
   'catch-up-response': ['progress-api', 'CatchUpResponse'],
 };
+// 2.21.0 (AGB-1096): new examples. Event fixtures are listed in NEW_EVENT_EXAMPLES.
+const EXAMPLES_2_21 = {
+  'map-response': ['progress-reads', 'MapResponse'],
+  'topic-response': ['progress-reads', 'TopicResponse'],
+  'topic-response-help': ['progress-reads', 'TopicResponse'],
+  'home-response': ['progress-reads', 'HomeResponse'],
+  'my-learning-response': ['progress-reads', 'MyLearningResponse'],
+  'export-response': ['progress-reads', 'ExportResponse'],
+  'claim-student-request': ['guardian', 'ClaimStudentRequest'],
+  'claim-student-request-code': ['guardian', 'ClaimStudentRequest'],
+  'claimable-students-response': ['guardian', 'ClaimableStudentsResponse'],
+  'claim-code-response': ['guardian', 'ClaimCodeResponse'],
+  'parent-gate-verify-result': ['guardian', 'ParentGateVerifyResult'],
+  'student-profile-guardian-band': ['guardian', 'StudentProfile'],
+  'create-student-profile-request-guardian-band': ['guardian', 'CreateStudentProfileRequest'],
+};
+const NEW_EVENT_EXAMPLES = ['event-read-section-index', 'event-listen-section-index', 'event-round-complete-totals', 'event-correction-replacement', 'event-teach-back-no-key-words'];
+const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
+const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
 const event = (kind) => example(`event-${kind}`);
 const validEvent = (e) => valid('learning-event', 'LearningEvent', e);
 const invalidEvent = (e) => invalid('learning-event', 'LearningEvent', e);
@@ -84,7 +103,7 @@ const invalidEvent = (e) => invalid('learning-event', 'LearningEvent', e);
 console.log('Dashboard contracts');
 
 test('every schema compiles, declares draft-07 and every definition has a title', () => {
-  assert.equal(schemaFiles.length, 5);
+  assert.equal(schemaFiles.length, 6);
   for (const file of schemaFiles) {
     const schema = readJson(path.join(SCHEMA_DIR, file));
     assert.equal(schema.$schema, 'http://json-schema.org/draft-07/schema#', file);
@@ -97,8 +116,10 @@ test('every schema compiles, declares draft-07 and every definition has a title'
 
 test('every listed example validates against its definition', () => {
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
-  const listed = new Set([...Object.keys(EXAMPLES), ...KINDS.map((k) => `event-${k}`)]);
-  const onDisk = fs.readdirSync(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
+  for (const [name, [file, def]] of Object.entries(EXAMPLES_2_21)) valid(file, def, example(name));
+  for (const name of NEW_EVENT_EXAMPLES) validEvent(example(name));
+  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...NEW_EVENT_EXAMPLES, ...KINDS.map((k) => `event-${k}`)]);
+  const onDisk = jsonFiles(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
   assert.deepEqual(onDisk.filter((n) => !listed.has(n)), [], 'example without a test mapping');
   assert.deepEqual([...listed].filter((n) => !onDisk.includes(n)), [], 'mapping without an example');
 });
@@ -251,12 +272,103 @@ test('dashboard-errors: unique codes cover the spec and carry an HTTP status', (
   const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes;
   const codes = list.map((c) => c.code);
   assert.equal(new Set(codes).size, codes.length);
-  for (const needed of ['PIN_LOCKED', 'CONSENT_REQUIRED', 'STUDENT_SCOPE_ONLY', 'CONSENT_NOT_ACTIVE', 'NOT_GUARDIAN', 'EVENT_INVALID', 'BATCH_TOO_LARGE', 'CURSOR_EXPIRED']) assert.ok(codes.includes(needed), needed);
+  for (const needed of ['EXPORT_TOO_LARGE', 'INVALID_PARAMETER', 'PIN_LOCKED', 'CONSENT_REQUIRED', 'STUDENT_SCOPE_ONLY', 'CONSENT_NOT_ACTIVE', 'NOT_GUARDIAN', 'EVENT_INVALID', 'BATCH_TOO_LARGE', 'CURSOR_EXPIRED']) assert.ok(codes.includes(needed), needed);
   for (const c of list) {
     assert.match(c.code, /^[A-Z][A-Z_]+$/);
     assert.ok(Number.isInteger(c.httpStatus) && c.httpStatus >= 400 && c.httpStatus < 600, c.code);
     assert.ok(c.description.length > 10, c.code);
   }
+});
+
+const invalidExample = (name) => structuredClone(readJson(path.join(INVALID_DIR, `${name}.json`)));
+
+test('2.21.0 back-compat: every 2.20.0 example (all 18 shapes and 16 event kinds) still validates', () => {
+  assert.equal(Object.keys(EXAMPLES).length, 18);
+  for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
+  for (const kind of KINDS) validEvent(event(kind));
+  // the minimal read and listen and round-complete shapes of 2.20.0 stay valid without any new field
+  validEvent({ ...event('read'), detail: {} });
+  validEvent({ ...event('round-complete'), detail: { sectionsRead: 3 } });
+  validEvent({ ...event('correction'), detail: { correctsEventId: 'e0', reason: 'tap' } });
+});
+
+test('events: sectionIndex is an integer of at least 1 on read and listen only', () => {
+  validEvent(example('event-read-section-index'));
+  validEvent(example('event-listen-section-index'));
+  for (const bad of [0, -1, 1.5, '2']) {
+    const r = event('read'); r.detail.sectionIndex = bad; invalidEvent(r);
+    const l = event('listen'); l.detail.sectionIndex = bad; invalidEvent(l);
+  }
+  invalidEvent(invalidExample('read-section-index-zero'));
+  const answer = event('answer'); answer.detail.sectionIndex = 1; invalidEvent(answer);
+});
+
+test('events: round-complete sectionsTotal and practiceTotal are integers of at least 0', () => {
+  validEvent(example('event-round-complete-totals'));
+  for (const f of ['sectionsTotal', 'practiceTotal']) {
+    for (const bad of [-1, 2.5, '3']) { const e = event('round-complete'); e.detail[f] = bad; invalidEvent(e); }
+    const zero = event('round-complete'); zero.detail[f] = 0; validEvent(zero);
+  }
+  invalidEvent(invalidExample('round-complete-negative-total'));
+  const description = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventRoundComplete.description;
+  assert.match(description, /student actor only/);
+});
+
+test('events: correction replacement allows only the target kind\'s detail fields', () => {
+  validEvent(example('event-correction-replacement'));
+  validEvent(event('correction'));
+  const base = () => example('event-correction-replacement');
+  const noKind = base(); delete noKind.detail.replacement.targetKind; invalidEvent(noKind);
+  const correctionTarget = base(); correctionTarget.detail.replacement = { targetKind: 'correction', detail: {} }; invalidEvent(correctionTarget);
+  const wrongField = base(); wrongField.detail.replacement.detail = { seconds: 3 }; invalidEvent(wrongField);
+  invalidEvent(invalidExample('correction-replacement-field'));
+  const wrongValue = base(); wrongValue.detail.replacement.detail.outcome = 'great'; invalidEvent(wrongValue);
+  const extra = base(); extra.detail.replacement.name = 'x'; invalidEvent(extra);
+  // a replacement is partial: no required field of the target kind is needed
+  const partial = base(); partial.detail.replacement = { targetKind: 'answer', detail: { correct: true } }; validEvent(partial);
+  const read = base(); read.detail.replacement = { targetKind: 'read', detail: { sectionIndex: 3 } }; validEvent(read);
+  const description = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventCorrection.description;
+  assert.match(description, /a student may not correct a read, listen, revisit, round-start or round-complete/);
+  assert.match(description, /latest seq down/);
+});
+
+test('teach-back keyWordsInEnglish: the field is kept and the description follows the plan', () => {
+  validEvent(example('event-teach-back-no-key-words'));
+  const d = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventTeachBack.properties.detail.properties.keyWordsInEnglish;
+  assert.equal(d.type, 'boolean');
+  assert.match(d.description, /false: the child did NOT say the key English words/);
+  assert.match(d.description, /Absent: unknown, counts as understood/);
+});
+
+test('progress reads: map, topic, home, my-learning and export reject wrong keys and states', () => {
+  const map = example('map-response'); map.chapters[0].sections[0].step = 7; invalid('progress-reads', 'MapResponse', map, 'maximum');
+  const state = invalidExample('map-response-bad-state'); invalid('progress-reads', 'MapResponse', state, 'enum');
+  const topic = example('topic-response'); delete topic.stretchRight; invalid('progress-reads', 'TopicResponse', topic, 'required', 'stretchRight');
+  const cause = example('topic-response'); cause.cause = 'lazy'; invalid('progress-reads', 'TopicResponse', cause);
+  const home = example('home-response'); home.tonightPlan[0].minutes = 0; invalid('progress-reads', 'HomeResponse', home, 'minimum');
+  const mine = example('my-learning-response'); mine.chapters[0].sections[0].stateKey = 'state.strength'; invalid('progress-reads', 'MyLearningResponse', mine, 'enum');
+  const child = example('my-learning-response'); child.chapters[0].rounds[0].teachBacksUnderstood = 1; invalid('progress-reads', 'MyLearningResponse', child, 'additionalProperties');
+  const exp = example('export-response'); delete exp.summaries; invalid('progress-reads', 'ExportResponse', exp, 'required', 'summaries');
+  const states = new Set(example('my-learning-response').chapters[0].sections.map((x) => x.stateKey));
+  assert.equal(states.size, 5, 'my-learning example covers all five learning.state keys');
+});
+
+test('guardians: two-band alias, claim shapes and the age-band mapping helper', () => {
+  assert.deepEqual(readJson(path.join(SCHEMA_DIR, 'guardian.schema.json')).definitions.GuardianAgeBand.enum, ['under13', '13to17']);
+  invalid('guardian', 'StudentProfile', invalidExample('student-profile-guardian-band'), 'enum');
+  invalid('guardian', 'ClaimStudentRequest', invalidExample('claim-student-both-ids'), 'oneOf');
+  const neither = example('claim-student-request'); delete neither.studentId; invalid('guardian', 'ClaimStudentRequest', neither, 'oneOf');
+  const fourBand = example('claim-student-request'); fourBand.ageBand = '8-10'; invalid('guardian', 'ClaimStudentRequest', fourBand, 'enum');
+  assert.deepEqual(['5-7', '8-10', '11-13', '14-17'].map(dashboard.guardianAgeBandOf), ['under13', 'under13', 'under13', '13to17']);
+  assert.equal(dashboard.guardianAgeBandOf('4-6'), undefined);
+  assert.equal(dashboard.guardianAgeBandOf(undefined), undefined);
+  valid('guardian', 'StudentProfile', example('student-profile'));
+});
+
+test('dashboard-errors: statuses of the two new codes', () => {
+  const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes;
+  assert.equal(list.find((c) => c.code === 'EXPORT_TOO_LARGE').httpStatus, 413);
+  assert.equal(list.find((c) => c.code === 'INVALID_PARAMETER').httpStatus, 400);
 });
 
 test('versions: package.json, error-codes.json and api-response-schema.json agree', () => {
@@ -269,7 +381,8 @@ test('no schema or example assumes an OS, a drive letter, a backslash path or an
   const files = [
     ...schemaFiles.map((f) => path.join(SCHEMA_DIR, f)),
     path.join(SCHEMA_DIR, 'dashboard-errors.json'),
-    ...fs.readdirSync(EXAMPLE_DIR).map((f) => path.join(EXAMPLE_DIR, f)),
+    ...jsonFiles(EXAMPLE_DIR).map((f) => path.join(EXAMPLE_DIR, f)),
+    ...jsonFiles(INVALID_DIR).map((f) => path.join(INVALID_DIR, f)),
   ];
   const problems = [];
   const collect = (value, file, keyPath) => {

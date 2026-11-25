@@ -1,0 +1,12 @@
+{
+  "studentId": "usr_student_02",
+  "ageBand": "under13",
+  "consent": {
+    "version": 1,
+    "purposes": [
+      "reading-progress",
+      "learning-events"
+    ]
+  },
+  "claimCode": "X"
+}

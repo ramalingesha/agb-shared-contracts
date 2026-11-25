@@ -1,0 +1,10 @@
+{
+  "claimCode": "K7M2-93QX",
+  "ageBand": "13to17",
+  "consent": {
+    "version": 1,
+    "purposes": [
+      "reading-progress"
+    ]
+  }
+}
