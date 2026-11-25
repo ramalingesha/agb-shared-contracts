@@ -1,0 +1,14 @@
+{
+  "name": "Kavi",
+  "ageBand": "8-10",
+  "language": "kn",
+  "avatar": "owl",
+  "consent": {
+    "version": 1,
+    "purposes": [
+      "reading-progress",
+      "learning-events"
+    ]
+  },
+  "ageBandGuardian": "under13"
+}

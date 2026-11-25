@@ -28,4 +28,16 @@ function isStudentToken(claims) {
   return profileOf(claims) === 'student';
 }
 
-module.exports = { BATCH_MAX, HEADER_PROFILE_ID, HEADER_GUARDIAN_ID, LADDER_LABELS, profileOf, isStudentToken };
+/**
+ * The two-band age group user-management stores for a four-band contract `ageBand`
+ * (`5-7`, `8-10`, `11-13` -> `under13`; `14-17` -> `13to17`). `11-13` maps to `under13`
+ * because the band can hold a 13-year-old and consent is the stricter path. Unknown or absent
+ * input gives `undefined`.
+ */
+function guardianAgeBandOf(ageBand) {
+  if (ageBand === '5-7' || ageBand === '8-10' || ageBand === '11-13') return 'under13';
+  if (ageBand === '14-17') return '13to17';
+  return undefined;
+}
+
+module.exports = { BATCH_MAX, HEADER_PROFILE_ID, HEADER_GUARDIAN_ID, LADDER_LABELS, profileOf, isStudentToken, guardianAgeBandOf };

@@ -1,0 +1,19 @@
+{
+  "id": "usr_student_01",
+  "name": "Kavi",
+  "ageBand": "8-10",
+  "language": "kn",
+  "avatar": "owl",
+  "guardianId": "usr_parent_01",
+  "consent": {
+    "version": 1,
+    "purposes": [
+      "reading-progress",
+      "learning-events"
+    ],
+    "givenAt": "2026-11-20T18:00:00+05:30",
+    "status": "active"
+  },
+  "createdAt": "2026-11-20T18:00:00+05:30",
+  "ageBandGuardian": "under13"
+}

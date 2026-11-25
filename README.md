@@ -205,7 +205,7 @@ existing consumers get every type they did before with no import changes. CI fai
 the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
-### schemas/dashboard (parent dashboard, 2.20.0)
+### schemas/dashboard (parent dashboard, 2.21.0)
 
 Contracts for guardian profiles (AGB-904) and the progress service (AGB-1067): token claims
 (`profile`, `guardian`, `consent_v`), the guardian API, `LearningEvent` with a `detail` per kind,
@@ -222,6 +222,13 @@ import type { LearningEvent, StudentProfile } from '@ramalingesha/shared-contrac
 ```
 
 An absent `profile` claim means adult. At most `BATCH_MAX` (50) events per intake request.
+
+2.21.0 (all additive): `sectionIndex` on `read`/`listen`; `practiceTotal` on `round-complete` (student actor only,
+server verifies); `correction.replacement` with actor limits and the chain rule (described on `EventCorrection`);
+response shapes for `map`, `topic`, `home`, `my-learning` and `export` in `progress-reads.schema.json`
+(`ChangesResponse` is in `progress-api.schema.json`); `EXPORT_TOO_LARGE` and `INVALID_PARAMETER`; the two-band
+`GuardianAgeBand` (`under13` | `13to17`) with `guardianAgeBandOf()` and the claim shapes. Valid examples are in
+`examples/dashboard/`, deliberately invalid ones in `examples/dashboard/invalid/`.
 
 ### schemas/studio (Content Studio, 2.13.0)
 

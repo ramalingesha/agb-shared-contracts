@@ -1,0 +1,888 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProgressReads",
+  "description": "Response shapes of the progress service read APIs (AGB-1096): the four understanding reads (map, topic, home, my-learning) and the parent export. `changes` is ChangesResponse in progress-api.schema.json. Every text is an i18n key, never a sentence. Taken from bahuvani-progress-service `src/types/dashboard-api.ts` (rules understanding-v1).",
+  "definitions": {
+    "UnderstandingStep": {
+      "title": "UnderstandingStep",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6,
+      "description": "0 = not started, 1 to 6 = the ladder (LadderStep). Rules understanding-v1."
+    },
+    "RoundSummary": {
+      "title": "RoundSummary",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Numbers of one round of one chapter. A child is compared only with their own earlier rounds.",
+      "required": [
+        "round",
+        "sectionsRead",
+        "sectionsTotal",
+        "questionsAnswered",
+        "rightFirstTime",
+        "teachBacksUnderstood"
+      ],
+      "properties": {
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionsRead": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sectionsTotal": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "questionsAnswered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rightFirstTime": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "teachBacksUnderstood": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "ChildRoundSummary": {
+      "title": "ChildRoundSummary",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "RoundSummary without the parent-judged teach-back count (my-learning shows the child's own numbers only).",
+      "required": [
+        "round",
+        "sectionsRead",
+        "sectionsTotal",
+        "questionsAnswered",
+        "rightFirstTime"
+      ],
+      "properties": {
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionsRead": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sectionsTotal": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "questionsAnswered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rightFirstTime": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "Habits": {
+      "title": "Habits",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Effort signals. `peeks` and `repeatedBuddyQuestions` are parent-only diagnostics (signs of difficulty, not effort): never show them as habits.",
+      "required": [
+        "retriesEndedRight",
+        "revisits",
+        "revisionsKept",
+        "revisionsOnTime",
+        "buddyQuestions",
+        "repeatedBuddyQuestions",
+        "helpRequests",
+        "switches",
+        "notes",
+        "selfChecks",
+        "peeks"
+      ],
+      "properties": {
+        "retriesEndedRight": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revisits": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revisionsKept": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revisionsOnTime": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "buddyQuestions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "repeatedBuddyQuestions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "helpRequests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "switches": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selfChecks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "peeks": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "MapSection": {
+      "title": "MapSection",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One section on the parent's map.",
+      "required": [
+        "sectionId",
+        "step",
+        "stepKey",
+        "reasonKey",
+        "stateKey",
+        "strength",
+        "needsHelp",
+        "noteKeys",
+        "due",
+        "revisionDueAt"
+      ],
+      "properties": {
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "step": {
+          "$ref": "#/definitions/UnderstandingStep"
+        },
+        "stepKey": {
+          "type": "string",
+          "description": "`ladder.step.<n>`: the name of the step. A string; known today: ladder.step.0 to ladder.step.6.",
+          "maxLength": 128
+        },
+        "reasonKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Why the step, an i18n key such as `ladder.gets_answers_not_explained.reason`."
+        },
+        "stateKey": {
+          "type": "string",
+          "description": "i18n key of the section's state (parent view). A string: a newer server may send a value not listed. Known today: state.not_started, state.in_progress, state.needs_help, state.strength.",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "strength": {
+          "type": "boolean"
+        },
+        "needsHelp": {
+          "type": "boolean"
+        },
+        "noteKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "description": "i18n keys for progress the ladder does not count yet. Known: `progress.remembered_not_explained` (right at a revision after a gap, no parent-judged explanation yet) and `progress.stretch_right_not_counted_yet` (a stretch or new-case answer was right, below step 6). Never in the child's view."
+        },
+        "due": {
+          "type": "boolean"
+        },
+        "revisionDueAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "MapChapter": {
+      "title": "MapChapter",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One chapter on the map.",
+      "required": [
+        "knowledgeId",
+        "rounds",
+        "sections"
+      ],
+      "properties": {
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "rounds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RoundSummary"
+          }
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MapSection"
+          }
+        }
+      }
+    },
+    "MapResponse": {
+      "title": "MapResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /students/{studentId}/map (parent). All texts are i18n keys, never sentences. ETag with 304; Cache-Control private, no-cache.",
+      "required": [
+        "studentId",
+        "rulesVersion",
+        "chapters"
+      ],
+      "properties": {
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "rulesVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "The understanding rules that produced this answer, e.g. `understanding-v1`."
+        },
+        "chapters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MapChapter"
+          }
+        }
+      }
+    },
+    "Evidence": {
+      "title": "Evidence",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One event behind a topic's state, resolved to its kind, actor, date, the server's round and a label key; never the content.",
+      "required": [
+        "eventId",
+        "kind",
+        "actor",
+        "at",
+        "round",
+        "labelKey"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "The kind of the event (an EventKind such as `answer`, `teach-back`, `revision`). A string: a newer server may send a kind not listed in EventKind."
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "`student` or `parent` today. A string: a newer server may send another actor."
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The server's round (the last round that started at or before the event), not the event's own tag."
+        },
+        "labelKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "e.g. `evidence.answer.right_first_time`."
+        }
+      }
+    },
+    "TopicResponse": {
+      "title": "TopicResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /students/{studentId}/topics/{knowledgeId}/{sectionId} (parent). An unopened section is step 0, not started.",
+      "required": [
+        "studentId",
+        "knowledgeId",
+        "sectionId",
+        "rulesVersion",
+        "step",
+        "stepKey",
+        "reasonKey",
+        "stateKey",
+        "cause",
+        "causeReasonKey",
+        "strength",
+        "difficulty",
+        "rememberedWithoutExplanation",
+        "stretchRight",
+        "noteKeys",
+        "evidence",
+        "nextSteps",
+        "nextCheckAt",
+        "intervalDays",
+        "understoodAt",
+        "habits",
+        "rounds"
+      ],
+      "properties": {
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "rulesVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "step": {
+          "$ref": "#/definitions/UnderstandingStep"
+        },
+        "stepKey": {
+          "type": "string",
+          "description": "`ladder.step.<n>`: the name of the step. A string; known today: ladder.step.0 to ladder.step.6.",
+          "maxLength": 128
+        },
+        "reasonKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Why the step, an i18n key such as `ladder.gets_answers_not_explained.reason`."
+        },
+        "stateKey": {
+          "type": "string",
+          "description": "i18n key of the section's state (parent view). A string: a newer server may send a value not listed. Known today: state.not_started, state.in_progress, state.needs_help, state.strength.",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "cause": {
+          "anyOf": [
+            {
+              "$ref": "learning-event.schema.json#/definitions/WeakSpotCause"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "causeReasonKey": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "strength": {
+          "type": "boolean"
+        },
+        "difficulty": {
+          "type": "boolean",
+          "description": "A difficulty sign with no single cause (help request, \"I don't get this\" note, not-yet, repeated Buddy question, repeated unclassified wrong answers)."
+        },
+        "rememberedWithoutExplanation": {
+          "type": "boolean",
+          "description": "Right at a revision after a gap, but no parent-judged explanation yet. Shown as `progress.remembered_not_explained` in noteKeys."
+        },
+        "stretchRight": {
+          "type": "boolean",
+          "description": "A stretch or new-case answer or teach-back was right, below step 6. Shown as `progress.stretch_right_not_counted_yet` in noteKeys."
+        },
+        "noteKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "description": "i18n keys for progress the ladder does not count yet. Known: `progress.remembered_not_explained` (right at a revision after a gap, no parent-judged explanation yet) and `progress.stretch_right_not_counted_yet` (a stretch or new-case answer was right, below step 6). Never in the child's view."
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Evidence"
+          },
+          "maxItems": 12,
+          "description": "Oldest first, the newest 12 kept."
+        },
+        "nextSteps": {
+          "type": "array",
+          "items": {
+            "$ref": "learning-event.schema.json#/definitions/NextStep"
+          },
+          "maxItems": 3
+        },
+        "nextCheckAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "intervalDays": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "understoodAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "habits": {
+          "$ref": "#/definitions/Habits"
+        },
+        "rounds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RoundSummary"
+          }
+        }
+      }
+    },
+    "HomeCard": {
+      "title": "HomeCard",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One card on the parent home: a win or something to help with.",
+      "required": [
+        "knowledgeId",
+        "sectionId",
+        "step",
+        "reasonKey",
+        "cause",
+        "causeReasonKey",
+        "nextStep",
+        "evidenceCount"
+      ],
+      "properties": {
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "step": {
+          "$ref": "#/definitions/UnderstandingStep"
+        },
+        "reasonKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "cause": {
+          "anyOf": [
+            {
+              "$ref": "learning-event.schema.json#/definitions/WeakSpotCause"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "causeReasonKey": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextStep": {
+          "anyOf": [
+            {
+              "$ref": "learning-event.schema.json#/definitions/NextStep"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidenceCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "PlanItem": {
+      "title": "PlanItem",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A next step with the minutes it takes (tonight's plan).",
+      "required": [
+        "kind",
+        "minutes"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "A NextStep kind (read-section, mix-up-card, another-way, clip, switch-style, switch-language, teach-back, revision, stretch-question, activity, next-chapter, try-question, ask-help today). A string: a newer server may send another."
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Target style or language code for switch-style and switch-language."
+        },
+        "minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minutes the step takes."
+        }
+      }
+    },
+    "PendingReviews": {
+      "title": "PendingReviews",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A typed placeholder until the review queue ships (AGB-1075): show it only when `available` is true.",
+      "required": [
+        "available",
+        "count",
+        "oldestDueAt"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "oldestDueAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "HomeResponse": {
+      "title": "HomeResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /students/{studentId}/home?tz= (parent). `tz` is an IANA-style name of at most 64 characters (an unknown zone falls back to UTC).",
+      "required": [
+        "studentId",
+        "rulesVersion",
+        "win",
+        "helpWith",
+        "next",
+        "revisionDueToday",
+        "tonightPlan",
+        "pendingReviews"
+      ],
+      "properties": {
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "rulesVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "win": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/HomeCard"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "helpWith": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/HomeCard"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "next": {
+          "anyOf": [
+            {
+              "$ref": "learning-event.schema.json#/definitions/NextStep"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revisionDueToday": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tonightPlan": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlanItem"
+          },
+          "maxItems": 3
+        },
+        "pendingReviews": {
+          "$ref": "#/definitions/PendingReviews"
+        }
+      }
+    },
+    "MyLearningSection": {
+      "title": "MyLearningSection",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One section in the child's own view. No cause, no evidence, no parent judgement.",
+      "required": [
+        "sectionId",
+        "step",
+        "stepKey",
+        "stateKey",
+        "nextSteps"
+      ],
+      "properties": {
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "step": {
+          "$ref": "#/definitions/UnderstandingStep"
+        },
+        "stepKey": {
+          "type": "string",
+          "description": "`learning.step.<n>`: \"I've met it\" to \"I can use it\", in the child's words. A string; known today: learning.step.0 to learning.step.6.",
+          "maxLength": 128
+        },
+        "stateKey": {
+          "type": "string",
+          "description": "Child-friendly state. `not_yet` is the strongest negative and is used only where the child's own self-check said not-yet or a wrong answer came after a retry; every other reason is the gentler `look_again`. A string: a newer server may send a value not listed. Known today: learning.state.not_started, learning.state.climbing, learning.state.look_again, learning.state.not_yet, learning.state.going_well.",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "nextSteps": {
+          "type": "array",
+          "items": {
+            "$ref": "learning-event.schema.json#/definitions/NextStep"
+          },
+          "maxItems": 3
+        }
+      }
+    },
+    "MyLearningChapter": {
+      "title": "MyLearningChapter",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One chapter in the child's own view.",
+      "required": [
+        "knowledgeId",
+        "rounds",
+        "sections"
+      ],
+      "properties": {
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "rounds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChildRoundSummary"
+          }
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MyLearningSection"
+          }
+        }
+      }
+    },
+    "MyLearningResponse": {
+      "title": "MyLearningResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /students/{studentId}/my-learning: the only read a student token may call. Teachers read nothing; another parent or child gets 403.",
+      "required": [
+        "studentId",
+        "rulesVersion",
+        "chapters"
+      ],
+      "properties": {
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "rulesVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "chapters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MyLearningChapter"
+          }
+        }
+      }
+    },
+    "ExportResponse": {
+      "title": "ExportResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /students/{studentId}/export (parent only): everything held about the child as one JSON document, sent as an attachment `progress-export.json`. Refused with EXPORT_TOO_LARGE (413) above 20,000 events.",
+      "required": [
+        "studentId",
+        "exportedAt",
+        "events",
+        "positions",
+        "rounds",
+        "sectionStates",
+        "roundSummaries",
+        "summaries"
+      ],
+      "properties": {
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "exportedAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "title": "ExportEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "description": "An event with its server sequence number.",
+            "required": [
+              "seq",
+              "event"
+            ],
+            "properties": {
+              "seq": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "event": {
+                "$ref": "learning-event.schema.json#/definitions/LearningEvent"
+              }
+            }
+          }
+        },
+        "positions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed."
+        },
+        "rounds": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed."
+        },
+        "sectionStates": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed."
+        },
+        "roundSummaries": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed."
+        },
+        "summaries": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Retention summaries (reading evidence kept after the 2-year detail window)."
+        }
+      }
+    }
+  }
+}
