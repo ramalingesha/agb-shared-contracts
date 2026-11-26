@@ -96,6 +96,37 @@ const EXAMPLES_2_21 = {
 const NEW_EVENT_EXAMPLES = ['event-read-section-index', 'event-listen-section-index', 'event-round-complete-totals', 'event-correction-replacement', 'event-teach-back-no-key-words'];
 // 2.22.0 (AGB-1099): the answer with a mix-up id; the activity-done event is the 17th kind.
 const NEW_EVENT_EXAMPLES_2_22 = ['event-answer-mixup'];
+// 2.23.0 (AGB-1148, learner notes Phase A): new examples. The 2.22.0 examples are NOT edited, so they are the
+// compatibility fixtures; the quoteOffset, audience and not-ready shapes are new files.
+const EXAMPLES_2_23 = {
+  'create-note-request-quote-offset': ['progress-api', 'CreateNoteRequest'],
+  'edit-note-request-quote-offset': ['progress-api', 'EditNoteRequest'],
+  'note-only-me': ['progress-api', 'Note'],
+  'note-guardian': ['progress-api', 'Note'],
+  'note-search-request': ['progress-api', 'NoteSearchRequest'],
+  'note-search-response': ['progress-api', 'NoteSearchResponse'],
+  'note-versions-response': ['progress-api', 'NoteVersionsResponse'],
+  'learner-status-response': ['progress-api', 'LearnerStatusResponse'],
+  'learner-status-response-guarded': ['progress-api', 'LearnerStatusResponse'],
+  'learner-status-response-none': ['progress-api', 'LearnerStatusResponse'],
+  'self-export-response': ['progress-api', 'SelfExportResponse'],
+  'export-response-derived-pending': ['progress-reads', 'ExportResponse'],
+  'map-response-not-ready': ['progress-reads', 'MapResponse'],
+  'my-learning-response-not-ready': ['progress-reads', 'MyLearningResponse'],
+  'home-response-not-ready': ['progress-reads', 'HomeResponse'],
+  'review-list-response-not-ready': ['progress-api', 'ReviewListResponse'],
+  'learner-record-consent-request': ['guardian', 'LearnerRecordConsentRequest'],
+  'learner-record-consent': ['guardian', 'LearnerRecordConsent'],
+  'step-up-start-response': ['guardian', 'StepUpStartResponse'],
+  'step-up-complete-request': ['guardian', 'StepUpCompleteRequest'],
+  'step-up-complete-response': ['guardian', 'StepUpCompleteResponse'],
+  'note-quote-offset': ['progress-api', 'Note'],
+  'note-list-response-paged': ['progress-api', 'NoteListResponse'],
+  'note-list-query': ['progress-api', 'NoteListQuery'],
+  'learner-erase-request': ['progress-api', 'LearnerEraseRequest'],
+  'export-response-with-notes': ['progress-reads', 'ExportResponse'],
+};
+const NEW_EVENT_EXAMPLES_2_23 = ['event-note-quote-offset', 'event-note-redacted-create', 'event-note-redacted-guardian-reply', 'event-correction-redacted'];
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
 const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
 const event = (kind) => example(`event-${kind}`);
@@ -119,8 +150,9 @@ test('every schema compiles, declares draft-07 and every definition has a title'
 test('every listed example validates against its definition', () => {
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
   for (const [name, [file, def]] of Object.entries(EXAMPLES_2_21)) valid(file, def, example(name));
-  for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22]) validEvent(example(name));
-  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...KINDS.map((k) => `event-${k}`)]);
+  for (const [name, [file, def]] of Object.entries(EXAMPLES_2_23)) valid(file, def, example(name));
+  for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
+  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
   const onDisk = jsonFiles(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
   assert.deepEqual(onDisk.filter((n) => !listed.has(n)), [], 'example without a test mapping');
   assert.deepEqual([...listed].filter((n) => !onDisk.includes(n)), [], 'mapping without an example');
@@ -435,6 +467,180 @@ test('dashboard-errors: statuses of the two new codes', () => {
   const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes;
   assert.equal(list.find((c) => c.code === 'EXPORT_TOO_LARGE').httpStatus, 413);
   assert.equal(list.find((c) => c.code === 'INVALID_PARAMETER').httpStatus, 400);
+});
+
+test('2.23.0 back-compat: every 2.20.0, 2.21.0 and 2.22.0 example and event still validates (the 2.22 files are untouched)', () => {
+  assert.equal(Object.keys(EXAMPLES).length, 18);
+  assert.equal(Object.keys(EXAMPLES_2_21).length, 13);
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES, ...EXAMPLES_2_21 })) valid(file, def, example(name));
+  for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22]) validEvent(example(name));
+  for (const kind of KINDS) validEvent(event(kind));
+  // the 2.22 note shapes carry none of the new fields and are still valid
+  const note = example('note');
+  assert.equal('audience' in note || 'guardianVisible' in note, false);
+  validEvent(event('note'));
+  assert.equal('quoteOffset' in event('note').detail || 'redacted' in event('note').detail, false);
+  // the 2.22 export carries sectionStates and roundSummaries and no derivedPending
+  const exp = example('export-response');
+  assert.ok(exp.sectionStates && exp.roundSummaries && !('derivedPending' in exp));
+  // the 2.22 responses have no `ready`, which means ready
+  for (const name of ['map-response', 'topic-response', 'home-response', 'my-learning-response']) assert.equal('ready' in example(name), false, name);
+  // the 2.22 events a 2.22 client reads back from /changes still validate, new optional fields or not
+  const changes = example('changes-response');
+  changes.changes.push({ seq: 99, event: example('event-note-quote-offset') }, { seq: 100, event: example('event-note-redacted-create') });
+  valid('progress-api', 'ChangesResponse', changes);
+});
+
+test('2.23.0 is purely additive: no 2.22 definition lost a property, gained a required one or changed a type', () => {
+  const git = require('node:child_process');
+  let base;
+  try {
+    base = git.execFileSync('git', ['show', 'bb9ed20:schemas/dashboard/progress-api.schema.json'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch { return; } // the 2.22.0 commit is not in a shallow clone: the example run above still covers it
+  const old = JSON.parse(base).definitions;
+  const now = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions;
+  for (const [name, def] of Object.entries(old)) {
+    for (const key of Object.keys(def.properties || {})) assert.ok(now[name].properties[key], `${name}.${key} was removed`);
+    assert.deepEqual((now[name].required || []).filter((k) => !(def.required || []).includes(k)), [], `${name} gained a required field`);
+  }
+});
+
+test('2.23.0 events: note detail gains quoteOffset and a server-set readOnly redacted, nothing else', () => {
+  validEvent(example('event-note-quote-offset'));
+  assert.equal(example('event-note-quote-offset').detail.quoteOffset, 14);
+  for (const bad of [-1, 1.5, '3', null]) { const x = event('note'); x.detail.quoteOffset = bad; invalidEvent(x); }
+  const zero = event('note'); zero.detail.quoteOffset = 0; validEvent(zero);
+  invalidEvent(invalidExample('note-quote-offset-negative'));
+  // redacted is only ever `true` (const) and is documented as server-set
+  validEvent(example('event-note-redacted-create'));
+  validEvent(example('event-note-redacted-guardian-reply'));
+  invalidEvent(invalidExample('note-redacted-false'));
+  const nonBool = event('note'); nonBool.detail.redacted = 'yes'; invalidEvent(nonBool);
+  const props = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventNote.properties.detail.properties;
+  assert.equal(props.redacted.readOnly, true);
+  assert.equal(props.redacted.const, true);
+  assert.match(props.redacted.description, /SET BY THE SERVER ONLY/);
+  assert.match(props.redacted.description, /intake refuses it/);
+  // no new actions and no new actors
+  const note = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventNote;
+  assert.deepEqual(note.properties.detail.properties.action.enum, ['create', 'edit', 'delete']);
+  assert.deepEqual(note.properties.actor.enum, ['student', 'parent']);
+  assert.deepEqual(Object.keys(props).sort(), ['action', 'noteId', 'quote', 'quoteOffset', 'redacted', 'tag', 'text', 'version']);
+  const share = event('note'); share.detail.action = 'share'; invalidEvent(share);
+  const sys = event('note'); sys.actor = 'system'; invalidEvent(sys);
+  // the create and edit requests take quoteOffset too
+  const c = example('create-note-request'); c.quoteOffset = -2; invalid('progress-api', 'CreateNoteRequest', c, 'minimum');
+  const ed = example('edit-note-request'); ed.quoteOffset = 'x'; invalid('progress-api', 'EditNoteRequest', ed, 'type');
+});
+
+test('2.23.0 note DTO: audience is a plain string (not an enum) and guardianVisible a boolean', () => {
+  const props = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions.Note.properties;
+  assert.equal(props.audience.type, 'string');
+  assert.equal('enum' in props.audience, false);
+  assert.equal(props.guardianVisible.type, 'boolean');
+  const future = example('note-guardian'); future.audience = 'circle-teachers'; valid('progress-api', 'Note', future);
+  invalid('progress-api', 'Note', invalidExample('note-audience-not-string'), 'type');
+  const gv = example('note-only-me'); gv.guardianVisible = 'no'; invalid('progress-api', 'Note', gv, 'type');
+});
+
+test('2.23.0 search: a POST body of 1 to 100 characters, no extra fields', () => {
+  valid('progress-api', 'NoteSearchRequest', { q: 'x' });
+  valid('progress-api', 'NoteSearchRequest', { q: 'x'.repeat(100), sectionId: 's2', cursor: 'c1', limit: 50 });
+  invalid('progress-api', 'NoteSearchRequest', invalidExample('note-search-empty-q'), 'minLength');
+  invalid('progress-api', 'NoteSearchRequest', invalidExample('note-search-q-too-long'), 'maxLength');
+  invalid('progress-api', 'NoteSearchRequest', invalidExample('note-search-extra-field'), 'additionalProperties');
+  invalid('progress-api', 'NoteSearchRequest', {}, 'required', 'q');
+  invalid('progress-api', 'NoteSearchRequest', { q: 'a', limit: 0 }, 'minimum');
+  const description = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions.NoteSearchRequest.description;
+  assert.match(description, /never reaches a URL/);
+});
+
+test('2.23.0 status, relation and versions', () => {
+  assert.deepEqual(readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions.LearnerRelation.enum, ['none', 'self', 'guarded']);
+  invalid('progress-api', 'LearnerStatusResponse', invalidExample('learner-status-unknown-relation'), 'enum');
+  invalid('progress-api', 'LearnerStatusResponse', invalidExample('learner-status-missing-since'), 'required', 'guardianSince');
+  const zero = example('learner-status-response-guarded'); zero.guardianSince = 0; valid('progress-api', 'LearnerStatusResponse', zero);
+  const neg = example('learner-status-response-guarded'); neg.guardianSince = -1; invalid('progress-api', 'LearnerStatusResponse', neg, 'minimum');
+  const empty = example('note-versions-response'); empty.versions = []; invalid('progress-api', 'NoteVersionsResponse', empty, 'minItems');
+});
+
+test('2.23.0 export: self shape lists deleted notes as id and time only; guardian export may be derivedPending', () => {
+  const self = example('self-export-response');
+  assert.ok(self.notes.some((n) => Object.keys(n).sort().join() === 'deletedAt,id'));
+  invalid('progress-api', 'SelfExportResponse', invalidExample('self-export-deleted-note-with-text'));
+  assert.equal(JSON.stringify(self).includes('guardianId'), false, 'no other person\'s id in the self export');
+  const pending = example('export-response-derived-pending');
+  assert.equal(pending.derivedPending, true);
+  for (const omitted of ['sectionStates', 'roundSummaries', 'reviews', 'reviewSnoozes']) assert.equal(omitted in pending, false, omitted);
+  for (const kept of ['summaries', 'positions', 'rounds']) assert.ok(kept in pending, kept);
+  // summaries, positions and rounds stay required; the four derived sections are optional
+  for (const kept of ['summaries', 'positions', 'rounds']) { const x = example('export-response-derived-pending'); delete x[kept]; invalid('progress-reads', 'ExportResponse', x, 'required', kept); }
+  const full = example('export-response'); full.reviews = []; full.reviewSnoozes = []; full.derivedPending = false; valid('progress-reads', 'ExportResponse', full);
+  const bad = example('export-response-derived-pending'); bad.derivedPending = 'yes'; invalid('progress-reads', 'ExportResponse', bad, 'type');
+});
+
+test('2.23.0 ready: false on map, topic, home, my-learning and reviews (optional boolean; absent means ready)', () => {
+  for (const name of ['map-response-not-ready', 'my-learning-response-not-ready', 'home-response-not-ready']) assert.equal(example(name).ready, false, name);
+  assert.equal(example('review-list-response-not-ready').ready, false);
+  const topic = example('topic-response'); topic.ready = false; valid('progress-reads', 'TopicResponse', topic);
+  topic.ready = true; valid('progress-reads', 'TopicResponse', topic);
+  topic.ready = 'no'; invalid('progress-reads', 'TopicResponse', topic, 'type');
+  const map = example('map-response-not-ready'); map.ready = 0; invalid('progress-reads', 'MapResponse', map, 'type');
+});
+
+test('2.23.0 own consent and step-up types', () => {
+  invalid('guardian', 'LearnerRecordConsentRequest', { state: 'on' }, 'enum');
+  invalid('guardian', 'LearnerRecordConsentRequest', {}, 'required', 'state');
+  invalid('guardian', 'StepUpStartResponse', invalidExample('step-up-unknown-method'), 'enum');
+  for (const method of ['password', 'totp', 'password+totp', 'email-code']) valid('guardian', 'StepUpStartResponse', { ...example('step-up-start-response'), method });
+  invalid('guardian', 'StepUpCompleteRequest', { stepUpId: 'su_01', code: '12ab56' }, 'pattern');
+  invalid('guardian', 'StepUpCompleteResponse', {}, 'required');
+});
+
+test('2.23.0 error codes: three per-event refusal codes, none removed', () => {
+  const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes.map((c) => c.code);
+  for (const c of ['EVENT_INVALID', 'EVENT_KIND_NOT_ALLOWED', 'LINK_ERASED', 'SCHEMA_UNSUPPORTED', 'CONSENT_NOT_ACTIVE', 'CURSOR_EXPIRED']) assert.ok(list.includes(c), c);
+  assert.equal(new Set(list).size, list.length, 'duplicate code');
+});
+
+test('2.23.0 gap fixes: redacted correction, Note.quoteOffset, paged list, export notes, erase body', () => {
+  // a redacted correction (server-set) has no reason; a 2.22 correction still needs one
+  validEvent(example('event-correction-redacted'));
+  invalidEvent(invalidExample('correction-no-reason'));
+  invalidEvent(invalidExample('correction-redacted-false'));
+  const corr = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventCorrection.properties.detail.properties.redacted;
+  assert.equal(corr.readOnly, true); assert.equal(corr.const, true);
+  // Note reads the pin offset back
+  assert.equal(example('note-quote-offset').quoteOffset, 14);
+  const bad = example('note-quote-offset'); bad.quoteOffset = -1; invalid('progress-api', 'Note', bad, 'minimum');
+  // paging
+  valid('progress-api', 'NoteListResponse', example("note-list-response-paged"));
+  valid('progress-api', 'NoteListResponse', { notes: [] });
+  invalid('progress-api', 'NoteListResponse', invalidExample('note-list-response-bad-cursor'), 'anyOf');
+  invalid('progress-api', 'NoteListQuery', { limit: 51 }, 'maximum');
+  invalid('progress-api', 'NoteListQuery', { q: 'frogs' }, 'additionalProperties');
+  // guardian export: optional notes and noteReplies
+  const exp = example('export-response-with-notes');
+  assert.ok(exp.notes.length === 2 && exp.noteReplies.length === 1);
+  const delWithText = example('export-response-with-notes'); delWithText.notes[1].text = 'x'; invalid('progress-reads', 'ExportResponse', delWithText);
+  // erase body
+  invalid('progress-api', 'LearnerEraseRequest', invalidExample('learner-erase-request-no-ticket'), 'required', 'ticket');
+});
+
+test('2.23.0 step-up error codes follow the registry conventions', () => {
+  const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes;
+  const want = { STEP_UP_REQUIRED: 401, STEP_UP_CODE_INVALID: 400, STEP_UP_LOCKED: 429, STEP_UP_SEND_LIMITED: 429, LINK_ERASED: 409, EVENT_KIND_NOT_ALLOWED: 400, SCHEMA_UNSUPPORTED: 400 };
+  for (const [code, status] of Object.entries(want)) assert.equal(list.find((c) => c.code === code).httpStatus, status, code);
+  // append-only: the ten 2.22 codes are still first and unchanged
+  assert.deepEqual(list.slice(0, 10).map((c) => c.code), ['PIN_LOCKED', 'CONSENT_REQUIRED', 'STUDENT_SCOPE_ONLY', 'CONSENT_NOT_ACTIVE', 'NOT_GUARDIAN', 'EVENT_INVALID', 'BATCH_TOO_LARGE', 'CURSOR_EXPIRED', 'EXPORT_TOO_LARGE', 'INVALID_PARAMETER']);
+});
+
+test('2.23.0 has no Phase B (sharing) types', () => {
+  const names = schemaFiles.flatMap((f) => Object.keys(readJson(path.join(SCHEMA_DIR, f)).definitions));
+  assert.deepEqual(names.filter((n) => /share|viewer|reply-?queue|report/i.test(n) && n !== 'NoteReply' && n !== 'NoteReplyRequest'), []);
+  const note = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventNote;
+  assert.equal(note.properties.actor.enum.includes('system'), false);
+  assert.equal(JSON.stringify(note).includes('"sys-'), false);
 });
 
 test('versions: package.json, error-codes.json and api-response-schema.json agree', () => {

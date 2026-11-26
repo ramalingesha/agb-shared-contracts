@@ -1,0 +1,11 @@
+{
+  "id": "note_01",
+  "knowledgeId": "k-its-all-a-cycle",
+  "sectionId": "s2",
+  "tag": "I have a question",
+  "text": "Why do frogs lay so many eggs?",
+  "createdAt": "2026-11-22T09:30:00+05:30",
+  "latestVersion": 1,
+  "audience": "only-me",
+  "guardianVisible": false
+}

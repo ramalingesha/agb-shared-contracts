@@ -26,7 +26,7 @@
       "title": "EventResult",
       "type": "object",
       "additionalProperties": false,
-      "description": "Per-event outcome. `error` is present only when result is error (for example EVENT_INVALID).",
+      "description": "Per-event outcome. `error` is present only when result is error (for example EVENT_INVALID). From 2.23.0 an error is one of EVENT_INVALID (permanent), EVENT_KIND_NOT_ALLOWED (permanent: a self learner sent a kind other than note), LINK_ERASED (permanent) or SCHEMA_UNSUPPORTED (version skew: keep the event and retry after an app update). Unknown codes must be treated like SCHEMA_UNSUPPORTED.",
       "required": [
         "eventId",
         "result"
@@ -303,6 +303,19 @@
           "items": {
             "$ref": "#/definitions/NoteReply"
           }
+        },
+        "audience": {
+          "type": "string",
+          "description": "Added in 2.23.0. Who can read this note, computed at read time. Documented values: `only-me` (a learner without a guardian) and `guardian` (a guarded learner: the guardian sees notes saved after the claim). A later release may add values, so readers must tolerate an unknown string; deliberately not a closed enum."
+        },
+        "guardianVisible": {
+          "type": "boolean",
+          "description": "Added in 2.23.0. True when the learner's guardian can read this note under the claim rule (a note written before the claim stays private). Computed at read time."
+        },
+        "quoteOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Added in 2.23.0. Character offset of `quote` inside the block text, read back so the app can reopen at the pin. Absent when the note has none."
         }
       }
     },
@@ -345,6 +358,11 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 2000
+        },
+        "quoteOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice."
         }
       }
     },
@@ -368,6 +386,11 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 2000
+        },
+        "quoteOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice."
         }
       },
       "minProperties": 1,
@@ -377,7 +400,7 @@
       "title": "NoteListResponse",
       "type": "object",
       "additionalProperties": false,
-      "description": "GET /students/{id}/notes (filters: chapter, tag).",
+      "description": "GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.",
       "required": [
         "notes"
       ],
@@ -387,6 +410,19 @@
           "items": {
             "$ref": "#/definitions/Note"
           }
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Added in 2.23.0. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer)."
         }
       }
     },
@@ -493,6 +529,9 @@
               "type": "null"
             }
           ]
+        },
+        "ready": {
+          "$ref": "progress-reads.schema.json#/definitions/Ready"
         }
       }
     },
@@ -584,6 +623,301 @@
             "$ref": "#/definitions/ReviewItem"
           },
           "maxItems": 3
+        }
+      }
+    },
+    "NoteSearchRequest": {
+      "title": "NoteSearchRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /learners/me/notes/search (2.23.0). A POST so that note-derived text never reaches a URL, Kong or access logs; there is no GET `q`. The service never logs this body. `q` is NFC-normalised and matched as a case-insensitive substring over `text` and `quote` of the caller's own notes.",
+      "required": [
+        "q"
+      ],
+      "properties": {
+        "q": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "The `cursor` of the previous page."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    },
+    "NoteSearchResponse": {
+      "title": "NoteSearchResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Answer of POST /learners/me/notes/search (2.23.0): newest first; no repeats or skips between pages. A learner with no link row gets an empty list (200).",
+      "required": [
+        "notes"
+      ],
+      "properties": {
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Note"
+          }
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Pass as `cursor` for the next page; null or absent on the last page."
+        }
+      }
+    },
+    "NoteVersionsResponse": {
+      "title": "NoteVersionsResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /learners/me/notes/{noteId}/versions and GET /students/{id}/notes/{noteId}/versions (2.23.0): the versions of one note, oldest first, replayed from its events. A deleted note is a tombstone and answers 404, never this shape.",
+      "required": [
+        "noteId",
+        "versions"
+      ],
+      "properties": {
+        "noteId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NoteVersion"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "LearnerRelation": {
+      "title": "LearnerRelation",
+      "type": "string",
+      "enum": [
+        "none",
+        "self",
+        "guarded"
+      ],
+      "description": "How a learner's notes are held (2.23.0). `none`: nothing is recorded (no link, or after a rollback). `self`: an adult learner with their own consent and no guardian; notes are private. `guarded`: a child with a guardian; the guardian reads notes saved after the claim."
+    },
+    "LearnerStatusResponse": {
+      "title": "LearnerStatusResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET /learners/me/status (2.23.0). With no link row at all the service answers 200 `{ relation: \"none\", recording: \"off\", guardianVisible: false, guardianSince: null }`.",
+      "required": [
+        "relation",
+        "recording",
+        "guardianVisible",
+        "guardianSince"
+      ],
+      "properties": {
+        "relation": {
+          "$ref": "#/definitions/LearnerRelation"
+        },
+        "recording": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Whether the service accepts note events now. Documented values: `active` (accepted) and `off` (not accepted). A string so a newer server value never fails a strict client; treat anything but `active` as off."
+        },
+        "guardianVisible": {
+          "type": "boolean",
+          "description": "True when a guardian can read notes saved from now on."
+        },
+        "guardianSince": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The server sequence watermark of the claim: the guardian sees only notes created after it. A new value tells the app to show the one-time claim sheet before it flushes the outbox. 0 for a guarded profile with nothing older; null for `none` and `self`."
+        }
+      }
+    },
+    "DeletedNote": {
+      "title": "DeletedNote",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A deleted note in an export (2.23.0): its id and deletion time only; the text and quote are redacted and never exported.",
+      "required": [
+        "id",
+        "deletedAt"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "deletedAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        }
+      }
+    },
+    "SelfExportNote": {
+      "title": "SelfExportNote",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A live note in a learner's own export (2.23.0), with all its versions. No other person's id or name appears: guardian replies are not part of the self export.",
+      "required": [
+        "id",
+        "knowledgeId",
+        "sectionId",
+        "tag",
+        "text",
+        "createdAt",
+        "latestVersion",
+        "versions"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "quote": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "quoteOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice."
+        },
+        "tag": {
+          "type": "string",
+          "enum": [
+            "Rough note",
+            "Remember this",
+            "My example",
+            "I have a question",
+            "I don't get this"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "latestVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NoteVersion"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "SelfExportResponse": {
+      "title": "SelfExportResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /students/{id}/export when `id` is the caller's own id (2.23.0; self learners only: a guarded child cannot export their own notes, the guardian does). Restricted shape: the learner's own notes with versions, deleted notes as `{ id, deletedAt }`, no other person's id or name. With no link row the export is an empty document (`notes: []`). Own export stays open for a withdrawn or `none` link.",
+      "required": [
+        "learnerId",
+        "exportedAt",
+        "notes"
+      ],
+      "properties": {
+        "learnerId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The caller's own subject id."
+        },
+        "exportedAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/SelfExportNote"
+              },
+              {
+                "$ref": "#/definitions/DeletedNote"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "NoteListQuery": {
+      "title": "NoteListQuery",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Query parameters of the notes list (2.23.0), shown as an object. There is no `q`: search is a POST (NoteSearchRequest), so note text never reaches a URL.",
+      "properties": {
+        "chapter": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "tag": {
+          "type": "string",
+          "enum": [
+            "Rough note",
+            "Remember this",
+            "My example",
+            "I have a question",
+            "I don't get this"
+          ]
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    },
+    "LearnerEraseRequest": {
+      "title": "LearnerEraseRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /learners/me/learning-record/erase (2.23.0, adult token): permanent and terminal for the account. The body carries the single-use step-up ticket from step-up/complete; the answer is DataRequestResult. A missing, expired or used ticket is STEP_UP_REQUIRED.",
+      "required": [
+        "ticket"
+      ],
+      "properties": {
+        "ticket": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
         }
       }
     }

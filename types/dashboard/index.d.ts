@@ -27,6 +27,10 @@ export type DashboardLanguage = 'en' | 'kn' | 'ta' | 'te' | 'hi';
  */
 export type GuardianAgeBand = 'under13' | '13to17';
 /**
+ * How a fresh sign-in is proved before an own erase (2.23.0): password for password accounts, TOTP when MFA is on, both when both exist, a one-time code mailed to the verified address for social-only accounts with neither.
+ */
+export type StepUpMethod = 'password' | 'totp' | 'password+totp' | 'email-code';
+/**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
 export type DashboardId1 = string;
@@ -243,6 +247,18 @@ export type WeakSpotCause =
   | 'forgot'
   | 'rushed-or-peeked';
 /**
+ * How a learner's notes are held (2.23.0). `none`: nothing is recorded (no link, or after a rollback). `self`: an adult learner with their own consent and no guardian; notes are private. `guarded`: a child with a guardian; the guardian reads notes saved after the claim.
+ */
+export type LearnerRelation = 'none' | 'self' | 'guarded';
+/**
+ * Added in 2.23.0. Absent or true: the answer is built. `false`: a guardian's derived state is "being prepared" (the claim rule needs a re-projection that has not run yet), so the data fields are empty and the app shows a "being prepared" state instead of an empty dashboard that would read as "no progress". A 2.22 client that ignores it sees empty data.
+ */
+export type Ready = boolean;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId40 = string;
+/**
  * 0 = not started, 1 to 6 = the ladder (LadderStep). Rules understanding-v1.
  */
 export type UnderstandingStep = number;
@@ -257,11 +273,17 @@ export interface DashboardContracts {
   DataRequestResult?: DataRequestResult;
   GiveConsentRequest?: GiveConsentRequest;
   GuardianAgeBand?: GuardianAgeBand;
+  LearnerRecordConsent?: LearnerRecordConsent;
+  LearnerRecordConsentRequest?: LearnerRecordConsentRequest;
   ParentGateVerifyRequest?: ParentGateVerifyRequest;
   ParentGateVerifyResponse?: ParentGateVerifyResponse;
   ParentGateVerifyResult?: ParentGateVerifyResult;
   ProfileConsent?: ProfileConsent;
   SetParentPinRequest?: SetParentPinRequest;
+  StepUpCompleteRequest?: StepUpCompleteRequest;
+  StepUpCompleteResponse?: StepUpCompleteResponse;
+  StepUpMethod?: StepUpMethod;
+  StepUpStartResponse?: StepUpStartResponse;
   StudentProfile?: StudentProfile;
   StudentProfileList?: StudentProfileList;
   SwitchStudentResponse?: SwitchStudentResponse;
@@ -295,15 +317,23 @@ export interface DashboardContracts {
   ChangeEntry?: ChangeEntry;
   ChangesResponse?: ChangesResponse;
   CreateNoteRequest?: CreateNoteRequest;
+  DeletedNote?: DeletedNote;
   EditNoteRequest?: EditNoteRequest;
   EventIntakeRequest?: EventIntakeRequest;
   EventIntakeResponse?: EventIntakeResponse;
   EventResult?: EventResult;
+  LearnerEraseRequest?: LearnerEraseRequest;
+  LearnerRelation?: LearnerRelation;
+  LearnerStatusResponse?: LearnerStatusResponse;
   Note?: Note;
+  NoteListQuery?: NoteListQuery;
   NoteListResponse?: NoteListResponse;
   NoteReply?: NoteReply;
   NoteReplyRequest?: NoteReplyRequest;
+  NoteSearchRequest?: NoteSearchRequest;
+  NoteSearchResponse?: NoteSearchResponse;
   NoteVersion?: NoteVersion;
+  NoteVersionsResponse?: NoteVersionsResponse;
   PositionEntry?: PositionEntry;
   PositionsResponse?: PositionsResponse;
   ReviewDoneRequest?: ReviewDoneRequest;
@@ -311,6 +341,8 @@ export interface DashboardContracts {
   ReviewItem?: ReviewItem;
   ReviewListResponse?: ReviewListResponse;
   ReviewRhythm?: ReviewRhythm;
+  SelfExportNote?: SelfExportNote;
+  SelfExportResponse?: SelfExportResponse;
   ChildRoundSummary?: ChildRoundSummary;
   Evidence?: Evidence;
   ExportResponse?: ExportResponse;
@@ -325,6 +357,7 @@ export interface DashboardContracts {
   MyLearningSection?: MyLearningSection;
   PendingReviews?: PendingReviews;
   PlanItem?: PlanItem;
+  Ready?: Ready;
   RoundSummary?: RoundSummary;
   TopicResponse?: TopicResponse;
   UnderstandingStep?: UnderstandingStep;
@@ -412,6 +445,34 @@ export interface GiveConsentRequest {
   purposes: [string, ...string[]];
 }
 /**
+ * GET and PUT answer of /learners/me/record-consent (2.23.0): the learner's current own consent.
+ */
+export interface LearnerRecordConsent {
+  status: 'active' | 'withdrawn' | 'none';
+  version?: number;
+  purposes: string[];
+  over18Declared: boolean;
+  givenAt?: DashboardTime | null;
+}
+/**
+ * PUT /learners/me/record-consent (2.23.0, adult token): a learner turns saving of their own notes on or off. The learner's own consent has its own text versions, separate from a guardian's. Refused for an account that may be a minor (a member of a minor Circle without an exempt role, an enrolment-consent holder, a student profile) and after an own erase (terminal).
+ */
+export interface LearnerRecordConsentRequest {
+  state: 'active' | 'withdrawn';
+  /**
+   * The 18 or over declaration. Required (true) when `state` is `active`; the declaration alone is not trusted, the service also checks eligibility.
+   */
+  over18Declared?: boolean;
+  /**
+   * The own-consent text version shown to the learner. Required when `state` is `active`.
+   */
+  version?: number;
+  /**
+   * @minItems 1
+   */
+  purposes?: [string, ...string[]];
+}
+/**
  * POST /guardians/me/gate/verify and /gate/switch-to-parent. 5 wrong tries lock the account and the device for 15 minutes (PIN_LOCKED).
  */
 export interface ParentGateVerifyRequest {
@@ -438,6 +499,33 @@ export interface ParentGateVerifyResult {
 export interface SetParentPinRequest {
   pin: string;
   currentPin?: string;
+}
+/**
+ * POST /learners/me/step-up/complete (2.23.0). Send exactly what `method` asks: `password`, `totpCode` or `code` (both `password` and `totpCode` for password+totp).
+ */
+export interface StepUpCompleteRequest {
+  stepUpId: DashboardId;
+  password?: string;
+  totpCode?: string;
+  /**
+   * The 6-digit one-time code mailed for method `email-code`.
+   */
+  code?: string;
+}
+/**
+ * Answer of step-up/complete (2.23.0): a single-use ticket valid for 5 minutes, bound to the step-up record and the session, that the erase call needs. A refresh grant cannot mint one.
+ */
+export interface StepUpCompleteResponse {
+  ticket: string;
+  expiresAt: DashboardTime;
+}
+/**
+ * POST /learners/me/step-up/start (2.23.0, no body): the proof the learner must give. Limits are per user on the server (5 tries per code, one live code, 3 sends per hour and 10 per day, 15 minutes lockout after 5 failures in an hour).
+ */
+export interface StepUpStartResponse {
+  stepUpId: DashboardId;
+  method: StepUpMethod;
+  expiresAt: DashboardTime;
 }
 /**
  * GET /guardians/me/students.
@@ -589,7 +677,7 @@ export interface EventCorrection {
   at: DashboardTime;
   detail: {
     correctsEventId: DashboardId;
-    reason: string;
+    reason?: string;
     /**
      * PLANNED: not applied by the service yet (it only voids events), but accepted at intake. Optional corrected detail values for the event named by correctsEventId. `targetKind` is the kind of that event (any kind except `correction`) and must equal the real kind of the corrected event (checked by the server, not by this schema); `detail` holds only fields that the kind's own `detail` allows, and only the fields to change (the others keep their value). A field the target kind does not allow is rejected. Without `replacement` the correction voids the event.
      */
@@ -1640,6 +1728,10 @@ export interface EventCorrection {
               | [DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage];
           };
         };
+    /**
+     * Added in 2.23.0. SET BY THE SERVER ONLY: this correction targets a note that was deleted, so its `reason` and `replacement.detail.text` / `quote` were blanked (redaction, TA D18). Intake refuses it from a client, like `redacted` on a note event. Because `reason` is removed, `reason` is required only when `redacted` is absent (a 2.22 correction always has it).
+     */
+    redacted?: true;
   };
 }
 /**
@@ -1691,7 +1783,7 @@ export interface EventListen {
   };
 }
 /**
- * A `note` event.
+ * A `note` event. 2.23.0 adds the optional `quoteOffset` (create and edit) and the server-set, read-only `redacted: true`; no new actions and no new actors.
  */
 export interface EventNote {
   eventId: DashboardId18;
@@ -1714,6 +1806,14 @@ export interface EventNote {
     tag?: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
     text?: string;
     quote?: string;
+    /**
+     * Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice.
+     */
+    quoteOffset?: number;
+    /**
+     * Added in 2.23.0. SET BY THE SERVER ONLY: a deleted note's `text` and `quote` were blanked (redaction) and this marks the event. It appears on events read back through `/changes` and export so they still validate against `LearningEvent`. A client must never send it: intake refuses it with an explicit check after schema validation, on both `/events` and `/events/parent` (the schema allows the field only because server-written events carry it). A create carrying it is a blank shell of a deleted note (tombstone).
+     */
+    redacted?: true;
   };
 }
 /**
@@ -2907,6 +3007,17 @@ export interface CreateNoteRequest {
   quote?: string;
   tag: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   text: string;
+  /**
+   * Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice.
+   */
+  quoteOffset?: number;
+}
+/**
+ * A deleted note in an export (2.23.0): its id and deletion time only; the text and quote are redacted and never exported.
+ */
+export interface DeletedNote {
+  id: DashboardId;
+  deletedAt: DashboardTime;
 }
 /**
  * PATCH /students/{id}/notes/{noteId}: makes a new version. DELETE has no body.
@@ -2914,6 +3025,10 @@ export interface CreateNoteRequest {
 export interface EditNoteRequest {
   tag?: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   text?: string;
+  /**
+   * Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice.
+   */
+  quoteOffset?: number;
 }
 /**
  * POST /events (student token) and POST /events/parent (parent token). At most BATCH_MAX = 50 events; more is BATCH_TOO_LARGE.
@@ -2936,7 +3051,7 @@ export interface EventIntakeResponse {
   results: [EventResult, ...EventResult[]];
 }
 /**
- * Per-event outcome. `error` is present only when result is error (for example EVENT_INVALID).
+ * Per-event outcome. `error` is present only when result is error (for example EVENT_INVALID). From 2.23.0 an error is one of EVENT_INVALID (permanent), EVENT_KIND_NOT_ALLOWED (permanent: a self learner sent a kind other than note), LINK_ERASED (permanent) or SCHEMA_UNSUPPORTED (version skew: keep the event and retry after an app update). Unknown codes must be treated like SCHEMA_UNSUPPORTED.
  */
 export interface EventResult {
   eventId: DashboardId;
@@ -2951,6 +3066,30 @@ export interface DashboardApiError {
   message: string;
   details?: {};
 }
+/**
+ * POST /learners/me/learning-record/erase (2.23.0, adult token): permanent and terminal for the account. The body carries the single-use step-up ticket from step-up/complete; the answer is DataRequestResult. A missing, expired or used ticket is STEP_UP_REQUIRED.
+ */
+export interface LearnerEraseRequest {
+  ticket: string;
+}
+/**
+ * GET /learners/me/status (2.23.0). With no link row at all the service answers 200 `{ relation: "none", recording: "off", guardianVisible: false, guardianSince: null }`.
+ */
+export interface LearnerStatusResponse {
+  relation: LearnerRelation;
+  /**
+   * Whether the service accepts note events now. Documented values: `active` (accepted) and `off` (not accepted). A string so a newer server value never fails a strict client; treat anything but `active` as off.
+   */
+  recording: string;
+  /**
+   * True when a guardian can read notes saved from now on.
+   */
+  guardianVisible: boolean;
+  /**
+   * The server sequence watermark of the claim: the guardian sees only notes created after it. A new value tells the app to show the one-time claim sheet before it flushes the outbox. 0 for a guarded profile with nothing older; null for `none` and `self`.
+   */
+  guardianSince: number | null;
+}
 export interface Note {
   id: DashboardId;
   knowledgeId: DashboardId;
@@ -2962,6 +3101,18 @@ export interface Note {
   createdAt: DashboardTime;
   latestVersion: number;
   replies?: NoteReply[];
+  /**
+   * Added in 2.23.0. Who can read this note, computed at read time. Documented values: `only-me` (a learner without a guardian) and `guardian` (a guarded learner: the guardian sees notes saved after the claim). A later release may add values, so readers must tolerate an unknown string; deliberately not a closed enum.
+   */
+  audience?: string;
+  /**
+   * Added in 2.23.0. True when the learner's guardian can read this note under the claim rule (a note written before the claim stays private). Computed at read time.
+   */
+  guardianVisible?: boolean;
+  /**
+   * Added in 2.23.0. Character offset of `quote` inside the block text, read back so the app can reopen at the pin. Absent when the note has none.
+   */
+  quoteOffset?: number;
 }
 export interface NoteReply {
   id: DashboardId;
@@ -2972,10 +3123,23 @@ export interface NoteReply {
   at: DashboardTime;
 }
 /**
- * GET /students/{id}/notes (filters: chapter, tag).
+ * Query parameters of the notes list (2.23.0), shown as an object. There is no `q`: search is a POST (NoteSearchRequest), so note text never reaches a URL.
+ */
+export interface NoteListQuery {
+  chapter?: DashboardId;
+  tag?: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
+  cursor?: string;
+  limit?: number;
+}
+/**
+ * GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.
  */
 export interface NoteListResponse {
   notes: Note[];
+  /**
+   * Added in 2.23.0. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer).
+   */
+  cursor?: string | null;
 }
 /**
  * POST /students/{id}/notes/{noteId}/replies: text, a reaction, or both.
@@ -2984,11 +3148,43 @@ export interface NoteReplyRequest {
   text?: string;
   reaction?: string;
 }
+/**
+ * POST /learners/me/notes/search (2.23.0). A POST so that note-derived text never reaches a URL, Kong or access logs; there is no GET `q`. The service never logs this body. `q` is NFC-normalised and matched as a case-insensitive substring over `text` and `quote` of the caller's own notes.
+ */
+export interface NoteSearchRequest {
+  q: string;
+  sectionId?: DashboardId;
+  /**
+   * The `cursor` of the previous page.
+   */
+  cursor?: string;
+  limit?: number;
+}
+/**
+ * Answer of POST /learners/me/notes/search (2.23.0): newest first; no repeats or skips between pages. A learner with no link row gets an empty list (200).
+ */
+export interface NoteSearchResponse {
+  notes: Note[];
+  /**
+   * Pass as `cursor` for the next page; null or absent on the last page.
+   */
+  cursor?: string | null;
+}
 export interface NoteVersion {
   version: number;
   text: string;
   tag: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   at: DashboardTime;
+}
+/**
+ * GET /learners/me/notes/{noteId}/versions and GET /students/{id}/notes/{noteId}/versions (2.23.0): the versions of one note, oldest first, replayed from its events. A deleted note is a tombstone and answers 404, never this shape.
+ */
+export interface NoteVersionsResponse {
+  noteId: DashboardId;
+  /**
+   * @minItems 1
+   */
+  versions: [NoteVersion, ...NoteVersion[]];
 }
 export interface PositionEntry {
   knowledgeId: DashboardId;
@@ -3029,6 +3225,7 @@ export interface ReviewListResponse {
     [k: string]: number;
   };
   lastReviewAt?: DashboardTime | null;
+  ready?: Ready;
 }
 /**
  * PUT /guardians/me/review-rhythm (days 0 = Sunday).
@@ -3049,6 +3246,36 @@ export interface ReviewRhythm {
   minuteOfDay: number;
   channel: 'push' | 'email' | 'none';
   timezone: string;
+}
+/**
+ * A live note in a learner's own export (2.23.0), with all its versions. No other person's id or name appears: guardian replies are not part of the self export.
+ */
+export interface SelfExportNote {
+  id: DashboardId;
+  knowledgeId: DashboardId;
+  sectionId: DashboardId;
+  blockId?: DashboardId;
+  quote?: string;
+  /**
+   * Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice.
+   */
+  quoteOffset?: number;
+  tag: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
+  text: string;
+  createdAt: DashboardTime;
+  latestVersion: number;
+  /**
+   * @minItems 1
+   */
+  versions: [NoteVersion, ...NoteVersion[]];
+}
+/**
+ * POST /students/{id}/export when `id` is the caller's own id (2.23.0; self learners only: a guarded child cannot export their own notes, the guardian does). Restricted shape: the learner's own notes with versions, deleted notes as `{ id, deletedAt }`, no other person's id or name. With no link row the export is an empty document (`notes: []`). Own export stays open for a withdrawn or `none` link.
+ */
+export interface SelfExportResponse {
+  learnerId: DashboardId40;
+  exportedAt: DashboardTime;
+  notes: (SelfExportNote | DeletedNote)[];
 }
 /**
  * RoundSummary without the parent-judged teach-back count (my-learning shows the child's own numbers only).
@@ -3099,17 +3326,37 @@ export interface ExportResponse {
    */
   rounds: {}[];
   /**
-   * Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed.
+   * Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed. Omitted when `derivedPending` is true (2.23.0).
    */
-  sectionStates: {}[];
+  sectionStates?: {}[];
   /**
-   * Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed.
+   * Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed. Omitted when `derivedPending` is true (2.23.0); note-derived, because a note adds a chapter and a round summary.
    */
-  roundSummaries: {}[];
+  roundSummaries?: {}[];
   /**
    * Retention summaries (reading evidence kept after the 2-year detail window).
    */
   summaries: {}[];
+  /**
+   * Added in 2.23.0. True when the guardian's derived state is not ready: exactly `sectionStates`, `roundSummaries`, `reviews` and `reviewSnoozes` are then omitted. `summaries`, `positions` and `rounds` stay. 2.22 consumers must tolerate the absent sections.
+   */
+  derivedPending?: boolean;
+  /**
+   * Added in 2.23.0 to the schema. Derived review rows as stored; omitted when `derivedPending` is true.
+   */
+  reviews?: {}[];
+  /**
+   * Added in 2.23.0 to the schema. Derived review snooze rows as stored; omitted when `derivedPending` is true.
+   */
+  reviewSnoozes?: {}[];
+  /**
+   * Added in 2.23.0. The learner's notes as the service holds them; a deleted note is `{ id, deletedAt }`. For a guardian the claim rule applies (notes before the claim are left out); the service decides, so this stays optional like the derived parts.
+   */
+  notes?: (Note | DeletedNote)[];
+  /**
+   * Added in 2.23.0. Guardian replies to the exported notes (claim rule applied); replies of a deleted note are redacted and left out.
+   */
+  noteReplies?: NoteReply[];
 }
 /**
  * An event with its server sequence number.
@@ -3162,6 +3409,7 @@ export interface HomeResponse {
    */
   tonightPlan: [] | [PlanItem] | [PlanItem, PlanItem] | [PlanItem, PlanItem, PlanItem];
   pendingReviews: PendingReviews;
+  ready?: Ready;
 }
 /**
  * A next step with the minutes it takes (tonight's plan).
@@ -3247,6 +3495,7 @@ export interface MapResponse {
    */
   rulesVersion: string;
   chapters: MapChapter[];
+  ready?: Ready;
 }
 /**
  * One chapter in the child's own view.
@@ -3282,6 +3531,7 @@ export interface MyLearningResponse {
   studentId: DashboardId;
   rulesVersion: string;
   chapters: MyLearningChapter[];
+  ready?: Ready;
 }
 /**
  * GET /students/{studentId}/topics/{knowledgeId}/{sectionId} (parent). An unopened section is step 0, not started.
@@ -3364,6 +3614,7 @@ export interface TopicResponse {
   understoodAt: DashboardTime | null;
   habits: Habits;
   rounds: RoundSummary[];
+  ready?: Ready;
 }
 /**
  * The additional claims only; the token carries its other claims (sub, scope, exp, ...) unchanged. For a student token `sub` is the student's own subject id, `guardian` the parent's subject id.

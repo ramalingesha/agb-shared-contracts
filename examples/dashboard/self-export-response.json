@@ -1,0 +1,36 @@
+{
+  "learnerId": "usr_adult_01",
+  "exportedAt": "2026-11-26T10:00:00+05:30",
+  "notes": [
+    {
+      "id": "note_01",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2",
+      "blockId": "s2-n1",
+      "quote": "Frogs lay eggs in water.",
+      "quoteOffset": 14,
+      "tag": "I have a question",
+      "text": "Why do frogs lay so many eggs at once?",
+      "createdAt": "2026-11-22T09:30:00+05:30",
+      "latestVersion": 2,
+      "versions": [
+        {
+          "version": 1,
+          "text": "Why do frogs lay so many eggs?",
+          "tag": "I have a question",
+          "at": "2026-11-22T09:30:00+05:30"
+        },
+        {
+          "version": 2,
+          "text": "Why do frogs lay so many eggs at once?",
+          "tag": "I have a question",
+          "at": "2026-11-22T09:40:00+05:30"
+        }
+      ]
+    },
+    {
+      "id": "note_02",
+      "deletedAt": "2026-11-23T08:00:00+05:30"
+    }
+  ]
+}

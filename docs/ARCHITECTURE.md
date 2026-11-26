@@ -3,7 +3,7 @@
 ## What this is
 
 A static, versioned set of language-agnostic contracts published as one npm package,
-`@ramalingesha/shared-contracts` (version 2.22.0), to GitHub Packages. It holds JSON Schema files,
+`@ramalingesha/shared-contracts` (version 2.23.0), to GitHub Packages. It holds JSON Schema files,
 JSON data tables, an error-code registry, one small runtime file (`dashboard/index.js`), generated TypeScript `.d.ts` files and examples. There
 is no runtime service, database or API. Node consumers `npm install` it; Python consumers fetch the
 raw JSON over HTTPS. Services validate against the schemas themselves.
@@ -88,7 +88,7 @@ Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) 2.9.0 (AGB-898/
 - **inventory, pages, coverage-report, gate-index, picture-requests (2.9.0):** the source inventory, the page ledger, the inventory-to-master coverage report, the Gate 1 index and the picture requests for the drawn kits. The job also gains `sources[].layout`, `sourceLanguage` and `asIsItems`, and the Runner settings gain `intake` and `ocr`.
 - **Store keys** are relative, forward-slash, pattern-checked; no schema holds an OS path.
 
-## Parent dashboard contracts (`schemas/dashboard/`, 2.20.0 to 2.22.0)
+## Parent dashboard contracts (`schemas/dashboard/`, 2.20.0 to 2.23.0)
 
 Added in 2.20.0 (AGB-1084, for the guardian profiles AGB-904 and the progress service AGB-1067), extended in 2.21.0 (AGB-1096) and 2.22.0 (AGB-1099). All later additions are optional, so earlier documents still validate.
 
@@ -110,7 +110,7 @@ Added in 2.20.0 (AGB-1084, for the guardian profiles AGB-904 and the progress se
   version with the package version" as D67. It is not covered by the equality check.
 - Every schema change needs a `CHANGELOG.md` entry (checked in the pre-push hook), and no error code may
   be removed.
-- Release history: 2.22.0 activity block, mix-up matching and the `activity-done` event, 2.21.0 progress read shapes and event follow-ups, 2.20.0 dashboard and guardian contracts, 2.19.0 `Narration.parts`, 2.18.0 change after publish and import, 2.17.0 review comments, 2.16.0 `run` and `lesson-view`, 2.15.x runner `claudeCommand`, 2.14.0 status-check error codes, 2.13.0 Studio creator journey (job spec v2, lesson, lesson-facet, audience presets, studio-errors), 2.12.0 Studio job status, plan before start, notifications (job-plan, runner-presence, notification, notification-prefs, stage progress/wait/estimate), 2.11.0 Studio generation items (template `generate`, job-item, item-keys, practice), 2.10.0 Runner session limit setting, 2.9.0 Studio upload to Gate 1, 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
+- Release history: 2.23.0 learner notes Phase A (quoteOffset, note audience, learner status, search, versions, self export, not-ready state, own consent and step-up types, erase body, step-up codes), 2.22.0 activity block, mix-up matching and the `activity-done` event, 2.21.0 progress read shapes and event follow-ups, 2.20.0 dashboard and guardian contracts, 2.19.0 `Narration.parts`, 2.18.0 change after publish and import, 2.17.0 review comments, 2.16.0 `run` and `lesson-view`, 2.15.x runner `claudeCommand`, 2.14.0 status-check error codes, 2.13.0 Studio creator journey (job spec v2, lesson, lesson-facet, audience presets, studio-errors), 2.12.0 Studio job status, plan before start, notifications (job-plan, runner-presence, notification, notification-prefs, stage progress/wait/estimate), 2.11.0 Studio generation items (template `generate`, job-item, item-keys, practice), 2.10.0 Runner session limit setting, 2.9.0 Studio upload to Gate 1, 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
   table explanations, 2.4.0 voice samples and answer marks, 2.3.0 technical lessons, 2.2.0 MVP modules,
   2.1.0 `uri-reference`, 2.0.0 StyleId, 1.2.0 Knowledge schema, 1.1.0 CI pipeline, 1.0.0 error registry.
 

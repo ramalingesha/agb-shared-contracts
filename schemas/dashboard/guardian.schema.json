@@ -521,6 +521,167 @@
           "$ref": "common.schema.json#/definitions/DashboardTime"
         }
       }
+    },
+    "LearnerRecordConsentRequest": {
+      "title": "LearnerRecordConsentRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "PUT /learners/me/record-consent (2.23.0, adult token): a learner turns saving of their own notes on or off. The learner's own consent has its own text versions, separate from a guardian's. Refused for an account that may be a minor (a member of a minor Circle without an exempt role, an enrolment-consent holder, a student profile) and after an own erase (terminal).",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "withdrawn"
+          ]
+        },
+        "over18Declared": {
+          "type": "boolean",
+          "description": "The 18 or over declaration. Required (true) when `state` is `active`; the declaration alone is not trusted, the service also checks eligibility."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The own-consent text version shown to the learner. Required when `state` is `active`."
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "LearnerRecordConsent": {
+      "title": "LearnerRecordConsent",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GET and PUT answer of /learners/me/record-consent (2.23.0): the learner's current own consent.",
+      "required": [
+        "status",
+        "purposes",
+        "over18Declared"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "withdrawn",
+            "none"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "over18Declared": {
+          "type": "boolean"
+        },
+        "givenAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/DashboardTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "StepUpMethod": {
+      "title": "StepUpMethod",
+      "type": "string",
+      "enum": [
+        "password",
+        "totp",
+        "password+totp",
+        "email-code"
+      ],
+      "description": "How a fresh sign-in is proved before an own erase (2.23.0): password for password accounts, TOTP when MFA is on, both when both exist, a one-time code mailed to the verified address for social-only accounts with neither."
+    },
+    "StepUpStartResponse": {
+      "title": "StepUpStartResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /learners/me/step-up/start (2.23.0, no body): the proof the learner must give. Limits are per user on the server (5 tries per code, one live code, 3 sends per hour and 10 per day, 15 minutes lockout after 5 failures in an hour).",
+      "required": [
+        "stepUpId",
+        "method",
+        "expiresAt"
+      ],
+      "properties": {
+        "stepUpId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "method": {
+          "$ref": "#/definitions/StepUpMethod"
+        },
+        "expiresAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        }
+      }
+    },
+    "StepUpCompleteRequest": {
+      "title": "StepUpCompleteRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /learners/me/step-up/complete (2.23.0). Send exactly what `method` asks: `password`, `totpCode` or `code` (both `password` and `totpCode` for password+totp).",
+      "required": [
+        "stepUpId"
+      ],
+      "properties": {
+        "stepUpId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "totpCode": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$"
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$",
+          "description": "The 6-digit one-time code mailed for method `email-code`."
+        }
+      }
+    },
+    "StepUpCompleteResponse": {
+      "title": "StepUpCompleteResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Answer of step-up/complete (2.23.0): a single-use ticket valid for 5 minutes, bound to the step-up record and the session, that the erase call needs. A refresh grant cannot mint one.",
+      "required": [
+        "ticket",
+        "expiresAt"
+      ],
+      "properties": {
+        "ticket": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "expiresAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        }
+      }
     }
   }
 }
