@@ -66,6 +66,26 @@
       "code": "SCHEMA_UNSUPPORTED",
       "httpStatus": 400,
       "description": "Per event (2.23.0): the event uses a field or value this service version does not know (version skew, for example a newer app). Not permanent: the app keeps the event, moves on and retries after an update."
+    },
+    {
+      "code": "STEP_UP_REQUIRED",
+      "httpStatus": 401,
+      "description": "Own erase (2.23.0): the step-up ticket is missing, expired, already used or bound to another session. Start a new step-up."
+    },
+    {
+      "code": "STEP_UP_CODE_INVALID",
+      "httpStatus": 400,
+      "description": "Step-up (2.23.0): the password, TOTP code or one-time code is wrong or expired; a used TOTP counter is also refused. Counts as one of the 5 tries."
+    },
+    {
+      "code": "STEP_UP_LOCKED",
+      "httpStatus": 429,
+      "description": "Step-up (2.23.0): 5 failures in an hour lock step-up for the user for 15 minutes."
+    },
+    {
+      "code": "STEP_UP_SEND_LIMITED",
+      "httpStatus": 429,
+      "description": "Step-up (2.23.0): the one-time code was already sent 3 times in an hour or 10 times in a day; no new code is sent."
     }
   ]
 }

@@ -909,6 +909,27 @@
             "type": "object"
           },
           "description": "Added in 2.23.0 to the schema. Derived review snooze rows as stored; omitted when `derivedPending` is true."
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "progress-api.schema.json#/definitions/Note"
+              },
+              {
+                "$ref": "progress-api.schema.json#/definitions/DeletedNote"
+              }
+            ]
+          },
+          "description": "Added in 2.23.0. The learner's notes as the service holds them; a deleted note is `{ id, deletedAt }`. For a guardian the claim rule applies (notes before the claim are left out); the service decides, so this stays optional like the derived parts."
+        },
+        "noteReplies": {
+          "type": "array",
+          "items": {
+            "$ref": "progress-api.schema.json#/definitions/NoteReply"
+          },
+          "description": "Added in 2.23.0. Guardian replies to the exported notes (claim rule applied); replies of a deleted note are redacted and left out."
         }
       }
     },

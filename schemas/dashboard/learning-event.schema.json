@@ -1672,8 +1672,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "correctsEventId",
-            "reason"
+            "correctsEventId"
           ],
           "properties": {
             "correctsEventId": {
@@ -2271,7 +2270,25 @@
                   }
                 }
               ]
+            },
+            "redacted": {
+              "const": true,
+              "readOnly": true,
+              "description": "Added in 2.23.0. SET BY THE SERVER ONLY: this correction targets a note that was deleted, so its `reason` and `replacement.detail.text` / `quote` were blanked (redaction, TA D18). Intake refuses it from a client, like `redacted` on a note event. Because `reason` is removed, `reason` is required only when `redacted` is absent (a 2.22 correction always has it)."
             }
+          },
+          "if": {
+            "not": {
+              "required": [
+                "redacted"
+              ]
+            }
+          },
+          "then": {
+            "required": [
+              "correctsEventId",
+              "reason"
+            ]
           }
         }
       },

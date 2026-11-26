@@ -120,8 +120,13 @@ const EXAMPLES_2_23 = {
   'step-up-start-response': ['guardian', 'StepUpStartResponse'],
   'step-up-complete-request': ['guardian', 'StepUpCompleteRequest'],
   'step-up-complete-response': ['guardian', 'StepUpCompleteResponse'],
+  'note-quote-offset': ['progress-api', 'Note'],
+  'note-list-response-paged': ['progress-api', 'NoteListResponse'],
+  'note-list-query': ['progress-api', 'NoteListQuery'],
+  'learner-erase-request': ['progress-api', 'LearnerEraseRequest'],
+  'export-response-with-notes': ['progress-reads', 'ExportResponse'],
 };
-const NEW_EVENT_EXAMPLES_2_23 = ['event-note-quote-offset', 'event-note-redacted-create', 'event-note-redacted-guardian-reply'];
+const NEW_EVENT_EXAMPLES_2_23 = ['event-note-quote-offset', 'event-note-redacted-create', 'event-note-redacted-guardian-reply', 'event-correction-redacted'];
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
 const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
 const event = (kind) => example(`event-${kind}`);
@@ -596,6 +601,38 @@ test('2.23.0 error codes: three per-event refusal codes, none removed', () => {
   const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes.map((c) => c.code);
   for (const c of ['EVENT_INVALID', 'EVENT_KIND_NOT_ALLOWED', 'LINK_ERASED', 'SCHEMA_UNSUPPORTED', 'CONSENT_NOT_ACTIVE', 'CURSOR_EXPIRED']) assert.ok(list.includes(c), c);
   assert.equal(new Set(list).size, list.length, 'duplicate code');
+});
+
+test('2.23.0 gap fixes: redacted correction, Note.quoteOffset, paged list, export notes, erase body', () => {
+  // a redacted correction (server-set) has no reason; a 2.22 correction still needs one
+  validEvent(example('event-correction-redacted'));
+  invalidEvent(invalidExample('correction-no-reason'));
+  invalidEvent(invalidExample('correction-redacted-false'));
+  const corr = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventCorrection.properties.detail.properties.redacted;
+  assert.equal(corr.readOnly, true); assert.equal(corr.const, true);
+  // Note reads the pin offset back
+  assert.equal(example('note-quote-offset').quoteOffset, 14);
+  const bad = example('note-quote-offset'); bad.quoteOffset = -1; invalid('progress-api', 'Note', bad, 'minimum');
+  // paging
+  valid('progress-api', 'NoteListResponse', example("note-list-response-paged"));
+  valid('progress-api', 'NoteListResponse', { notes: [] });
+  invalid('progress-api', 'NoteListResponse', invalidExample('note-list-response-bad-cursor'), 'anyOf');
+  invalid('progress-api', 'NoteListQuery', { limit: 51 }, 'maximum');
+  invalid('progress-api', 'NoteListQuery', { q: 'frogs' }, 'additionalProperties');
+  // guardian export: optional notes and noteReplies
+  const exp = example('export-response-with-notes');
+  assert.ok(exp.notes.length === 2 && exp.noteReplies.length === 1);
+  const delWithText = example('export-response-with-notes'); delWithText.notes[1].text = 'x'; invalid('progress-reads', 'ExportResponse', delWithText);
+  // erase body
+  invalid('progress-api', 'LearnerEraseRequest', invalidExample('learner-erase-request-no-ticket'), 'required', 'ticket');
+});
+
+test('2.23.0 step-up error codes follow the registry conventions', () => {
+  const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes;
+  const want = { STEP_UP_REQUIRED: 401, STEP_UP_CODE_INVALID: 400, STEP_UP_LOCKED: 429, STEP_UP_SEND_LIMITED: 429, LINK_ERASED: 409, EVENT_KIND_NOT_ALLOWED: 400, SCHEMA_UNSUPPORTED: 400 };
+  for (const [code, status] of Object.entries(want)) assert.equal(list.find((c) => c.code === code).httpStatus, status, code);
+  // append-only: the ten 2.22 codes are still first and unchanged
+  assert.deepEqual(list.slice(0, 10).map((c) => c.code), ['PIN_LOCKED', 'CONSENT_REQUIRED', 'STUDENT_SCOPE_ONLY', 'CONSENT_NOT_ACTIVE', 'NOT_GUARDIAN', 'EVENT_INVALID', 'BATCH_TOO_LARGE', 'CURSOR_EXPIRED', 'EXPORT_TOO_LARGE', 'INVALID_PARAMETER']);
 });
 
 test('2.23.0 has no Phase B (sharing) types', () => {

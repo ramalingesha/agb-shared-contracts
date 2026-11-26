@@ -311,6 +311,11 @@
         "guardianVisible": {
           "type": "boolean",
           "description": "Added in 2.23.0. True when the learner's guardian can read this note under the claim rule (a note written before the claim stays private). Computed at read time."
+        },
+        "quoteOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Added in 2.23.0. Character offset of `quote` inside the block text, read back so the app can reopen at the pin. Absent when the note has none."
         }
       }
     },
@@ -395,7 +400,7 @@
       "title": "NoteListResponse",
       "type": "object",
       "additionalProperties": false,
-      "description": "GET /students/{id}/notes (filters: chapter, tag).",
+      "description": "GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.",
       "required": [
         "notes"
       ],
@@ -405,6 +410,19 @@
           "items": {
             "$ref": "#/definitions/Note"
           }
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Added in 2.23.0. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer)."
         }
       }
     },
@@ -853,6 +871,53 @@
               }
             ]
           }
+        }
+      }
+    },
+    "NoteListQuery": {
+      "title": "NoteListQuery",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Query parameters of the notes list (2.23.0), shown as an object. There is no `q`: search is a POST (NoteSearchRequest), so note text never reaches a URL.",
+      "properties": {
+        "chapter": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "tag": {
+          "type": "string",
+          "enum": [
+            "Rough note",
+            "Remember this",
+            "My example",
+            "I have a question",
+            "I don't get this"
+          ]
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    },
+    "LearnerEraseRequest": {
+      "title": "LearnerEraseRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "description": "POST /learners/me/learning-record/erase (2.23.0, adult token): permanent and terminal for the account. The body carries the single-use step-up ticket from step-up/complete; the answer is DataRequestResult. A missing, expired or used ticket is STEP_UP_REQUIRED.",
+      "required": [
+        "ticket"
+      ],
+      "properties": {
+        "ticket": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
         }
       }
     }

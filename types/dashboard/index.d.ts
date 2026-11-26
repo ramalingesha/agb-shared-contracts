@@ -322,9 +322,11 @@ export interface DashboardContracts {
   EventIntakeRequest?: EventIntakeRequest;
   EventIntakeResponse?: EventIntakeResponse;
   EventResult?: EventResult;
+  LearnerEraseRequest?: LearnerEraseRequest;
   LearnerRelation?: LearnerRelation;
   LearnerStatusResponse?: LearnerStatusResponse;
   Note?: Note;
+  NoteListQuery?: NoteListQuery;
   NoteListResponse?: NoteListResponse;
   NoteReply?: NoteReply;
   NoteReplyRequest?: NoteReplyRequest;
@@ -675,7 +677,7 @@ export interface EventCorrection {
   at: DashboardTime;
   detail: {
     correctsEventId: DashboardId;
-    reason: string;
+    reason?: string;
     /**
      * PLANNED: not applied by the service yet (it only voids events), but accepted at intake. Optional corrected detail values for the event named by correctsEventId. `targetKind` is the kind of that event (any kind except `correction`) and must equal the real kind of the corrected event (checked by the server, not by this schema); `detail` holds only fields that the kind's own `detail` allows, and only the fields to change (the others keep their value). A field the target kind does not allow is rejected. Without `replacement` the correction voids the event.
      */
@@ -1726,6 +1728,10 @@ export interface EventCorrection {
               | [DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage, DashboardLanguage];
           };
         };
+    /**
+     * Added in 2.23.0. SET BY THE SERVER ONLY: this correction targets a note that was deleted, so its `reason` and `replacement.detail.text` / `quote` were blanked (redaction, TA D18). Intake refuses it from a client, like `redacted` on a note event. Because `reason` is removed, `reason` is required only when `redacted` is absent (a 2.22 correction always has it).
+     */
+    redacted?: true;
   };
 }
 /**
@@ -3061,6 +3067,12 @@ export interface DashboardApiError {
   details?: {};
 }
 /**
+ * POST /learners/me/learning-record/erase (2.23.0, adult token): permanent and terminal for the account. The body carries the single-use step-up ticket from step-up/complete; the answer is DataRequestResult. A missing, expired or used ticket is STEP_UP_REQUIRED.
+ */
+export interface LearnerEraseRequest {
+  ticket: string;
+}
+/**
  * GET /learners/me/status (2.23.0). With no link row at all the service answers 200 `{ relation: "none", recording: "off", guardianVisible: false, guardianSince: null }`.
  */
 export interface LearnerStatusResponse {
@@ -3097,6 +3109,10 @@ export interface Note {
    * Added in 2.23.0. True when the learner's guardian can read this note under the claim rule (a note written before the claim stays private). Computed at read time.
    */
   guardianVisible?: boolean;
+  /**
+   * Added in 2.23.0. Character offset of `quote` inside the block text, read back so the app can reopen at the pin. Absent when the note has none.
+   */
+  quoteOffset?: number;
 }
 export interface NoteReply {
   id: DashboardId;
@@ -3107,10 +3123,23 @@ export interface NoteReply {
   at: DashboardTime;
 }
 /**
- * GET /students/{id}/notes (filters: chapter, tag).
+ * Query parameters of the notes list (2.23.0), shown as an object. There is no `q`: search is a POST (NoteSearchRequest), so note text never reaches a URL.
+ */
+export interface NoteListQuery {
+  chapter?: DashboardId;
+  tag?: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
+  cursor?: string;
+  limit?: number;
+}
+/**
+ * GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.
  */
 export interface NoteListResponse {
   notes: Note[];
+  /**
+   * Added in 2.23.0. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer).
+   */
+  cursor?: string | null;
 }
 /**
  * POST /students/{id}/notes/{noteId}/replies: text, a reaction, or both.
@@ -3320,6 +3349,14 @@ export interface ExportResponse {
    * Added in 2.23.0 to the schema. Derived review snooze rows as stored; omitted when `derivedPending` is true.
    */
   reviewSnoozes?: {}[];
+  /**
+   * Added in 2.23.0. The learner's notes as the service holds them; a deleted note is `{ id, deletedAt }`. For a guardian the claim rule applies (notes before the claim are left out); the service decides, so this stays optional like the derived parts.
+   */
+  notes?: (Note | DeletedNote)[];
+  /**
+   * Added in 2.23.0. Guardian replies to the exported notes (claim rule applied); replies of a deleted note are redacted and left out.
+   */
+  noteReplies?: NoteReply[];
 }
 /**
  * An event with its server sequence number.
