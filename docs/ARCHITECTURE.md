@@ -3,23 +3,24 @@
 ## What this is
 
 A static, versioned set of language-agnostic contracts published as one npm package,
-`@ramalingesha/shared-contracts` (version 2.13.0), to GitHub Packages. It holds JSON Schema files,
-two JSON data tables, an error-code registry, generated TypeScript `.d.ts` files and examples. There
+`@ramalingesha/shared-contracts` (version 2.22.0), to GitHub Packages. It holds JSON Schema files,
+JSON data tables, an error-code registry, one small runtime file (`dashboard/index.js`), generated TypeScript `.d.ts` files and examples. There
 is no runtime service, database or API. Node consumers `npm install` it; Python consumers fetch the
 raw JSON over HTTPS. Services validate against the schemas themselves.
 
 The point is one source of truth: several Python and Node services and apps agree on the same error
-codes, response envelope, Knowledge read surface and Studio job model, and "did the contract change?"
+codes, response envelope, Knowledge read surface, Studio job model and parent dashboard / progress events, and "did the contract change?"
 is a diffable CHANGELOG question.
 
 ## What the package contains
 
-| Area | Files | Own version field |
-|---|---|---|
-| Error registry | `error-codes.json` (22 codes in AUTH, VAL, DB, SYS, BIZ) | yes, equals package version |
-| Response envelope | `api-response-schema.json` | yes, equals package version |
-| Knowledge Platform read surface | `knowledge-api.schema.json`, `types/knowledge-api/` | yes, `0.1.0` today |
-| Content Studio | `schemas/studio/`, `examples/studio/`, `types/studio/` | no (package version) |
+| Area                                   | Files                                                                                 | Own version field           |
+| -------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------- |
+| Error registry                         | `error-codes.json` (22 codes in AUTH, VAL, DB, SYS, BIZ)                              | yes, equals package version |
+| Response envelope                      | `api-response-schema.json`                                                            | yes, equals package version |
+| Knowledge Platform read surface        | `knowledge-api.schema.json`, `types/knowledge-api/`                                   | yes, `0.1.0` today          |
+| Content Studio                         | `schemas/studio/`, `examples/studio/`, `types/studio/`                                | no (package version)        |
+| Parent dashboard and guardian profiles | `schemas/dashboard/`, `examples/dashboard/`, `types/dashboard/`, `dashboard/index.js` | no (package version)        |
 
 ## Knowledge contract (`knowledge-api.schema.json`)
 
@@ -47,7 +48,7 @@ Core enums (all verified in the schema):
   It is an indirection over the media layer so a client never knows the provider. `url` is a
   `uri-reference` since 2.1.0, so a static corpus can use relative paths.
 - **BlockType:** `heading`, `paragraph`, `list`, `listItem`, `quote`, `image`, `table`, `divider`,
-  `reference`, `example`, `callout`, `qa`, `takeaways`, `code`.
+  `reference`, `example`, `callout`, `qa`, `takeaways`, `code`, `activity` (2.22.0).
 - Block modifiers: `CalloutVariant` (`did-you-know`, `book-note`, `mix-up`, `another-way`, `example`,
   `summary`, `pattern`), `QaKind` (`check`, `explain-back`, `mcq`, `odd-one-out`, `fill-blank`,
   `true-false`, `short`, `long`, `activity`, `personal`), `Audience` (`learner`, `parent`, `trainer`),
@@ -63,6 +64,8 @@ Core enums (all verified in the schema):
   languages. Id uniqueness is checked by the content build, not by JSON Schema.
 
 ## Content Studio contracts (`schemas/studio/`)
+
+Later Studio releases, all additive: 2.14.0 status-check codes, 2.15.0 `runner-settings.claudeCommand`, 2.16.0 `run` and `lesson-view` (the lesson that stays open), 2.17.0 `review-comment`, `comment-*` and approve shapes (review by comments), 2.18.0 `facet-change-request`, `take-down-*`, `change-open-result`, `import-*` and `job-item.totalSections`. The next paragraph is the history up to 2.13.0.
 
 Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) 2.9.0 (AGB-898/899/900) 2.10.0 (AGB-888, `runner-settings.sessionTimeoutMinutes`) 2.11.0 (AGB-908/909/910, generation items and Gate 2) 2.12.0 (AGB-922/923/924, job status, plan and notifications) and 2.13.0 (AGB-888 Phase 6a, creator journey: job spec v2, lesson and facet, audience presets, Studio error list). JSON Schema draft-07 is the source.
 
@@ -85,6 +88,17 @@ Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) 2.9.0 (AGB-898/
 - **inventory, pages, coverage-report, gate-index, picture-requests (2.9.0):** the source inventory, the page ledger, the inventory-to-master coverage report, the Gate 1 index and the picture requests for the drawn kits. The job also gains `sources[].layout`, `sourceLanguage` and `asIsItems`, and the Runner settings gain `intake` and `ocr`.
 - **Store keys** are relative, forward-slash, pattern-checked; no schema holds an OS path.
 
+## Parent dashboard contracts (`schemas/dashboard/`, 2.20.0 to 2.22.0)
+
+Added in 2.20.0 (AGB-1084, for the guardian profiles AGB-904 and the progress service AGB-1067), extended in 2.21.0 (AGB-1096) and 2.22.0 (AGB-1099). All later additions are optional, so earlier documents still validate.
+
+- **Token claims** (`token-claims.schema.json`): optional `profile` (`adult` | `student`), `guardian` and `consent_v`; a token without them is an adult token (`profileOf`, `isStudentToken` in `dashboard/index.js`).
+- **Guardian API** (`guardian.schema.json`): `StudentProfile`, create, update and list shapes, `ProfileConsent`, `GiveConsentRequest`, PIN set and verify, `SwitchStudentResponse`, `SwitchToParentResponse`, data export and erase results, the claim shapes, and `GuardianAgeBand` (`under13` | `13to17`, see `guardianAgeBandOf`).
+- **Learning events** (`learning-event.schema.json`): `LearningEvent`, a union discriminated by `kind` with a `detail` per kind; 17 kinds since 2.22.0 (the last, `activity-done`, is for the parent actor only). At most `BATCH_MAX` (50) events per intake request.
+- **Progress API** (`progress-api.schema.json`): event intake with a per-event result of `accepted`, `duplicate` or `error`, positions, changes, notes, pending reviews and the review rhythm. **Reads** (`progress-reads.schema.json`, 2.21.0): `MapResponse`, `TopicResponse`, `HomeResponse`, `MyLearningResponse`, `ExportResponse`.
+- **Errors** (`dashboard-errors.json`): a separate file like `studio-errors.json`; each code carries its HTTP status.
+- **Content side of 2.22.0** (in `knowledge-api.schema.json`): the `activity` block, `mixUpMatches`, `newCase` and `tests` on `qa` blocks, `Knowledge.buildsOn` and `Knowledge.sections` (`SectionSummary`). Nothing enforces them yet; deployment order is contracts, progress service, then app and content (see `CHANGELOG.md` 2.22.0).
+
 ## Versioning policy
 
 - Package version is the release train: MINOR for additions (new optional fields, new files), MAJOR for
@@ -92,23 +106,23 @@ Added in 2.7.0 (AGB-889) and extended in 2.8.0 (AGB-894/895/896) 2.9.0 (AGB-898/
 - `error-codes.json` and `api-response-schema.json` must equal the package version (`scripts/check-versions.js`,
   also enforced in CI).
 - `knowledge-api.schema.json` has an independent `version`, currently `0.1.0`, while the package is
-  2.8.x. This is a known gap tracked in AGB-902; the parent decision log records "align the K3 schema
+  2.22.x. This is a known gap tracked in AGB-902; the parent decision log records "align the K3 schema
   version with the package version" as D67. It is not covered by the equality check.
 - Every schema change needs a `CHANGELOG.md` entry (checked in the pre-push hook), and no error code may
   be removed.
-- Release history: 2.13.0 Studio creator journey (job spec v2, lesson, lesson-facet, audience presets, studio-errors), 2.12.0 Studio job status, plan before start, notifications (job-plan, runner-presence, notification, notification-prefs, stage progress/wait/estimate), 2.11.0 Studio generation items (template `generate`, job-item, item-keys, practice), 2.10.0 Runner session limit setting, 2.9.0 Studio upload to Gate 1, 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
+- Release history: 2.22.0 activity block, mix-up matching and the `activity-done` event, 2.21.0 progress read shapes and event follow-ups, 2.20.0 dashboard and guardian contracts, 2.19.0 `Narration.parts`, 2.18.0 change after publish and import, 2.17.0 review comments, 2.16.0 `run` and `lesson-view`, 2.15.x runner `claudeCommand`, 2.14.0 status-check error codes, 2.13.0 Studio creator journey (job spec v2, lesson, lesson-facet, audience presets, studio-errors), 2.12.0 Studio job status, plan before start, notifications (job-plan, runner-presence, notification, notification-prefs, stage progress/wait/estimate), 2.11.0 Studio generation items (template `generate`, job-item, item-keys, practice), 2.10.0 Runner session limit setting, 2.9.0 Studio upload to Gate 1, 2.8.0 Studio review screens, 2.7.0 Studio contracts, 2.6.0 Study Jam, 2.5.0 picture and
   table explanations, 2.4.0 voice samples and answer marks, 2.3.0 technical lessons, 2.2.0 MVP modules,
   2.1.0 `uri-reference`, 2.0.0 StyleId, 1.2.0 Knowledge schema, 1.1.0 CI pipeline, 1.0.0 error registry.
 
 ## Generation, validation, publishing
 
-- `types/knowledge-api/` and `types/studio/` are generated by `json-schema-to-typescript` (plus the
+- `types/knowledge-api/`, `types/studio/` and `types/dashboard/` are generated by `json-schema-to-typescript` (plus the
   TypeScript compiler API for the topic split) and committed, never hand-edited. The freshness check
   fails on any diff or untracked generated file.
-- `npm run validate` runs the three validators; the Knowledge validator also checks
+- `npm run validate` runs the four validators (error codes, knowledge schema, studio schemas, dashboard schemas); the Knowledge validator also checks
   `scripts/contract-samples.json`.
 - CI runs only on push to `main` (path filtered); PR-only checks moved into the husky hooks (AGB-837).
-- `publish.yml` runs on a `v*.*.*` tag: bump `package.json`, update `CHANGELOG.md`, merge, then tag.
+- `publish.yml` runs on a `v*.*.*` tag: bump `package.json` (the tag must equal it), update `CHANGELOG.md`, merge, then tag. It validates, checks that the package, error-code and API-envelope versions agree, runs `npm publish` to GitHub Packages and creates a GitHub release from the CHANGELOG section. Publish contracts before the services and apps that need the new version.
 
 ## Consumers
 
@@ -125,4 +139,4 @@ Parent repo `ramalingesha/ai_gnan_bandar`: Confluence-derived design in `docs/`,
 Friend leading to Study Jam), D67 (align the schema version with the package version), D61 (two content
 modes: pre-generated library and Studio), and section 5 (Content Studio, epic AGB-888).
 
-Last verified against main 38677fa on 2026-11-10
+Last verified against main d5446fa on 2026-11-26
