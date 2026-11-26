@@ -1153,11 +1153,21 @@
             "quote": {
               "type": "string",
               "maxLength": 500
+            },
+            "quoteOffset": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Added in 2.23.0. Character offset of `quote` inside the block text (0 or more), so the pin survives a style or language switch and the editor can reopen at the exact place. Sent on `create` and `edit` only; the service ignores it on `delete`. Optional: a 2.22 event without it is unchanged. If the block is missing, the app falls to the nearest block with a notice."
+            },
+            "redacted": {
+              "const": true,
+              "readOnly": true,
+              "description": "Added in 2.23.0. SET BY THE SERVER ONLY: a deleted note's `text` and `quote` were blanked (redaction) and this marks the event. It appears on events read back through `/changes` and export so they still validate against `LearningEvent`. A client must never send it: intake refuses it with an explicit check after schema validation, on both `/events` and `/events/parent` (the schema allows the field only because server-written events carry it). A create carrying it is a blank shell of a deleted note (tombstone)."
             }
           }
         }
       },
-      "description": "A `note` event."
+      "description": "A `note` event. 2.23.0 adds the optional `quoteOffset` (create and edit) and the server-set, read-only `redacted: true`; no new actions and no new actors."
     },
     "EventBuddyQuestion": {
       "title": "EventBuddyQuestion",

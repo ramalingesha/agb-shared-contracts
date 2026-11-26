@@ -288,6 +288,9 @@
           "items": {
             "$ref": "#/definitions/MapChapter"
           }
+        },
+        "ready": {
+          "$ref": "#/definitions/Ready"
         }
       }
     },
@@ -500,6 +503,9 @@
           "items": {
             "$ref": "#/definitions/RoundSummary"
           }
+        },
+        "ready": {
+          "$ref": "#/definitions/Ready"
         }
       }
     },
@@ -706,6 +712,9 @@
         },
         "pendingReviews": {
           "$ref": "#/definitions/PendingReviews"
+        },
+        "ready": {
+          "$ref": "#/definitions/Ready"
         }
       }
     },
@@ -800,6 +809,9 @@
           "items": {
             "$ref": "#/definitions/MyLearningChapter"
           }
+        },
+        "ready": {
+          "$ref": "#/definitions/Ready"
         }
       }
     },
@@ -814,8 +826,6 @@
         "events",
         "positions",
         "rounds",
-        "sectionStates",
-        "roundSummaries",
         "summaries"
       ],
       "properties": {
@@ -866,14 +876,14 @@
           "items": {
             "type": "object"
           },
-          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed."
+          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed. Omitted when `derivedPending` is true (2.23.0)."
         },
         "roundSummaries": {
           "type": "array",
           "items": {
             "type": "object"
           },
-          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed."
+          "description": "Derived rows as stored (rebuildable from the events); their columns follow the service's tables and may grow, so only the container is typed. Omitted when `derivedPending` is true (2.23.0); note-derived, because a note adds a chapter and a round summary."
         },
         "summaries": {
           "type": "array",
@@ -881,8 +891,31 @@
             "type": "object"
           },
           "description": "Retention summaries (reading evidence kept after the 2-year detail window)."
+        },
+        "derivedPending": {
+          "type": "boolean",
+          "description": "Added in 2.23.0. True when the guardian's derived state is not ready: exactly `sectionStates`, `roundSummaries`, `reviews` and `reviewSnoozes` are then omitted. `summaries`, `positions` and `rounds` stay. 2.22 consumers must tolerate the absent sections."
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Added in 2.23.0 to the schema. Derived review rows as stored; omitted when `derivedPending` is true."
+        },
+        "reviewSnoozes": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Added in 2.23.0 to the schema. Derived review snooze rows as stored; omitted when `derivedPending` is true."
         }
       }
+    },
+    "Ready": {
+      "title": "Ready",
+      "type": "boolean",
+      "description": "Added in 2.23.0. Absent or true: the answer is built. `false`: a guardian's derived state is \"being prepared\" (the claim rule needs a re-projection that has not run yet), so the data fields are empty and the app shows a \"being prepared\" state instead of an empty dashboard that would read as \"no progress\". A 2.22 client that ignores it sees empty data."
     }
   }
 }

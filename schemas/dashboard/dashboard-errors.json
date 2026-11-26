@@ -51,6 +51,21 @@
       "code": "INVALID_PARAMETER",
       "httpStatus": 400,
       "description": "A path or query parameter is malformed (knowledgeId, sectionId, studentId or tz). Checked after access; the value is never echoed."
+    },
+    {
+      "code": "EVENT_KIND_NOT_ALLOWED",
+      "httpStatus": 400,
+      "description": "Per event (2.23.0): a self learner sent a kind other than `note`. Permanent: the app drops the event."
+    },
+    {
+      "code": "LINK_ERASED",
+      "httpStatus": 409,
+      "description": "Per event (2.23.0): the learner's own record was erased; nothing can be saved for this account again. Permanent: the app drops the event and clears its queue."
+    },
+    {
+      "code": "SCHEMA_UNSUPPORTED",
+      "httpStatus": 400,
+      "description": "Per event (2.23.0): the event uses a field or value this service version does not know (version skew, for example a newer app). Not permanent: the app keeps the event, moves on and retries after an update."
     }
   ]
 }

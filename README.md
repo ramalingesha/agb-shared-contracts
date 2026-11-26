@@ -205,7 +205,7 @@ existing consumers get every type they did before with no import changes. CI fai
 the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
-### schemas/dashboard (parent dashboard, 2.22.0)
+### schemas/dashboard (parent dashboard, 2.23.0)
 
 Contracts for guardian profiles (AGB-904) and the progress service (AGB-1067): token claims
 (`profile`, `guardian`, `consent_v`), the guardian API, `LearningEvent` with a `detail` per kind,
@@ -236,6 +236,8 @@ the `activity` block, `mixUpMatches`, `newCase` and `tests` on `qa` blocks, `Kno
 `Knowledge.sections[].expectedSeconds`; examples in `examples/knowledge-api/`. The progress service does not read any of
 these yet. Deployment order: publish contracts, upgrade the progress service to 2.22, then ship an app and content that
 send them (a service on 2.21 rejects the new kind and fields with `EVENT_INVALID`). Details: `CHANGELOG.md`.
+
+2.23.0 (all additive, AGB-1148, learner notes Phase A): `quoteOffset` and the server-set `redacted` on the `note` event detail, `audience` and `guardianVisible` on `Note`, `NoteSearchRequest` (POST) and `NoteSearchResponse`, `NoteVersionsResponse`, `LearnerRelation` and `LearnerStatusResponse`, `SelfExportResponse` (deleted notes as `{ id, deletedAt }`), `derivedPending` on `ExportResponse` and `ready` on the map, topic, home, my-learning and reviews answers, the own-consent and step-up types, and the per-event codes `EVENT_KIND_NOT_ALLOWED`, `LINK_ERASED` and `SCHEMA_UNSUPPORTED`. No sharing types (Phase B). Deployment order: publish contracts, progress service, user-management, app. Details: `CHANGELOG.md`.
 
 ### schemas/studio (Content Studio, 2.13.0)
 

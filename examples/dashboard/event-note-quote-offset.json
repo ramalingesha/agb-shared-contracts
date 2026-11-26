@@ -1,0 +1,24 @@
+{
+  "eventId": "7d6c1f0e-5b3a-4c8e-9a41-0f2b6d9e0020",
+  "profileId": "usr_student_01",
+  "knowledgeId": "k-its-all-a-cycle",
+  "contentVersion": "2026-11-20.1",
+  "round": 1,
+  "sectionId": "s2",
+  "blockId": "s2-n1",
+  "kind": "note",
+  "language": "en",
+  "style": "simple",
+  "actor": "student",
+  "actorId": "usr_student_01",
+  "at": "2026-11-22T09:30:00+05:30",
+  "detail": {
+    "noteId": "note_01",
+    "action": "create",
+    "version": 1,
+    "tag": "I have a question",
+    "text": "Why do frogs lay so many eggs?",
+    "quote": "Frogs lay eggs in water.",
+    "quoteOffset": 14
+  }
+}

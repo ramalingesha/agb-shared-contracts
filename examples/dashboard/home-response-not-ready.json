@@ -1,0 +1,15 @@
+{
+  "studentId": "usr_student_01",
+  "rulesVersion": "understanding-v1",
+  "win": null,
+  "helpWith": null,
+  "next": null,
+  "revisionDueToday": 0,
+  "tonightPlan": [],
+  "pendingReviews": {
+    "available": false,
+    "count": 0,
+    "oldestDueAt": null
+  },
+  "ready": false
+}
