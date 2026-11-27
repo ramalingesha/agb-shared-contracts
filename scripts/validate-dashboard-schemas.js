@@ -727,7 +727,7 @@ test('no schema or example assumes an OS, a drive letter, a backslash path or an
 test('2.26.0 notes responses match what the server sends: new optional fields, valid and invalid', () => {
   const list = example('note-server-list-response');
   assert.equal(list.nextCursor, null);
-  assert.equal(list.cursor, list.nextCursor, 'the server sends cursor as a copy of nextCursor');
+  assert.equal(list.cursor, list.nextCursor, 'the server sends both with one value');
   const page = example('note-server-list-response-page');
   assert.equal(page.nextCursor, page.cursor);
   assert.ok(typeof page.nextCursor === 'string');
@@ -743,7 +743,7 @@ test('2.26.0 notes responses match what the server sends: new optional fields, v
   invalid('progress-api', 'NoteListResponse', invalidExample('note-list-response-next-cursor-number'), 'anyOf');
   const extra = example('note-server-list-response'); extra.surprise = 1; invalid('progress-api', 'NoteListResponse', extra, 'additionalProperties');
   const defs = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions;
-  for (const name of ['NoteListResponse', 'NoteSearchResponse']) assert.match(defs[name].properties.cursor.description, /DEPRECATED/, `${name}.cursor is marked deprecated`);
+  for (const name of ['NoteListResponse', 'NoteSearchResponse']) assert.doesNotMatch(defs[name].properties.cursor.description, /deprecated/i, `${name}.cursor stays documented, not deprecated`);
 });
 
 test('2.26.0 back-compat: every 2.20.0 to 2.25.0 example and event validates unchanged', () => {

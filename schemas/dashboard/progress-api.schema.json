@@ -449,7 +449,7 @@
               "type": "null"
             }
           ],
-          "description": "DEPRECATED (kept, not removed). Added in 2.23.0 as the paging value, but only the progress service sends it, as a copy of `nextCursor`; read `nextCursor`. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer)."
+          "description": "Added in 2.23.0. The documented paging field: pass as `cursor` for the next (older) page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`. Absent means a 2.22 server (everything in one answer)."
         },
         "studentId": {
           "$ref": "common.schema.json#/definitions/DashboardId",
@@ -466,7 +466,7 @@
               "type": "null"
             }
           ],
-          "description": "Added in 2.26.0. What the server actually sends: pass as `cursor` for the next (older) page; null on the last page. Always the same value as `cursor`. New clients should read `nextCursor` and fall back to `cursor`."
+          "description": "Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`."
         }
       }
     },
@@ -726,7 +726,7 @@
               "type": "null"
             }
           ],
-          "description": "DEPRECATED (kept, not removed): a copy of `nextCursor`, read `nextCursor`. Pass as `cursor` for the next page; null or absent on the last page."
+          "description": "The documented paging field: pass as `cursor` for the next page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`."
         },
         "studentId": {
           "$ref": "common.schema.json#/definitions/DashboardId",
@@ -743,7 +743,7 @@
               "type": "null"
             }
           ],
-          "description": "Added in 2.26.0. What the server actually sends: pass as `cursor` for the next page; null on the last page. Always the same value as `cursor`."
+          "description": "Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`."
         }
       }
     },
