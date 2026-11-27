@@ -205,7 +205,7 @@ existing consumers get every type they did before with no import changes. CI fai
 the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
-### schemas/dashboard (parent dashboard, 2.25.0)
+### schemas/dashboard (parent dashboard, 2.26.0)
 
 Contracts for guardian profiles (AGB-904) and the progress service (AGB-1067): token claims
 (`profile`, `guardian`, `consent_v`), the guardian API, `LearningEvent` with a `detail` per kind,
@@ -239,6 +239,7 @@ send them (a service on 2.21 rejects the new kind and fields with `EVENT_INVALID
 
 2.23.0 (all additive, AGB-1148, learner notes Phase A): `quoteOffset` and the server-set `redacted` on the `note` event detail, `audience` and `guardianVisible` on `Note`, `NoteSearchRequest` (POST) and `NoteSearchResponse`, `NoteVersionsResponse`, `LearnerRelation` and `LearnerStatusResponse`, `SelfExportResponse` (deleted notes as `{ id, deletedAt }`), `derivedPending` on `ExportResponse` and `ready` on the map, topic, home, my-learning and reviews answers, the own-consent and step-up types, `Note.quoteOffset`, a paged notes list (`cursor`, `NoteListQuery`), `notes` and `noteReplies` on the guardian export, `LearnerEraseRequest`, `redacted` on corrections, the per-event codes `EVENT_KIND_NOT_ALLOWED`, `LINK_ERASED` and `SCHEMA_UNSUPPORTED`, and the step-up codes `STEP_UP_REQUIRED`, `STEP_UP_CODE_INVALID`, `STEP_UP_LOCKED` and `STEP_UP_SEND_LIMITED`. No sharing types (Phase B). Deployment order: publish contracts, progress service, user-management, app. Details: `CHANGELOG.md`.
 
+2.26.0 (additive, AGB-1074 e2e F-1): the notes list, search and `Note` list what the progress service really sends: optional `studentId`, `nextCursor` (and `cursor` marked deprecated), and per note `status`, `statusKey`, `tagKey`, `edited`, `updatedAt`. Details: `CHANGELOG.md`.
 2.25.0 (additive, AGB-1074): optional `required` (`password` | `totp` | `code`) on `StepUpStartResponse`, listing exactly which proofs the server will require; absent means infer from `method`. Details: `CHANGELOG.md`.
 
 ### schemas/studio (Content Studio, 2.13.0)

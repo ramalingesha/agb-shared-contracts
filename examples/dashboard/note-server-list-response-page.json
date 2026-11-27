@@ -1,0 +1,24 @@
+{
+  "studentId": "usr_8f3a1c2e",
+  "notes": [
+    {
+      "id": "note_03",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s1",
+      "tag": "Remember this",
+      "tagKey": "notes.tag.remember_this",
+      "text": "Metamorphosis means a big change of shape.",
+      "status": "open",
+      "statusKey": "notes.status.open",
+      "latestVersion": 1,
+      "edited": false,
+      "createdAt": "2026-11-27T12:00:00.000Z",
+      "updatedAt": "2026-11-27T12:00:00.000Z",
+      "audience": "only-me",
+      "guardianVisible": false,
+      "replies": []
+    }
+  ],
+  "nextCursor": "eyJjcmVhdGVkQXQiOiIyMDI2LTExLTI3VDEyOjAwOjAwLjAwMFoiLCJpZCI6Im5vdGVfMDMifQ",
+  "cursor": "eyJjcmVhdGVkQXQiOiIyMDI2LTExLTI3VDEyOjAwOjAwLjAwMFoiLCJpZCI6Im5vdGVfMDMifQ"
+}

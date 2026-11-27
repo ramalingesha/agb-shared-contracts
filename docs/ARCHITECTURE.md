@@ -3,7 +3,7 @@
 ## What this is
 
 A static, versioned set of language-agnostic contracts published as one npm package,
-`@ramalingesha/shared-contracts` (version 2.25.0), to GitHub Packages. It holds JSON Schema files,
+`@ramalingesha/shared-contracts` (version 2.26.0), to GitHub Packages. It holds JSON Schema files,
 JSON data tables, an error-code registry, one small runtime file (`dashboard/index.js`), generated TypeScript `.d.ts` files and examples. There
 is no runtime service, database or API. Node consumers `npm install` it; Python consumers fetch the
 raw JSON over HTTPS. Services validate against the schemas themselves.

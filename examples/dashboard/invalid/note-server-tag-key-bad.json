@@ -1,0 +1,17 @@
+{
+  "id": "note_05",
+  "knowledgeId": "k-its-all-a-cycle",
+  "sectionId": "s3",
+  "tag": "I have a question",
+  "tagKey": "Notes.Tag.Question",
+  "text": "Do all frogs start in water?",
+  "status": "resolved",
+  "statusKey": "notes.status.resolved",
+  "latestVersion": 3,
+  "edited": true,
+  "createdAt": "2026-11-26T08:00:00.000Z",
+  "updatedAt": "2026-11-27T08:05:00.000Z",
+  "audience": "guardian",
+  "guardianVisible": true,
+  "replies": []
+}

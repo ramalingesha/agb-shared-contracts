@@ -1,0 +1,24 @@
+{
+  "studentId": "usr_8f3a1c2e",
+  "notes": [
+    {
+      "id": "note_01",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2",
+      "tag": "My example",
+      "tagKey": "notes.tag.my_example",
+      "text": "My pond has frog eggs in spring.",
+      "status": "open",
+      "statusKey": "notes.status.open",
+      "latestVersion": 1,
+      "edited": false,
+      "createdAt": "2026-11-27T09:30:00.000Z",
+      "updatedAt": "2026-11-27T09:30:00.000Z",
+      "audience": "only-me",
+      "guardianVisible": false,
+      "replies": []
+    }
+  ],
+  "nextCursor": null,
+  "cursor": null
+}

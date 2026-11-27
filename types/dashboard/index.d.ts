@@ -251,13 +251,25 @@ export type WeakSpotCause =
  */
 export type LearnerRelation = 'none' | 'self' | 'guarded';
 /**
+ * An ISO 8601 date-time with an offset.
+ */
+export type DashboardTime1 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId40 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId41 = string;
+/**
  * Added in 2.23.0. Absent or true: the answer is built. `false`: a guardian's derived state is "being prepared" (the claim rule needs a re-projection that has not run yet), so the data fields are empty and the app shows a "being prepared" state instead of an empty dashboard that would read as "no progress". A 2.22 client that ignores it sees empty data.
  */
 export type Ready = boolean;
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
-export type DashboardId40 = string;
+export type DashboardId42 = string;
 /**
  * 0 = not started, 1 to 6 = the ladder (LadderStep). Rules understanding-v1.
  */
@@ -3119,6 +3131,23 @@ export interface Note {
    * Added in 2.23.0. Character offset of `quote` inside the block text, read back so the app can reopen at the pin. Absent when the note has none.
    */
   quoteOffset?: number;
+  /**
+   * Added in 2.26.0 (what the server has always sent). The note thread state: `open` (no reply yet), `replied` (a guardian replied), `resolved`. Optional: a client must not require it.
+   */
+  status?: 'open' | 'replied' | 'resolved';
+  /**
+   * Added in 2.26.0. The i18n key of `status`, always `notes.status.<status>`.
+   */
+  statusKey?: string;
+  /**
+   * Added in 2.26.0. The i18n key of `tag`: the tag lower-cased, apostrophes dropped, other runs of non-alphanumerics as `_` (`Rough note` is `notes.tag.rough_note`, `I don't get this` is `notes.tag.i_dont_get_this`).
+   */
+  tagKey?: string;
+  /**
+   * Added in 2.26.0. True when the note has more than one version (`latestVersion` above 1).
+   */
+  edited?: boolean;
+  updatedAt?: DashboardTime1;
 }
 export interface NoteReply {
   id: DashboardId;
@@ -3143,9 +3172,14 @@ export interface NoteListQuery {
 export interface NoteListResponse {
   notes: Note[];
   /**
-   * Added in 2.23.0. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer).
+   * DEPRECATED (kept, not removed). Added in 2.23.0 as the paging value, but only the progress service sends it, as a copy of `nextCursor`; read `nextCursor`. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer).
    */
   cursor?: string | null;
+  studentId?: DashboardId40;
+  /**
+   * Added in 2.26.0. What the server actually sends: pass as `cursor` for the next (older) page; null on the last page. Always the same value as `cursor`. New clients should read `nextCursor` and fall back to `cursor`.
+   */
+  nextCursor?: string | null;
 }
 /**
  * POST /students/{id}/notes/{noteId}/replies: text, a reaction, or both.
@@ -3172,9 +3206,14 @@ export interface NoteSearchRequest {
 export interface NoteSearchResponse {
   notes: Note[];
   /**
-   * Pass as `cursor` for the next page; null or absent on the last page.
+   * DEPRECATED (kept, not removed): a copy of `nextCursor`, read `nextCursor`. Pass as `cursor` for the next page; null or absent on the last page.
    */
   cursor?: string | null;
+  studentId?: DashboardId41;
+  /**
+   * Added in 2.26.0. What the server actually sends: pass as `cursor` for the next page; null on the last page. Always the same value as `cursor`.
+   */
+  nextCursor?: string | null;
 }
 export interface NoteVersion {
   version: number;
@@ -3279,7 +3318,7 @@ export interface SelfExportNote {
  * POST /students/{id}/export when `id` is the caller's own id (2.23.0; self learners only: a guarded child cannot export their own notes, the guardian does). Restricted shape: the learner's own notes with versions, deleted notes as `{ id, deletedAt }`, no other person's id or name. With no link row the export is an empty document (`notes: []`). Own export stays open for a withdrawn or `none` link.
  */
 export interface SelfExportResponse {
-  learnerId: DashboardId40;
+  learnerId: DashboardId42;
   exportedAt: DashboardTime;
   notes: (SelfExportNote | DeletedNote)[];
 }
