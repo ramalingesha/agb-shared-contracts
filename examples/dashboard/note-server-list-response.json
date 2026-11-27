@@ -1,0 +1,52 @@
+{
+  "studentId": "usr_8f3a1c2e",
+  "notes": [
+    {
+      "id": "note_02",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2",
+      "blockId": "b4",
+      "quote": "Frogs lay hundreds of eggs",
+      "quoteOffset": 14,
+      "tag": "I don't get this",
+      "tagKey": "notes.tag.i_dont_get_this",
+      "text": "Why do frogs lay so many eggs? I read it twice.",
+      "status": "replied",
+      "statusKey": "notes.status.replied",
+      "latestVersion": 2,
+      "edited": true,
+      "createdAt": "2026-11-27T10:15:00.000Z",
+      "updatedAt": "2026-11-27T10:20:00.000Z",
+      "audience": "guardian",
+      "guardianVisible": true,
+      "replies": [
+        {
+          "id": "reply_01",
+          "noteId": "note_02",
+          "guardianId": "usr_77aa01bc",
+          "text": "Most of them are eaten, so many are needed.",
+          "at": "2026-11-27T11:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "note_01",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2",
+      "tag": "Rough note",
+      "tagKey": "notes.tag.rough_note",
+      "text": "Eggs, tadpole, frog.",
+      "status": "open",
+      "statusKey": "notes.status.open",
+      "latestVersion": 1,
+      "edited": false,
+      "createdAt": "2026-11-27T09:30:00.000Z",
+      "updatedAt": "2026-11-27T09:30:00.000Z",
+      "audience": "guardian",
+      "guardianVisible": true,
+      "replies": []
+    }
+  ],
+  "nextCursor": null,
+  "cursor": null
+}

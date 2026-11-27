@@ -132,6 +132,13 @@ const EXAMPLES_2_25 = {
   'step-up-start-response-required-code-totp': ['guardian', 'StepUpStartResponse'],
   'step-up-start-response-required-code': ['guardian', 'StepUpStartResponse'],
 };
+// 2.26.0 (AGB-1074 e2e F-1): the notes responses as the progress service really sends them. No earlier example is edited.
+const EXAMPLES_2_26 = {
+  'note-server-list-response': ['progress-api', 'NoteListResponse'],
+  'note-server-list-response-page': ['progress-api', 'NoteListResponse'],
+  'note-server-search-response': ['progress-api', 'NoteSearchResponse'],
+  'note-server-note-edited': ['progress-api', 'Note'],
+};
 const NEW_EVENT_EXAMPLES_2_23 = ['event-note-quote-offset', 'event-note-redacted-create', 'event-note-redacted-guardian-reply', 'event-correction-redacted'];
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
 const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
@@ -156,9 +163,9 @@ test('every schema compiles, declares draft-07 and every definition has a title'
 test('every listed example validates against its definition', () => {
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
   for (const [name, [file, def]] of Object.entries(EXAMPLES_2_21)) valid(file, def, example(name));
-  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES_2_23, ...EXAMPLES_2_25 })) valid(file, def, example(name));
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES_2_23, ...EXAMPLES_2_25, ...EXAMPLES_2_26 })) valid(file, def, example(name));
   for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
-  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...Object.keys(EXAMPLES_2_25), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
+  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...Object.keys(EXAMPLES_2_25), ...Object.keys(EXAMPLES_2_26), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
   const onDisk = jsonFiles(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
   assert.deepEqual(onDisk.filter((n) => !listed.has(n)), [], 'example without a test mapping');
   assert.deepEqual([...listed].filter((n) => !onDisk.includes(n)), [], 'mapping without an example');
@@ -715,6 +722,64 @@ test('no schema or example assumes an OS, a drive letter, a backslash path or an
   };
   for (const file of files) collect(readJson(file), path.basename(file), '');
   assert.deepEqual(problems, []);
+});
+
+test('2.26.0 notes responses match what the server sends: new optional fields, valid and invalid', () => {
+  const list = example('note-server-list-response');
+  assert.equal(list.nextCursor, null);
+  assert.equal(list.cursor, list.nextCursor, 'the server sends both with one value');
+  const page = example('note-server-list-response-page');
+  assert.equal(page.nextCursor, page.cursor);
+  assert.ok(typeof page.nextCursor === 'string');
+  for (const n of [...list.notes, ...page.notes, ...example('note-server-search-response').notes, example('note-server-note-edited')]) {
+    assert.equal(n.edited, n.latestVersion > 1, 'edited is latestVersion above 1');
+    assert.equal(n.statusKey, `notes.status.${n.status}`);
+  }
+  valid('progress-api', 'NoteListResponse', { notes: [], nextCursor: 'abc' });
+  valid('progress-api', 'NoteSearchResponse', { notes: [], nextCursor: null, studentId: 'usr_1' });
+  invalid('progress-api', 'Note', invalidExample('note-server-status-unknown'), 'enum');
+  invalid('progress-api', 'Note', invalidExample('note-server-tag-key-bad'), 'pattern');
+  invalid('progress-api', 'Note', invalidExample('note-server-edited-not-boolean'), 'type');
+  invalid('progress-api', 'NoteListResponse', invalidExample('note-list-response-next-cursor-number'), 'anyOf');
+  const extra = example('note-server-list-response'); extra.surprise = 1; invalid('progress-api', 'NoteListResponse', extra, 'additionalProperties');
+  const defs = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions;
+  for (const name of ['NoteListResponse', 'NoteSearchResponse']) assert.doesNotMatch(defs[name].properties.cursor.description, /deprecated/i, `${name}.cursor stays documented, not deprecated`);
+});
+
+test('2.26.0 back-compat: every 2.20.0 to 2.25.0 example and event validates unchanged', () => {
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES, ...EXAMPLES_2_21, ...EXAMPLES_2_23, ...EXAMPLES_2_25 })) valid(file, def, example(name));
+  for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
+  for (const kind of KINDS) validEvent(event(kind));
+});
+
+test('2.26.0 is purely additive against the 2.25.0 tag: progress-api.schema.json gains only the listed optional properties', () => {
+  const git = require('node:child_process');
+  let base;
+  try {
+    base = git.execFileSync('git', ['show', 'v2.25.0:schemas/dashboard/progress-api.schema.json'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch { return; } // the 2.25.0 tag is not in a shallow clone: the example run above still covers it
+  const old = JSON.parse(base);
+  const now = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json'));
+  assert.deepEqual(Object.keys(now.definitions).filter((k) => !(k in old.definitions)), [], 'no new definition');
+  const added = {
+    Note: ['status', 'statusKey', 'tagKey', 'edited', 'updatedAt'],
+    NoteListResponse: ['studentId', 'nextCursor'],
+    NoteSearchResponse: ['studentId', 'nextCursor'],
+  };
+  for (const [name, def] of Object.entries(old.definitions)) {
+    const cur = now.definitions[name];
+    assert.ok(cur, `${name} was removed`);
+    if (!(name in added)) { assert.deepEqual(cur, def, `${name} changed`); continue; }
+    const { properties: curProps, ...curRest } = cur;
+    const { properties: oldProps, ...oldRest } = def;
+    assert.deepEqual(curRest, oldRest, `${name}: required, additionalProperties and the rest are unchanged`);
+    assert.deepEqual(Object.keys(curProps).filter((k) => !(k in oldProps)).sort(), [...added[name]].sort(), `${name}: only the listed properties are new`);
+    for (const [prop, pdef] of Object.entries(oldProps)) {
+      if (prop === 'cursor' && name !== 'Note') { assert.deepEqual({ ...curProps[prop], description: 0 }, { ...pdef, description: 0 }, `${name}.cursor changed beyond its description`); continue; }
+      assert.deepEqual(curProps[prop], pdef, `${name}.${prop} changed`);
+    }
+    for (const prop of added[name]) assert.equal((cur.required || []).includes(prop), false, `${name}.${prop} must stay optional`);
+  }
 });
 
 console.log(`\nDashboard contracts: ${passed} passed, ${failures} failed`);

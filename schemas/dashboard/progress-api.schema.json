@@ -316,6 +316,33 @@
           "type": "integer",
           "minimum": 0,
           "description": "Added in 2.23.0. Character offset of `quote` inside the block text, read back so the app can reopen at the pin. Absent when the note has none."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "replied",
+            "resolved"
+          ],
+          "description": "Added in 2.26.0 (what the server has always sent). The note thread state: `open` (no reply yet), `replied` (a guardian replied), `resolved`. Optional: a client must not require it."
+        },
+        "statusKey": {
+          "type": "string",
+          "pattern": "^notes\\.status\\.(open|replied|resolved)$",
+          "description": "Added in 2.26.0. The i18n key of `status`, always `notes.status.<status>`."
+        },
+        "tagKey": {
+          "type": "string",
+          "pattern": "^notes\\.tag\\.[a-z0-9_]+$",
+          "description": "Added in 2.26.0. The i18n key of `tag`: the tag lower-cased, apostrophes dropped, other runs of non-alphanumerics as `_` (`Rough note` is `notes.tag.rough_note`, `I don't get this` is `notes.tag.i_dont_get_this`)."
+        },
+        "edited": {
+          "type": "boolean",
+          "description": "Added in 2.26.0. True when the note has more than one version (`latestVersion` above 1)."
+        },
+        "updatedAt": {
+          "$ref": "common.schema.json#/definitions/DashboardTime",
+          "description": "Added in 2.26.0. When the note last changed (equals `createdAt` for a note never edited)."
         }
       }
     },
@@ -422,7 +449,24 @@
               "type": "null"
             }
           ],
-          "description": "Added in 2.23.0. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer)."
+          "description": "Added in 2.23.0. The documented paging field: pass as `cursor` for the next (older) page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`. Absent means a 2.22 server (everything in one answer)."
+        },
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Added in 2.26.0 (what the server has always sent). The learner whose notes these are; an echo of the path id, or of the caller for `/learners/me`."
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`."
         }
       }
     },
@@ -682,7 +726,24 @@
               "type": "null"
             }
           ],
-          "description": "Pass as `cursor` for the next page; null or absent on the last page."
+          "description": "The documented paging field: pass as `cursor` for the next page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`."
+        },
+        "studentId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Added in 2.26.0 (what the server has always sent). The learner whose notes these are; an echo of the path id, or of the caller for `/learners/me`."
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`."
         }
       }
     },
