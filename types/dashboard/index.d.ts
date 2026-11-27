@@ -3172,12 +3172,12 @@ export interface NoteListQuery {
 export interface NoteListResponse {
   notes: Note[];
   /**
-   * DEPRECATED (kept, not removed). Added in 2.23.0 as the paging value, but only the progress service sends it, as a copy of `nextCursor`; read `nextCursor`. Pass as `cursor` for the next page; null or absent on the last page. Absent means a 2.22 server (everything in one answer).
+   * Added in 2.23.0. The documented paging field: pass as `cursor` for the next (older) page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`. Absent means a 2.22 server (everything in one answer).
    */
   cursor?: string | null;
   studentId?: DashboardId40;
   /**
-   * Added in 2.26.0. What the server actually sends: pass as `cursor` for the next (older) page; null on the last page. Always the same value as `cursor`. New clients should read `nextCursor` and fall back to `cursor`.
+   * Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`.
    */
   nextCursor?: string | null;
 }
@@ -3206,12 +3206,12 @@ export interface NoteSearchRequest {
 export interface NoteSearchResponse {
   notes: Note[];
   /**
-   * DEPRECATED (kept, not removed): a copy of `nextCursor`, read `nextCursor`. Pass as `cursor` for the next page; null or absent on the last page.
+   * The documented paging field: pass as `cursor` for the next page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`.
    */
   cursor?: string | null;
   studentId?: DashboardId41;
   /**
-   * Added in 2.26.0. What the server actually sends: pass as `cursor` for the next page; null on the last page. Always the same value as `cursor`.
+   * Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`.
    */
   nextCursor?: string | null;
 }
