@@ -526,6 +526,12 @@ export interface StepUpStartResponse {
   stepUpId: DashboardId;
   method: StepUpMethod;
   expiresAt: DashboardTime;
+  /**
+   * Optional (2.25.0). Exactly which StepUpCompleteRequest fields the server will require for this step-up: `password` is the `password` field, `totp` is `totpCode`, `code` is the mailed `code`. Needed because `method` cannot say it all: a social-only account with MFA on needs BOTH the mailed code and the authenticator code, which `method` reports as `email-code`, so it is `["code", "totp"]`. Absent means infer from `method` as before (an older server). Clients must collect every listed proof before submitting, because a missing factor costs one try.
+   *
+   * @minItems 1
+   */
+  required?: ['password' | 'totp' | 'code', ...('password' | 'totp' | 'code')[]];
 }
 /**
  * GET /guardians/me/students.

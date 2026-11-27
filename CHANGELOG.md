@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.25.0] - 2026-11-27
+
+### Added (AGB-1074, learner notes step-up; strictly additive, nothing is removed or renamed, so every 2.20.0 to 2.24.0 example and event still validates and no example file is edited)
+- **`StepUpStartResponse.required`** (`schemas/dashboard/guardian.schema.json`): optional array (`minItems` 1, `uniqueItems`) of `password` | `totp` | `code`, listing exactly which `StepUpCompleteRequest` fields (`password`, `totpCode`, `code`) the server will require for this step-up. `method` cannot say it all: a social-only account with MFA on needs both the mailed code and the authenticator code, which `method` reports as `email-code`, so it is `["code", "totp"]`. Absent means infer from `method` as before (an older server). Clients must collect every listed proof before submitting, because a missing factor costs one try. `StepUpMethod`, the `required` list and `additionalProperties: false` of `StepUpStartResponse` are unchanged.
+- **Deployment order**: publish contracts first; then the user-management service returns `required` from step-up start; then the app uses it instead of the `GET /auth/mfa/status` workaround. Until then an app keeps inferring from `method`.
+- New examples `step-up-start-response-required-password-totp`, `step-up-start-response-required-code-totp`, `step-up-start-response-required-code`; invalid examples `step-up-required-empty`, `step-up-required-unknown-value`, `step-up-required-duplicate`. Tests in `scripts/validate-dashboard-schemas.js`: the new shapes, a back-compat run of every 2.20.0 to 2.24.0 example, and a comparison of `guardian.schema.json` against the `v2.24.0` tag (only `StepUpStartResponse.required` is new). Types regenerated.
+
 ## [2.24.0] - 2026-11-27
 
 ### Added (Studio, epic AGB-888: the Runner's "Drawing the pictures" step)
