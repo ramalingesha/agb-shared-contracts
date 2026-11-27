@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.24.0] - 2026-11-27
+
+### Added (Studio, epic AGB-888: the Runner's "Drawing the pictures" step)
+- **`pictures` progress step** (`schemas/studio/stage.schema.json`, `progress.step`): the master stage now draws a lesson's pictures after the master text is written and before its checks, and the Runner reports that as its own step so the Studio can show "Drawing the pictures" in every language. The list stays closed; the new value sits between `generating-item` and `checks`. Nothing is removed or renamed.
+- **Deployment order**: publish contracts first; then the Studio Worker, Runner and app can use the step (an older Worker that validates the step list would refuse a Runner report with `pictures`).
+
 ## [2.23.0] - 2026-11-26
 
 ### Added (AGB-1148, story A1 of the learner notes Phase A technical analysis AGB-1074 section 6, epic AGB-1066; every new field is optional and nothing is removed or renamed, so every 2.20.0, 2.21.0 and 2.22.0 example and event still validates; the 2.22 example files are not edited)
