@@ -104,6 +104,7 @@
             "reading-batch",
             "master-group",
             "generating-item",
+            "pictures",
             "checks",
             "pushing-checkpoint"
           ]
