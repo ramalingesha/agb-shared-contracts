@@ -1,6 +1,6 @@
 # Codebase Map — agb-shared-contracts
 
-**Purpose:** "where do I look for X?" for `@ramalingesha/shared-contracts` (package version 2.24.0).
+**Purpose:** "where do I look for X?" for `@ramalingesha/shared-contracts` (package version 2.25.0).
 Read [ARCHITECTURE.md](ARCHITECTURE.md) for what the contracts mean. This repo has no runtime
 code: it is JSON Schema, JSON data tables, generated `.d.ts` files, examples and validator scripts.
 Default branch is `main`. There are four contract areas: the registry files at the root, `knowledge-api.schema.json`, `schemas/studio/` and `schemas/dashboard/`. There is no `CLAUDE.md` or `AGENTS.md` on `main`; `.github/instructions/shared/`

@@ -126,6 +126,12 @@ const EXAMPLES_2_23 = {
   'learner-erase-request': ['progress-api', 'LearnerEraseRequest'],
   'export-response-with-notes': ['progress-reads', 'ExportResponse'],
 };
+// 2.25.0 (AGB-1074): optional `required` proofs on StepUpStartResponse. The 2.23.0 start example is NOT edited.
+const EXAMPLES_2_25 = {
+  'step-up-start-response-required-password-totp': ['guardian', 'StepUpStartResponse'],
+  'step-up-start-response-required-code-totp': ['guardian', 'StepUpStartResponse'],
+  'step-up-start-response-required-code': ['guardian', 'StepUpStartResponse'],
+};
 const NEW_EVENT_EXAMPLES_2_23 = ['event-note-quote-offset', 'event-note-redacted-create', 'event-note-redacted-guardian-reply', 'event-correction-redacted'];
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
 const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
@@ -150,9 +156,9 @@ test('every schema compiles, declares draft-07 and every definition has a title'
 test('every listed example validates against its definition', () => {
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
   for (const [name, [file, def]] of Object.entries(EXAMPLES_2_21)) valid(file, def, example(name));
-  for (const [name, [file, def]] of Object.entries(EXAMPLES_2_23)) valid(file, def, example(name));
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES_2_23, ...EXAMPLES_2_25 })) valid(file, def, example(name));
   for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
-  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
+  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...Object.keys(EXAMPLES_2_25), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
   const onDisk = jsonFiles(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
   assert.deepEqual(onDisk.filter((n) => !listed.has(n)), [], 'example without a test mapping');
   assert.deepEqual([...listed].filter((n) => !onDisk.includes(n)), [], 'mapping without an example');
@@ -595,6 +601,47 @@ test('2.23.0 own consent and step-up types', () => {
   for (const method of ['password', 'totp', 'password+totp', 'email-code']) valid('guardian', 'StepUpStartResponse', { ...example('step-up-start-response'), method });
   invalid('guardian', 'StepUpCompleteRequest', { stepUpId: 'su_01', code: '12ab56' }, 'pattern');
   invalid('guardian', 'StepUpCompleteResponse', {}, 'required');
+});
+
+test('2.25.0 step-up: optional required proofs, valid and invalid shapes', () => {
+  valid('guardian', 'StepUpStartResponse', example('step-up-start-response')); // the 2.23.0 shape: no `required`, infer from method
+  assert.deepEqual(example('step-up-start-response-required-password-totp').required, ['password', 'totp']);
+  assert.deepEqual(example('step-up-start-response-required-code-totp').required, ['code', 'totp']);
+  assert.deepEqual(example('step-up-start-response-required-code').required, ['code']);
+  invalid('guardian', 'StepUpStartResponse', invalidExample('step-up-required-empty'), 'minItems');
+  invalid('guardian', 'StepUpStartResponse', invalidExample('step-up-required-unknown-value'), 'enum');
+  invalid('guardian', 'StepUpStartResponse', invalidExample('step-up-required-duplicate'), 'uniqueItems');
+  const bad = example('step-up-start-response'); bad.extra = 1; invalid('guardian', 'StepUpStartResponse', bad, 'additionalProperties');
+});
+
+test('2.25.0 back-compat: every 2.20.0 to 2.24.0 example and event validates unchanged', () => {
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES, ...EXAMPLES_2_21, ...EXAMPLES_2_23 })) valid(file, def, example(name));
+  for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
+  for (const kind of KINDS) validEvent(event(kind));
+  assert.equal('required' in example('step-up-start-response'), false);
+});
+
+test('2.25.0 is purely additive against the 2.24.0 tag: guardian.schema.json differs only by StepUpStartResponse.required', () => {
+  const git = require('node:child_process');
+  let base;
+  try {
+    base = git.execFileSync('git', ['show', 'v2.24.0:schemas/dashboard/guardian.schema.json'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch { return; } // the 2.24.0 tag is not in a shallow clone: the example run above still covers it
+  const old = JSON.parse(base);
+  const now = readJson(path.join(SCHEMA_DIR, 'guardian.schema.json'));
+  assert.deepEqual(Object.keys(now.definitions).filter((k) => !(k in old.definitions)), [], 'no new definition');
+  for (const [name, def] of Object.entries(old.definitions)) {
+    const cur = now.definitions[name];
+    assert.ok(cur, `${name} was removed`);
+    if (name === 'StepUpStartResponse') {
+      const { required: added, ...rest } = cur.properties;
+      assert.deepEqual(rest, def.properties, 'StepUpStartResponse existing properties changed');
+      assert.ok(added, 'required property is present');
+      assert.deepEqual(cur.required, def.required, 'the required list is unchanged');
+      assert.equal(cur.additionalProperties, def.additionalProperties);
+      assert.deepEqual({ ...cur, properties: 0, description: 0 }, { ...def, properties: 0, description: 0 });
+    } else assert.deepEqual(cur, def, `${name} changed`);
+  }
 });
 
 test('2.23.0 error codes: three per-event refusal codes, none removed', () => {

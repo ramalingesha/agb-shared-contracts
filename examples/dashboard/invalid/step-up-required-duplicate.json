@@ -1,0 +1,6 @@
+{
+  "stepUpId": "su_01",
+  "method": "email-code",
+  "expiresAt": "2026-11-26T10:10:00+05:30",
+  "required": ["code", "code"]
+}
