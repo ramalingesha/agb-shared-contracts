@@ -3166,7 +3166,7 @@ export interface NoteListQuery {
   cursor?: string;
   limit?: number;
   /**
-   * Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 VALIDATION_ERROR. It only narrows the result: a guardian still sees only notes created after the claim.
+   * Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 INVALID_PARAMETER. It only narrows the result: a guardian still sees only notes created after the claim.
    */
   createdFrom?: string;
   /**
@@ -3208,7 +3208,7 @@ export interface NoteSearchRequest {
   cursor?: string;
   limit?: number;
   /**
-   * Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 VALIDATION_ERROR. It only narrows the result: a guardian still sees only notes created after the claim.
+   * Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 INVALID_PARAMETER. It only narrows the result: a guardian still sees only notes created after the claim.
    */
   createdFrom?: string;
   /**
