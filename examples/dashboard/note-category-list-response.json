@@ -1,0 +1,17 @@
+{
+  "categories": [
+    {
+      "id": "cat_01",
+      "name": "Maths tricks",
+      "createdAt": "2026-11-29T09:30:00+05:30",
+      "noteCount": 3,
+      "aliases": ["cat_02"]
+    },
+    {
+      "id": "cat_03",
+      "name": "ಪರೀಕ್ಷೆಗಾಗಿ",
+      "createdAt": "2026-11-29T11:00:00+05:30",
+      "noteCount": 0
+    }
+  ]
+}

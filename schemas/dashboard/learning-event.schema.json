@@ -23,7 +23,9 @@
         "help-request",
         "review-done",
         "activity-done",
-        "correction"
+        "correction",
+        "note-category",
+        "saved-idea"
       ]
     },
     "ReviewItemType": {
@@ -1163,11 +1165,22 @@
               "const": true,
               "readOnly": true,
               "description": "Added in 2.23.0. SET BY THE SERVER ONLY: a deleted note's `text` and `quote` were blanked (redaction) and this marks the event. It appears on events read back through `/changes` and export so they still validate against `LearningEvent`. A client must never send it: intake refuses it with an explicit check after schema validation, on both `/events` and `/events/parent` (the schema allows the field only because server-written events carry it). A create carrying it is a blank shell of a deleted note (tombstone)."
+            },
+            "categoryId": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/DashboardId"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Added in 2.29.0 (AGB-1187). The learner's custom category (the id of a `note-category`). Optional, on `create` and `edit`. On `edit`: absent means unchanged, a string sets the category, `null` clears it (back to the base `tag`); a `tag` alone never clears a category. `tag` stays one of the five built-in values and is the base tag an older app or service shows. Never sent while the service does not advertise the `note-categories` capability (an older service refuses it as skew)."
             }
           }
         }
       },
-      "description": "A `note` event. 2.23.0 adds the optional `quoteOffset` (create and edit) and the server-set, read-only `redacted: true`; no new actions and no new actors."
+      "description": "A `note` event. 2.23.0 adds the optional `quoteOffset` (create and edit) and the server-set, read-only `redacted: true`; no new actions and no new actors. 2.29.0 adds the optional `categoryId` (create and edit)."
     },
     "EventBuddyQuestion": {
       "title": "EventBuddyQuestion",
@@ -2346,10 +2359,201 @@
           "$ref": "#/definitions/EventActivityDone"
         },
         {
+          "$ref": "#/definitions/EventNoteCategory"
+        },
+        {
+          "$ref": "#/definitions/EventSavedIdea"
+        },
+        {
           "$ref": "#/definitions/EventCorrection"
         }
       ],
       "description": "Discriminated by `kind`."
+    },
+    "EventNoteCategory": {
+      "title": "EventNoteCategory",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "kind": {
+          "const": "note-category"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "const": "student"
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "categoryId",
+            "action"
+          ],
+          "properties": {
+            "categoryId": {
+              "$ref": "common.schema.json#/definitions/DashboardId"
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "create",
+                "rename",
+                "delete"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 100,
+              "description": "The category name. Required on `create` and `rename` (service rule, not schema). The real limit is the name rule of the service: 1 to 24 characters not counting combining marks, so the schema allows 100 UTF-16 code units. A blanked or alias event carries no `name`. A name is personal data: never log it."
+            },
+            "aliasOf": {
+              "$ref": "common.schema.json#/definitions/DashboardId",
+              "readOnly": true,
+              "description": "SET BY THE SERVER ONLY: a `create` whose normalised name equals a live category is stored with `aliasOf` = the existing category id and no `name`; every note carrying this event's `categoryId` then resolves to the existing category. A client must never send it: intake refuses it."
+            },
+            "redacted": {
+              "const": true,
+              "readOnly": true,
+              "description": "SET BY THE SERVER ONLY: the `name` of a deleted category was blanked (redaction). Appears on events read back through `/changes` and the learner's own export so they still validate. A client must never send it: intake refuses it on both routes."
+            }
+          }
+        }
+      },
+      "description": "A `note-category` event (2.29.0, AGB-1187): a learner creates, renames or deletes one of their own note categories. Student actor only (a guarded child's student token or a self learner's adult token), never on `/events/parent`. Private to the learner: never visible to a guardian (a guardian sees only the plain-text label on a note). No `knowledgeId`, `sectionId` or `blockId`. Send only when `GET /learners/me/status` lists the `note-categories` capability."
+    },
+    "EventSavedIdea": {
+      "title": "EventSavedIdea",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "profileId",
+        "kind",
+        "actor",
+        "actorId",
+        "at",
+        "detail"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "Client-made UUID, or mig-{subjectId}-{knowledgeId}-{sectionId} for imported reading events. Idempotency key within a profile."
+        },
+        "profileId": {
+          "$ref": "common.schema.json#/definitions/DashboardId",
+          "description": "The student's subject id. Must equal the token's profile, otherwise EVENT_INVALID."
+        },
+        "kind": {
+          "const": "saved-idea"
+        },
+        "knowledgeId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "contentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sectionId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "blockId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "language": {
+          "$ref": "common.schema.json#/definitions/DashboardLanguage"
+        },
+        "style": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "actor": {
+          "type": "string",
+          "const": "student"
+        },
+        "actorId": {
+          "$ref": "common.schema.json#/definitions/DashboardId"
+        },
+        "at": {
+          "$ref": "common.schema.json#/definitions/DashboardTime"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ideaId",
+            "action"
+          ],
+          "properties": {
+            "ideaId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "description": "The Study Jam line id. Unique within its section, so the key of a saved idea is (`knowledgeId`, `sectionId`, `ideaId`)."
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "save",
+                "remove"
+              ]
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 600,
+              "description": "A copy of the saved line. Required on `save` (service rule), ignored on `remove`."
+            },
+            "who": {
+              "type": "string",
+              "maxLength": 60,
+              "description": "The speaker's display name. Required on `save` (service rule), ignored on `remove`."
+            },
+            "redacted": {
+              "const": true,
+              "readOnly": true,
+              "description": "SET BY THE SERVER ONLY. A client must never send it: intake refuses it on both routes."
+            }
+          }
+        }
+      },
+      "description": "A `saved-idea` event (2.29.0, AGB-1188): a learner saves or removes a Study Jam line as a bookmark. Student actor only, never on `/events/parent`, and learner-only: never visible to a guardian on any path. `knowledgeId` and `sectionId` (the Study Jam section id) are required by the service, `style` is `study-jam`, `language` as the player sends it; neither is part of the key and the first save wins. Never sent with an empty section id. Send only when the `saved-ideas` capability is listed."
     }
   }
 }

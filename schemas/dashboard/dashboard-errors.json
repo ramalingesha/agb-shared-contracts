@@ -86,6 +86,21 @@
       "code": "STEP_UP_SEND_LIMITED",
       "httpStatus": 429,
       "description": "Step-up (2.23.0): the one-time code was already sent 3 times in an hour or 10 times in a day; no new code is sent."
+    },
+    {
+      "code": "CATEGORY_LIMIT",
+      "httpStatus": 409,
+      "description": "Per event (2.29.0): a `note-category` create beyond the 10 custom categories a learner may have. Permanent: the event is not stored; the app files its pending notes under Rough note and tells the learner."
+    },
+    {
+      "code": "CATEGORY_NAME_TAKEN",
+      "httpStatus": 409,
+      "description": "Per event (2.29.0): a `note-category` rename to a name another live category already has. Permanent: the event is not stored and the form shows the error. (A duplicate-name create is not refused: it is stored as an alias.)"
+    },
+    {
+      "code": "SAVED_IDEAS_LIMIT",
+      "httpStatus": 409,
+      "description": "Per event (2.29.0): a `saved-idea` save of a new idea beyond 500 live saved ideas. Permanent: the event is not stored and the learner is told."
     }
   ]
 }

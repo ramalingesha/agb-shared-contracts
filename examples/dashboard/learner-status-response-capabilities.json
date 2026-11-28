@@ -1,0 +1,7 @@
+{
+  "relation": "self",
+  "recording": "active",
+  "guardianVisible": false,
+  "guardianSince": null,
+  "capabilities": ["note-categories", "saved-ideas"]
+}

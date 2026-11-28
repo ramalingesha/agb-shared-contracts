@@ -1,0 +1,37 @@
+{
+  "learnerId": "usr_adult_01",
+  "exportedAt": "2026-11-29T10:00:00+05:30",
+  "notes": [
+    {
+      "id": "note_02",
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "s2",
+      "tag": "Rough note",
+      "categoryId": "cat_01",
+      "text": "Multiply by 5 by halving then adding a zero.",
+      "createdAt": "2026-11-29T09:32:00+05:30",
+      "latestVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "text": "Multiply by 5 by halving then adding a zero.",
+          "tag": "Rough note",
+          "at": "2026-11-29T09:32:00+05:30"
+        }
+      ]
+    }
+  ],
+  "noteCategories": [
+    { "id": "cat_01", "name": "Maths tricks", "createdAt": "2026-11-29T09:30:00+05:30" }
+  ],
+  "savedIdeas": [
+    {
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "sj-s2",
+      "ideaId": "line-14",
+      "text": "Frogs lay eggs in water so the tadpoles can swim.",
+      "who": "Kavi",
+      "savedAt": "2026-11-29T09:35:00+05:30"
+    }
+  ]
+}
