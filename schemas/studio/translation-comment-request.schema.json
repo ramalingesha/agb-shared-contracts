@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioTranslationCommentRequest",
+  "description": "POST .../translations/:lang/comments (2.27.0). A comment on one line of the translation. Not a state change, so no confirmation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key",
+    "note"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    }
+  }
+}

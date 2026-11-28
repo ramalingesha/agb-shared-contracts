@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.28.0] - 2026-11-28
+
+### Added (Studio, epic AGB-1173 stories AGB-1177, AGB-1178 and AGB-1179: translation in the Studio; strictly additive, nothing is removed or renamed)
+- **Eight schemas under `schemas/studio/`**: `translation-cards` (answer of `GET /lessons/:lessonId/translations`: per English version the translated languages that exist with state, open count, changed lines with before and after, comments, who approved or published which text, and the one Runner job that is pending), `translation-prepare-request`, `translation-import-request` (also the import of a change), `translation-comment-request`, `translation-type-request`, `translation-accept-request`, `translation-confirm-request` and `translation-action-result` (`changed:false` with `confirm` is the first click of a button; with `reason` a gate refused).
+- **Deployment order**: publish contracts first; then the Studio Worker (migration 0030) and the Runner (engine level 4 on the job branch); then the app screens.
+- Examples for every new schema; types regenerated.
+
 ## [2.27.0] - 2026-11-28
 
 ### Added (AGB-1186, epic AGB-1184 learner notes UX redesign; strictly additive: two optional fields, nothing is removed, renamed or narrowed, so every 2.20.0 to 2.26.0 example and event still validates and no earlier example file is edited)

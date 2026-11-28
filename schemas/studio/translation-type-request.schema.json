@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioTranslationTypeRequest",
+  "description": "POST .../translations/:lang/type (2.27.0). The reviewer types the corrected text of one line; the same rules as an import check it before it shows as before and after.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key",
+    "text"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8000
+    },
+    "confirmed": {
+      "type": "boolean",
+      "description": "Must be true for the request to change anything. Without it the Worker changes nothing and answers 200 { changed:false, confirm:{title,message} }."
+    }
+  }
+}

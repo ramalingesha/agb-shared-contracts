@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioTranslationConfirmRequest",
+  "description": "POST .../translations/:lang/send, /approve, /publish (2.27.0). Every state-changing request carries confirmed:true.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "confirmed": {
+      "type": "boolean",
+      "description": "Must be true for the request to change anything. Without it the Worker changes nothing and answers 200 { changed:false, confirm:{title,message} }."
+    }
+  }
+}

@@ -794,5 +794,26 @@ test('no schema or example assumes an OS, a drive letter, a backslash path or an
   assert.deepEqual(problems, []);
 });
 
+test('2.27.0 translation contracts: valid and invalid shapes', () => {
+  expectValid('translation-cards', example('translation-cards'));
+  const badLang = example('translation-cards'); badLang.cards[0].languages[0].lang = 'en';
+  expectInvalid('translation-cards', badLang, 'enum', '/lang');
+  const badState = example('translation-cards'); badState.cards[0].languages[0].state = 'done';
+  expectInvalid('translation-cards', badState, 'enum', '/state');
+  const badPending = example('translation-cards'); badPending.cards[0].pending.kind = 'publish';
+  expectInvalid('translation-cards', badPending, 'enum', '/kind');
+  const noLangs = example('translation-prepare-request'); noLangs.langs = [];
+  expectInvalid('translation-prepare-request', noLangs, 'minItems', '/langs');
+  const dupLangs = example('translation-prepare-request'); dupLangs.langs = ['kn', 'kn'];
+  expectInvalid('translation-prepare-request', dupLangs, 'uniqueItems', '/langs');
+  const noFiles = example('translation-import-request'); noFiles.files = [];
+  expectInvalid('translation-import-request', noFiles, 'minItems', '/files');
+  const noNote = example('translation-comment-request'); delete noNote.note;
+  expectInvalid('translation-comment-request', noNote, 'required', 'note');
+  const extra = example('translation-confirm-request'); extra.force = true;
+  expectInvalid('translation-confirm-request', extra, 'additionalProperties', 'force');
+  expectValid('translation-action-result', { changed: false, reason: 'the English item is not approved yet' });
+});
+
 console.log(`\nStudio contracts: ${passed} passed, ${failures} failed`);
 if (failures > 0) process.exit(1);
