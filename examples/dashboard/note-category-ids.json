@@ -1,0 +1,13 @@
+{
+  "id": "note_02",
+  "knowledgeId": "k-its-all-a-cycle",
+  "sectionId": "s2",
+  "tag": "Rough note",
+  "categoryId": "cat_01",
+  "categoryLabel": "Maths tricks",
+  "text": "Multiply by 5 by halving then adding a zero.",
+  "createdAt": "2026-11-29T09:32:00+05:30",
+  "latestVersion": 1,
+  "audience": "only-me",
+  "guardianVisible": false
+}

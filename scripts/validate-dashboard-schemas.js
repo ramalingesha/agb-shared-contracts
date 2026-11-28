@@ -145,6 +145,36 @@ const EXAMPLES_2_27 = {
   'note-search-request-created-range': ['progress-api', 'NoteSearchRequest'],
 };
 const NEW_EVENT_EXAMPLES_2_23 = ['event-note-quote-offset', 'event-note-redacted-create', 'event-note-redacted-guardian-reply', 'event-correction-redacted'];
+// 2.29.0 (AGB-1187, AGB-1188): custom note categories and saved ideas. No earlier example is edited.
+const KINDS_2_29 = [...KINDS, 'note-category', 'saved-idea'];
+const EXAMPLES_2_29 = {
+  'note-category-ids': ['progress-api', 'Note'],
+  'note-guardian-category-label': ['progress-api', 'Note'],
+  'note-category-list-response': ['progress-api', 'NoteCategoryListResponse'],
+  'saved-ideas-query': ['progress-api', 'SavedIdeasQuery'],
+  'saved-ideas-response': ['progress-api', 'SavedIdeasResponse'],
+  'learner-status-response-capabilities': ['progress-api', 'LearnerStatusResponse'],
+  'note-list-query-category': ['progress-api', 'NoteListQuery'],
+  'self-export-response-extras': ['progress-api', 'SelfExportResponse'],
+};
+const NEW_EVENT_EXAMPLES_2_29 = ['event-note-category-rename', 'event-note-category-delete', 'event-note-category-alias', 'event-note-category-redacted', 'event-saved-idea-remove', 'event-note-categoryid', 'event-note-categoryid-clear'];
+// What 2.29.0 added to progress-api.schema.json, removed again so the older tag comparisons below still describe their own release.
+const ADDED_2_29 = { Note: ['categoryId', 'categoryLabel'], SelfExportNote: ['categoryId'], NoteListQuery: ['categoryId'], LearnerStatusResponse: ['capabilities'], SelfExportResponse: ['noteCategories', 'savedIdeas'] };
+const progressApiDefs = () => readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions;
+const NEW_DEFINITIONS_2_29 = ['NoteCategoryItem', 'NoteCategoryListResponse', 'SavedIdeasQuery', 'SavedIdea', 'SavedIdeasResponse', 'SelfExportNoteCategory', 'SelfExportSavedIdea'];
+function without229(now, old) {
+  const out = structuredClone(now);
+  for (const name of NEW_DEFINITIONS_2_29) delete out.definitions[name];
+  for (const [name, props] of Object.entries(ADDED_2_29)) for (const prop of props) delete out.definitions[name].properties[prop];
+  out.definitions.EventResult.description = old.definitions.EventResult.description;
+  out.definitions.SelfExportResponse.description = old.definitions.SelfExportResponse.description;
+  // privacy wording added in 2.29.0 on guardian-facing definitions
+  for (const name of ['ChangeEntry', 'Note', 'NoteListResponse']) {
+    if (old.definitions[name].description === undefined) delete out.definitions[name].description;
+    else out.definitions[name].description = old.definitions[name].description;
+  }
+  return out;
+}
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
 const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
 const event = (kind) => example(`event-${kind}`);
@@ -168,19 +198,21 @@ test('every schema compiles, declares draft-07 and every definition has a title'
 test('every listed example validates against its definition', () => {
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
   for (const [name, [file, def]] of Object.entries(EXAMPLES_2_21)) valid(file, def, example(name));
-  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES_2_23, ...EXAMPLES_2_25, ...EXAMPLES_2_26, ...EXAMPLES_2_27 })) valid(file, def, example(name));
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES_2_23, ...EXAMPLES_2_25, ...EXAMPLES_2_26, ...EXAMPLES_2_27, ...EXAMPLES_2_29 })) valid(file, def, example(name));
+  for (const name of NEW_EVENT_EXAMPLES_2_29) validEvent(example(name));
   for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
-  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...Object.keys(EXAMPLES_2_25), ...Object.keys(EXAMPLES_2_26), ...Object.keys(EXAMPLES_2_27), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
+  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...Object.keys(EXAMPLES_2_25), ...Object.keys(EXAMPLES_2_26), ...Object.keys(EXAMPLES_2_27), ...Object.keys(EXAMPLES_2_29), ...NEW_EVENT_EXAMPLES_2_29, ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS_2_29.map((k) => `event-${k}`)]);
   const onDisk = jsonFiles(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
   assert.deepEqual(onDisk.filter((n) => !listed.has(n)), [], 'example without a test mapping');
   assert.deepEqual([...listed].filter((n) => !onDisk.includes(n)), [], 'mapping without an example');
 });
 
-test('one valid fixture per event kind, and the kinds list matches the union (17 kinds)', () => {
+test('one valid fixture per event kind, and the kinds list matches the union (19 kinds)', () => {
   const schema = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json'));
-  assert.deepEqual(schema.definitions.EventKind.enum, KINDS);
-  assert.equal(KINDS.length, 17);
-  for (const kind of KINDS) {
+  assert.deepEqual(schema.definitions.EventKind.enum, KINDS_2_29);
+  assert.equal(KINDS_2_29.length, 19);
+  assert.equal(schema.definitions.LearningEvent.oneOf.length, 19);
+  for (const kind of KINDS_2_29) {
     const e = event(kind);
     assert.equal(e.kind, kind, `event-${kind}.json has kind ${e.kind}`);
     validEvent(e);
@@ -543,7 +575,7 @@ test('2.23.0 events: note detail gains quoteOffset and a server-set readOnly red
   const note = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions.EventNote;
   assert.deepEqual(note.properties.detail.properties.action.enum, ['create', 'edit', 'delete']);
   assert.deepEqual(note.properties.actor.enum, ['student', 'parent']);
-  assert.deepEqual(Object.keys(props).sort(), ['action', 'noteId', 'quote', 'quoteOffset', 'redacted', 'tag', 'text', 'version']);
+  assert.deepEqual(Object.keys(props).sort(), ['action', 'categoryId', 'noteId', 'quote', 'quoteOffset', 'redacted', 'tag', 'text', 'version']); // categoryId: 2.29.0
   const share = event('note'); share.detail.action = 'share'; invalidEvent(share);
   const sys = event('note'); sys.actor = 'system'; invalidEvent(sys);
   // the create and edit requests take quoteOffset too
@@ -764,7 +796,7 @@ test('2.26.0 is purely additive against the 2.25.0 tag: progress-api.schema.json
     base = git.execFileSync('git', ['show', 'v2.25.0:schemas/dashboard/progress-api.schema.json'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   } catch { return; } // the 2.25.0 tag is not in a shallow clone: the example run above still covers it
   const old = JSON.parse(base);
-  const now = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json'));
+  const now = without229(readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')), old);
   assert.deepEqual(Object.keys(now.definitions).filter((k) => !(k in old.definitions)), [], 'no new definition');
   const added = {
     Note: ['status', 'statusKey', 'tagKey', 'edited', 'updatedAt'],
@@ -811,7 +843,7 @@ test('2.27.0 is purely additive against the 2.26.0 tag: only createdFrom and cre
     base = git.execFileSync('git', ['show', 'v2.26.0:schemas/dashboard/progress-api.schema.json'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   } catch { return; } // the 2.26.0 tag is not in a shallow clone: the example run above still covers it
   const old = JSON.parse(base);
-  const now = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json'));
+  const now = without229(readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')), old);
   assert.deepEqual(Object.keys(now.definitions).filter((k) => !(k in old.definitions)), [], 'no new definition');
   for (const [name, def] of Object.entries(old.definitions)) {
     const cur = now.definitions[name];
@@ -823,6 +855,178 @@ test('2.27.0 is purely additive against the 2.26.0 tag: only createdFrom and cre
     assert.deepEqual(Object.keys(curProps).filter((k) => !(k in oldProps)).sort(), ['createdFrom', 'createdTo'], `${name}: only the two filters are new`);
     for (const [prop, pdef] of Object.entries(oldProps)) assert.deepEqual(curProps[prop], pdef, `${name}.${prop} changed`);
   }
+});
+
+test('2.29.0 events: note-category and saved-idea valid shapes, student actor only, server-set keys read-only', () => {
+  validEvent(event('note-category'));
+  for (const name of ['event-note-category-rename', 'event-note-category-delete', 'event-note-category-alias', 'event-note-category-redacted', 'event-saved-idea-remove']) validEvent(example(name));
+  validEvent(event('saved-idea'));
+  // note-category: closed action, id required, no lesson ids, name length in code points, client junk refused
+  invalidEvent(invalidExample('note-category-bad-action'));
+  const noId = event('note-category'); delete noId.detail.categoryId; invalidEvent(noId);
+  const noAction = event('note-category'); delete noAction.detail.action; invalidEvent(noAction);
+  const long = event('note-category'); long.detail.name = 'x'.repeat(101); invalidEvent(long);
+  const max = event('note-category'); max.detail.name = 'x'.repeat(100); validEvent(max);
+  const emptyName = event('note-category'); emptyName.detail.name = ''; invalidEvent(emptyName);
+  const lesson = event('note-category'); lesson.knowledgeId = 'k-1'; invalidEvent(lesson);
+  const extra = event('note-category'); extra.detail.color = 'red'; invalidEvent(extra);
+  const parent = event('note-category'); parent.actor = 'parent'; invalidEvent(parent);
+  const falsy = example('event-note-category-redacted'); falsy.detail.redacted = false; invalidEvent(falsy);
+  const aliasFalse = example('event-note-category-alias'); aliasFalse.detail.aliasOf = ''; invalidEvent(aliasFalse);
+  // saved-idea
+  invalidEvent(invalidExample('saved-idea-no-idea-id'));
+  invalidEvent(invalidExample('saved-idea-parent-actor'));
+  const act = event('saved-idea'); act.detail.action = 'toggle'; invalidEvent(act);
+  for (const bad of ['', 'has space', 'a/b', 'x'.repeat(65)]) { const e = event('saved-idea'); e.detail.ideaId = bad; invalidEvent(e); }
+  for (const good of ['line-14', 'a.b:c_d', 'x'.repeat(64)]) { const e = event('saved-idea'); e.detail.ideaId = good; validEvent(e); }
+  for (const field of ['knowledgeId', 'sectionId']) { const e = event('saved-idea'); delete e[field]; invalidEvent(e); }
+  for (const field of ['text', 'who']) { const e = event('saved-idea'); delete e.detail[field]; invalidEvent(e); const z = event('saved-idea'); z.detail[field] = ''; invalidEvent(z); }
+  const removeNoText = example('event-saved-idea-remove'); assert.equal('text' in removeNoText.detail, false); validEvent(removeNoText);
+  const removeWithText = example('event-saved-idea-remove'); removeWithText.detail.text = 'x'; validEvent(removeWithText);
+  const text = event('saved-idea'); text.detail.text = 'x'.repeat(601); invalidEvent(text);
+  text.detail.text = 'x'.repeat(600); validEvent(text);
+  const who = event('saved-idea'); who.detail.who = 'x'.repeat(61); invalidEvent(who);
+  const extraIdea = event('saved-idea'); extraIdea.detail.note = 'x'; invalidEvent(extraIdea);
+  const redFalse = event('saved-idea'); redFalse.detail.redacted = false; invalidEvent(redFalse);
+  const redTrue = event('saved-idea'); redTrue.detail.redacted = true; validEvent(redTrue);
+  const wrongDetail = event('saved-idea'); wrongDetail.detail = event('note-category').detail; invalidEvent(wrongDetail);
+  const defs = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json')).definitions;
+  for (const [name, key] of [['EventNoteCategory', 'redacted'], ['EventSavedIdea', 'redacted'], ['EventNoteCategory', 'aliasOf']]) {
+    const prop = defs[name].properties.detail.properties[key];
+    assert.equal(prop.readOnly, true, `${name}.${key}`);
+    assert.match(prop.description, /SET BY THE SERVER ONLY/);
+    assert.match(prop.description, /intake refuses it/);
+  }
+  for (const [label, text] of [['ChangeEntry', progressApiDefs().ChangeEntry.description], ['Note', progressApiDefs().Note.description], ['NoteListResponse', progressApiDefs().NoteListResponse.description], ['ExportResponse', readJson(path.join(SCHEMA_DIR, 'progress-reads.schema.json')).definitions.ExportResponse.description]]) {
+    assert.match(text, /guardian NEVER receives a `note-category` or `saved-idea` event/, label);
+    assert.match(text, /NEVER receives `categoryId`/, label);
+  }
+  assert.deepEqual(defs.EventNoteCategory.properties.actor, { type: 'string', const: 'student' });
+  assert.deepEqual(defs.EventSavedIdea.properties.actor, { type: 'string', const: 'student' });
+});
+
+test('2.29.0 note events: optional categoryId (string or null), tag stays the closed five', () => {
+  validEvent(example('event-note-categoryid'));
+  const cleared = example('event-note-categoryid-clear');
+  assert.equal(cleared.detail.categoryId, null);
+  validEvent(cleared);
+  validEvent(event('note')); // 2.28 note without categoryId
+  for (const bad of ['', 7, true, {}, 'x'.repeat(129)]) { const e = example('event-note-categoryid'); e.detail.categoryId = bad; invalidEvent(e); }
+  const custom = example('event-note-categoryid'); custom.detail.tag = 'c:cat_01'; invalidEvent(custom);
+});
+
+test('2.29.0 progress-api: Note labels, category list, saved ideas, status capabilities, self export', () => {
+  const learnerNote = example('note-category-ids');
+  assert.equal(learnerNote.tag, 'Rough note');
+  const guardianNote = example('note-guardian-category-label');
+  assert.equal('categoryId' in guardianNote, false, 'a guardian note never carries the id');
+  for (const bad of [{ categoryLabel: '' }, { categoryLabel: 5 }, { categoryLabel: 'x'.repeat(101) }, { categoryId: '' }]) invalid('progress-api', 'Note', { ...learnerNote, ...bad });
+  valid('progress-api', 'Note', example('note')); // a 2.28 note
+  const list = example('note-category-list-response');
+  assert.ok(list.categories.length <= 10);
+  invalid('progress-api', 'NoteCategoryListResponse', { categories: Array.from({ length: 11 }, (_, i) => ({ id: `c${i}`, name: 'n', createdAt: '2026-11-29T09:30:00+05:30', noteCount: 0 })) }, 'maxItems');
+  invalid('progress-api', 'NoteCategoryListResponse', { categories: [{ id: 'c', name: 'n', createdAt: '2026-11-29T09:30:00+05:30' }] }, 'required');
+  invalid('progress-api', 'NoteCategoryListResponse', { categories: [{ id: 'c', name: 'n', createdAt: '2026-11-29T09:30:00+05:30', noteCount: -1 }] }, 'minimum');
+  invalid('progress-api', 'NoteCategoryItem', { ...list.categories[0], colour: 'red' }, 'additionalProperties');
+  valid('progress-api', 'SavedIdeasQuery', {});
+  for (const bad of [{ limit: 0 }, { limit: 51 }, { limit: '5' }, { page: 2 }]) invalid('progress-api', 'SavedIdeasQuery', bad);
+  const ideas = example('saved-ideas-response');
+  valid('progress-api', 'SavedIdeasResponse', { items: [] });
+  invalid('progress-api', 'SavedIdeasResponse', { items: Array.from({ length: 51 }, () => ideas.items[0]) }, 'maxItems');
+  const noText = structuredClone(ideas); delete noText.items[0].text; invalid('progress-api', 'SavedIdeasResponse', noText, 'required');
+  const idea = structuredClone(ideas); idea.items[0].extra = 1; invalid('progress-api', 'SavedIdeasResponse', idea, 'additionalProperties');
+  valid('progress-api', 'LearnerStatusResponse', example('learner-status-response')); // capabilities stay optional
+  valid('progress-api', 'LearnerStatusResponse', { ...example('learner-status-response'), capabilities: [] });
+  valid('progress-api', 'LearnerStatusResponse', { ...example('learner-status-response'), capabilities: ['note-categories', 'future-thing'] }); // unknown strings tolerated
+  invalid('progress-api', 'LearnerStatusResponse', { ...example('learner-status-response'), capabilities: ['a', 'a'] }, 'uniqueItems');
+  invalid('progress-api', 'LearnerStatusResponse', { ...example('learner-status-response'), capabilities: 'note-categories' }, 'type');
+  valid('progress-api', 'NoteListQuery', { categoryId: 'cat_01', tag: 'Rough note' });
+  invalid('progress-api', 'NoteListQuery', { categoryId: '' });
+  valid('progress-api', 'SelfExportResponse', example('self-export-response')); // 2.23 export
+  const exp = example('self-export-response-extras');
+  const noName = structuredClone(exp); delete noName.noteCategories[0].name; invalid('progress-api', 'SelfExportResponse', noName, 'required');
+  const noIdea = structuredClone(exp); delete noIdea.savedIdeas[0].savedAt; invalid('progress-api', 'SelfExportResponse', noIdea, 'required');
+  // nothing in the new shapes is required on an old shape
+  const defs = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions;
+  for (const [name, props] of Object.entries(ADDED_2_29)) for (const prop of props) assert.equal((defs[name].required || []).includes(prop), false, `${name}.${prop} stays optional`);
+  assert.match(defs.EventResult.description, /CATEGORY_LIMIT/);
+});
+
+test('2.29.0 error codes: three permanent per-event codes appended, none removed', () => {
+  const list = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json')).codes;
+  for (const code of ['CATEGORY_LIMIT', 'CATEGORY_NAME_TAKEN', 'SAVED_IDEAS_LIMIT']) {
+    const c = list.find((x) => x.code === code);
+    assert.ok(c, code);
+    assert.equal(c.httpStatus, 409, code);
+    assert.ok(c.description.length > 20, code);
+  }
+  assert.deepEqual(list.slice(-3).map((c) => c.code), ['CATEGORY_LIMIT', 'CATEGORY_NAME_TAKEN', 'SAVED_IDEAS_LIMIT']);
+  assert.equal(new Set(list.map((c) => c.code)).size, list.length, 'duplicate code');
+});
+
+test('2.29.0 back-compat: every 2.20.0 to 2.28.0 example and event validates unchanged', () => {
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES, ...EXAMPLES_2_21, ...EXAMPLES_2_23, ...EXAMPLES_2_25, ...EXAMPLES_2_26, ...EXAMPLES_2_27 })) valid(file, def, example(name));
+  for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
+  for (const kind of KINDS) validEvent(event(kind));
+});
+
+test('2.29.0 is purely additive against the 2.28.0 tag (learning-event, progress-api, progress-reads, errors)', () => {
+  const git = require('node:child_process');
+  const show = (file) => {
+    try { return JSON.parse(git.execFileSync('git', ['show', `v2.28.0:${file}`], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })); } catch { return null; }
+  };
+  const oldEvent = show('schemas/dashboard/learning-event.schema.json');
+  if (!oldEvent) { assert.ok(!process.env.CI, 'v2.28.0 tag missing in CI: checkout with fetch-depth 0 or fetch tags'); console.log('       (v2.28.0 tag not present: fetch tags to run the tag comparison)'); return; }
+  const oldApi = show('schemas/dashboard/progress-api.schema.json');
+  const oldReads = show('schemas/dashboard/progress-reads.schema.json');
+  const oldErrors = show('schemas/dashboard/dashboard-errors.json');
+  const nowEvent = readJson(path.join(SCHEMA_DIR, 'learning-event.schema.json'));
+  const nowApi = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json'));
+  const nowReads = readJson(path.join(SCHEMA_DIR, 'progress-reads.schema.json'));
+  const nowErrors = readJson(path.join(SCHEMA_DIR, 'dashboard-errors.json'));
+  // generic: only these definitions may differ, only by these properties; required lists never change
+  const compare = (label, old, now, newDefs, changed) => {
+    assert.deepEqual(Object.keys(now.definitions).filter((k) => !(k in old.definitions)).sort(), [...newDefs].sort(), `${label}: new definitions`);
+    for (const [name, def] of Object.entries(old.definitions)) {
+      const cur = now.definitions[name];
+      assert.ok(cur, `${label}: ${name} was removed`);
+      if (!(name in changed)) { assert.deepEqual(cur, def, `${label}: ${name} changed`); continue; }
+      const { properties: curProps, description: curDesc, ...curRest } = cur;
+      const { properties: oldProps, description: oldDesc, ...oldRest } = def;
+      assert.deepEqual(curRest, oldRest, `${label}: ${name}: required, additionalProperties and the rest are unchanged`);
+      assert.ok((curDesc || '').startsWith(oldDesc || ''), `${label}: ${name}: the description only grows`);
+      assert.deepEqual(Object.keys(curProps).filter((k) => !(k in oldProps)).sort(), [...changed[name]].sort(), `${label}: ${name}: only the listed properties are new`);
+      for (const [prop, pdef] of Object.entries(oldProps)) assert.deepEqual(curProps[prop], pdef, `${label}: ${name}.${prop} changed`);
+    }
+  };
+  compare('progress-api', oldApi, nowApi, NEW_DEFINITIONS_2_29, { ...ADDED_2_29, EventResult: [], ChangeEntry: [], NoteListResponse: [] });
+  compare('progress-reads', oldReads, nowReads, [], { ExportResponse: [] }); // unchanged: the guardian export reuses Note, so categoryLabel arrives through it
+  // learning-event: EventKind and LearningEvent grow; EventNote.detail grows by categoryId only
+  assert.deepEqual(nowEvent.definitions.EventKind.enum.slice(0, 17), oldEvent.definitions.EventKind.enum);
+  assert.deepEqual(nowEvent.definitions.EventKind.enum.slice(17), ['note-category', 'saved-idea']);
+  assert.deepEqual(nowEvent.definitions.LearningEvent.oneOf.filter((b) => !oldEvent.definitions.LearningEvent.oneOf.some((o) => o.$ref === b.$ref)).map((b) => b.$ref), ['#/definitions/EventNoteCategory', '#/definitions/EventSavedIdea']);
+  assert.equal(nowEvent.definitions.LearningEvent.oneOf.length, 19);
+  const oldNote = oldEvent.definitions.EventNote;
+  const nowNote = structuredClone(nowEvent.definitions.EventNote);
+  delete nowNote.properties.detail.properties.categoryId;
+  nowNote.description = oldNote.description;
+  assert.deepEqual(nowNote, oldNote, 'EventNote changed beyond detail.categoryId');
+  assert.equal(nowEvent.definitions.EventNote.properties.detail.required.includes('categoryId'), false);
+  for (const [name, def] of Object.entries(oldEvent.definitions)) {
+    if (['EventKind', 'EventNote', 'LearningEvent'].includes(name)) continue;
+    assert.deepEqual(nowEvent.definitions[name], def, `learning-event: ${name} changed`);
+  }
+  assert.deepEqual(Object.keys(nowEvent.definitions).filter((k) => !(k in oldEvent.definitions)).sort(), ['EventNoteCategory', 'EventSavedIdea']);
+  // errors: the old list is an unchanged prefix
+  assert.deepEqual(nowErrors.codes.slice(0, oldErrors.codes.length), oldErrors.codes);
+  assert.equal(nowErrors.codes.length, oldErrors.codes.length + 3);
+});
+
+test('2.29.0 the README, CHANGELOG and docs name the new version', () => {
+  const v = require('../package.json').version;
+  assert.equal(v, '2.29.0');
+  assert.match(fs.readFileSync(path.join(ROOT, 'CHANGELOG.md'), 'utf8'), /^## \[2\.29\.0\]/m);
+  for (const f of ['docs/CODEBASE_MAP.md', 'docs/ARCHITECTURE.md']) assert.match(fs.readFileSync(path.join(ROOT, f), 'utf8'), /version 2\.29\.0/, f);
 });
 
 console.log(`\nDashboard contracts: ${passed} passed, ${failures} failed`);

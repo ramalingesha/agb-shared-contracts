@@ -205,7 +205,7 @@ existing consumers get every type they did before with no import changes. CI fai
 the build if the committed split drifts from what the schema currently generates, so
 there is no separate build step for a consumer that only wants types.
 
-### schemas/dashboard (parent dashboard, 2.27.0)
+### schemas/dashboard (parent dashboard, 2.29.0)
 
 Contracts for guardian profiles (AGB-904) and the progress service (AGB-1067): token claims
 (`profile`, `guardian`, `consent_v`), the guardian API, `LearningEvent` with a `detail` per kind,
@@ -238,6 +238,8 @@ these yet. Deployment order: publish contracts, upgrade the progress service to 
 send them (a service on 2.21 rejects the new kind and fields with `EVENT_INVALID`). Details: `CHANGELOG.md`.
 
 2.23.0 (all additive, AGB-1148, learner notes Phase A): `quoteOffset` and the server-set `redacted` on the `note` event detail, `audience` and `guardianVisible` on `Note`, `NoteSearchRequest` (POST) and `NoteSearchResponse`, `NoteVersionsResponse`, `LearnerRelation` and `LearnerStatusResponse`, `SelfExportResponse` (deleted notes as `{ id, deletedAt }`), `derivedPending` on `ExportResponse` and `ready` on the map, topic, home, my-learning and reviews answers, the own-consent and step-up types, `Note.quoteOffset`, a paged notes list (`cursor`, `NoteListQuery`), `notes` and `noteReplies` on the guardian export, `LearnerEraseRequest`, `redacted` on corrections, the per-event codes `EVENT_KIND_NOT_ALLOWED`, `LINK_ERASED` and `SCHEMA_UNSUPPORTED`, and the step-up codes `STEP_UP_REQUIRED`, `STEP_UP_CODE_INVALID`, `STEP_UP_LOCKED` and `STEP_UP_SEND_LIMITED`. No sharing types (Phase B). Deployment order: publish contracts, progress service, user-management, app. Details: `CHANGELOG.md`.
+
+2.29.0 (additive, AGB-1187 and AGB-1188): the `note-category` and `saved-idea` event kinds (student actor, learner-only; server-set `aliasOf` and `redacted`), optional `categoryId` on note events, `Note` and `NoteListQuery`, `categoryLabel` on `Note` (the only thing a guardian sees), `LearnerStatusResponse.capabilities`, the learner reads `NoteCategoryListResponse` and `SavedIdeasResponse`, `noteCategories` and `savedIdeas` on `SelfExportResponse`, and the codes `CATEGORY_LIMIT`, `CATEGORY_NAME_TAKEN` and `SAVED_IDEAS_LIMIT`. A guardian never receives a `note-category` or `saved-idea` event or a `categoryId` (only the plain-text `categoryLabel`). Deployment order: publish contracts (owner's OK), progress service with its switch off, switch on, app. Details: `CHANGELOG.md`.
 
 2.27.0 (additive, AGB-1186): optional `createdFrom` and `createdTo` (ISO date `YYYY-MM-DD`, inclusive, UTC day bounds) on `NoteListQuery` and `NoteSearchRequest`. Deployment order: publish contracts, progress service, app. Details: `CHANGELOG.md`.
 

@@ -819,7 +819,7 @@
       "title": "ExportResponse",
       "type": "object",
       "additionalProperties": false,
-      "description": "POST /students/{studentId}/export (parent only): everything held about the child as one JSON document, sent as an attachment `progress-export.json`. Refused with EXPORT_TOO_LARGE (413) above 20,000 events.",
+      "description": "POST /students/{studentId}/export (parent only): everything held about the child as one JSON document, sent as an attachment `progress-export.json`. Refused with EXPORT_TOO_LARGE (413) above 20,000 events. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows. (Applies to `events[].event`: the guardian export holds no such event.)",
       "required": [
         "studentId",
         "exportedAt",

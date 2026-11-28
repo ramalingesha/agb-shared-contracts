@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "knowledgeId": "k-its-all-a-cycle",
+      "sectionId": "sj-s2",
+      "ideaId": "line-14",
+      "text": "Frogs lay eggs in water so the tadpoles can swim.",
+      "who": "Kavi",
+      "savedAt": "2026-11-29T09:35:00+05:30",
+      "style": "study-jam",
+      "language": "en"
+    }
+  ],
+  "nextCursor": "c_abc123"
+}

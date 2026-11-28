@@ -115,7 +115,9 @@ export type EventKind =
   | 'help-request'
   | 'review-done'
   | 'activity-done'
-  | 'correction';
+  | 'correction'
+  | 'note-category'
+  | 'saved-idea';
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
@@ -212,6 +214,26 @@ export type DashboardId38 = string;
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
 export type DashboardId39 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId40 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId41 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId42 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId43 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId44 = string;
 export type LadderLabel = 'Met' | 'Tried' | 'Gets it' | 'Can explain' | 'Remembers' | 'Can use it';
 /**
  * 1 Met, 2 Tried, 3 Gets it, 4 Can explain, 5 Remembers, 6 Can use it (labels: LADDER_LABELS in dashboard/index.js).
@@ -237,6 +259,8 @@ export type LearningEvent =
   | EventHelpRequest
   | EventReviewDone
   | EventActivityDone
+  | EventNoteCategory
+  | EventSavedIdea
   | EventCorrection;
 export type WeakSpotCause =
   | 'missing-foundation'
@@ -257,11 +281,19 @@ export type DashboardTime1 = string;
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
-export type DashboardId40 = string;
+export type DashboardId45 = string;
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
-export type DashboardId41 = string;
+export type DashboardId46 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId47 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId48 = string;
 /**
  * Added in 2.23.0. Absent or true: the answer is built. `false`: a guardian's derived state is "being prepared" (the claim rule needs a re-projection that has not run yet), so the data fields are empty and the app shows a "being prepared" state instead of an empty dashboard that would read as "no progress". A 2.22 client that ignores it sees empty data.
  */
@@ -269,7 +301,11 @@ export type Ready = boolean;
 /**
  * An opaque id: a user subject (usr_...), a client-made event id, a note id.
  */
-export type DashboardId42 = string;
+export type DashboardId49 = string;
+/**
+ * An opaque id: a user subject (usr_...), a client-made event id, a note id.
+ */
+export type DashboardId50 = string;
 /**
  * 0 = not started, 1 to 6 = the ladder (LadderStep). Rules understanding-v1.
  */
@@ -309,6 +345,7 @@ export interface DashboardContracts {
   EventKind?: EventKind;
   EventListen?: EventListen;
   EventNote?: EventNote;
+  EventNoteCategory?: EventNoteCategory;
   EventRead?: EventRead;
   EventReveal?: EventReveal;
   EventReviewDone?: EventReviewDone;
@@ -316,6 +353,7 @@ export interface DashboardContracts {
   EventRevisit?: EventRevisit;
   EventRoundComplete?: EventRoundComplete;
   EventRoundStart?: EventRoundStart;
+  EventSavedIdea?: EventSavedIdea;
   EventSelfCheck?: EventSelfCheck;
   EventSwitch?: EventSwitch;
   EventTeachBack?: EventTeachBack;
@@ -338,6 +376,8 @@ export interface DashboardContracts {
   LearnerRelation?: LearnerRelation;
   LearnerStatusResponse?: LearnerStatusResponse;
   Note?: Note;
+  NoteCategoryItem?: NoteCategoryItem;
+  NoteCategoryListResponse?: NoteCategoryListResponse;
   NoteListQuery?: NoteListQuery;
   NoteListResponse?: NoteListResponse;
   NoteReply?: NoteReply;
@@ -353,8 +393,13 @@ export interface DashboardContracts {
   ReviewItem?: ReviewItem;
   ReviewListResponse?: ReviewListResponse;
   ReviewRhythm?: ReviewRhythm;
+  SavedIdea?: SavedIdea;
+  SavedIdeasQuery?: SavedIdeasQuery;
+  SavedIdeasResponse?: SavedIdeasResponse;
   SelfExportNote?: SelfExportNote;
+  SelfExportNoteCategory?: SelfExportNoteCategory;
   SelfExportResponse?: SelfExportResponse;
+  SelfExportSavedIdea?: SelfExportSavedIdea;
   ChildRoundSummary?: ChildRoundSummary;
   Evidence?: Evidence;
   ExportResponse?: ExportResponse;
@@ -1801,7 +1846,7 @@ export interface EventListen {
   };
 }
 /**
- * A `note` event. 2.23.0 adds the optional `quoteOffset` (create and edit) and the server-set, read-only `redacted: true`; no new actions and no new actors.
+ * A `note` event. 2.23.0 adds the optional `quoteOffset` (create and edit) and the server-set, read-only `redacted: true`; no new actions and no new actors. 2.29.0 adds the optional `categoryId` (create and edit).
  */
 export interface EventNote {
   eventId: DashboardId18;
@@ -1832,14 +1877,44 @@ export interface EventNote {
      * Added in 2.23.0. SET BY THE SERVER ONLY: a deleted note's `text` and `quote` were blanked (redaction) and this marks the event. It appears on events read back through `/changes` and export so they still validate against `LearningEvent`. A client must never send it: intake refuses it with an explicit check after schema validation, on both `/events` and `/events/parent` (the schema allows the field only because server-written events carry it). A create carrying it is a blank shell of a deleted note (tombstone).
      */
     redacted?: true;
+    /**
+     * Added in 2.29.0 (AGB-1187). The learner's custom category (the id of a `note-category`). Optional, on `create` and `edit`. On `edit`: absent means unchanged, a string sets the category, `null` clears it (back to the base `tag`); a `tag` alone never clears a category. `tag` stays one of the five built-in values and is the base tag an older app or service shows. Never sent while the service does not advertise the `note-categories` capability (an older service refuses it as skew).
+     */
+    categoryId?: DashboardId | null;
+  };
+}
+/**
+ * A `note-category` event (2.29.0, AGB-1187): a learner creates, renames or deletes one of their own note categories. Student actor only (a guarded child's student token or a self learner's adult token), never on `/events/parent`. Private to the learner: never visible to a guardian (a guardian sees only the plain-text label on a note). No `knowledgeId`, `sectionId` or `blockId`. Send only when `GET /learners/me/status` lists the `note-categories` capability. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event.
+ */
+export interface EventNoteCategory {
+  eventId: DashboardId20;
+  profileId: DashboardId21;
+  kind: 'note-category';
+  language?: DashboardLanguage;
+  style?: string;
+  actor: 'student';
+  actorId: DashboardId;
+  at: DashboardTime;
+  detail: {
+    categoryId: DashboardId;
+    action: 'create' | 'rename' | 'delete';
+    /**
+     * The category name (1 to 100 characters, counted as code points by the validator). Required on `create` and `rename` (service rule, not schema). The real limit is the name rule of the service: 1 to 24 characters not counting combining marks, so the schema allows up to 100 characters. A blanked or alias event carries no `name`. A name is personal data: never log it.
+     */
+    name?: string;
+    aliasOf?: DashboardId22;
+    /**
+     * SET BY THE SERVER ONLY: the `name` of a deleted category was blanked (redaction). Appears on events read back through `/changes` and the learner's own export so they still validate. A client must never send it: intake refuses it on both routes.
+     */
+    redacted?: true;
   };
 }
 /**
  * A `read` event.
  */
 export interface EventRead {
-  eventId: DashboardId20;
-  profileId: DashboardId21;
+  eventId: DashboardId23;
+  profileId: DashboardId24;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1864,8 +1939,8 @@ export interface EventRead {
  * A `reveal` event.
  */
 export interface EventReveal {
-  eventId: DashboardId22;
-  profileId: DashboardId23;
+  eventId: DashboardId25;
+  profileId: DashboardId26;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1890,8 +1965,8 @@ export interface EventReveal {
  * A `review-done` event.
  */
 export interface EventReviewDone {
-  eventId: DashboardId24;
-  profileId: DashboardId25;
+  eventId: DashboardId27;
+  profileId: DashboardId28;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1912,8 +1987,8 @@ export interface EventReviewDone {
  * A `revision` event.
  */
 export interface EventRevision {
-  eventId: DashboardId26;
-  profileId: DashboardId27;
+  eventId: DashboardId29;
+  profileId: DashboardId30;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1934,8 +2009,8 @@ export interface EventRevision {
  * A `revisit` event.
  */
 export interface EventRevisit {
-  eventId: DashboardId28;
-  profileId: DashboardId29;
+  eventId: DashboardId31;
+  profileId: DashboardId32;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1955,8 +2030,8 @@ export interface EventRevisit {
  * A `round-complete` event. Who may send it: the student actor only (`actor` = student, with the student's own token). The server verifies the claim (sections read, and practice when known) and ignores and counts a round-complete from any other actor or that fails the check; a parent or the system never completes a round for the child.
  */
 export interface EventRoundComplete {
-  eventId: DashboardId30;
-  profileId: DashboardId31;
+  eventId: DashboardId33;
+  profileId: DashboardId34;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -1984,8 +2059,8 @@ export interface EventRoundComplete {
  * A `round-start` event.
  */
 export interface EventRoundStart {
-  eventId: DashboardId32;
-  profileId: DashboardId33;
+  eventId: DashboardId35;
+  profileId: DashboardId36;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -2000,11 +2075,48 @@ export interface EventRoundStart {
   detail: {};
 }
 /**
+ * A `saved-idea` event (2.29.0, AGB-1188): a learner saves or removes a Study Jam line as a bookmark. Student actor only, never on `/events/parent`, and learner-only: never visible to a guardian on any path. `knowledgeId` and `sectionId` (the Study Jam section id) are required, `style` is `study-jam`, `language` as the player sends it; neither is part of the key and the first save wins. Never sent with an empty section id. Send only when the `saved-ideas` capability is listed. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event.
+ */
+export interface EventSavedIdea {
+  eventId: DashboardId37;
+  profileId: DashboardId38;
+  kind: 'saved-idea';
+  knowledgeId: DashboardId;
+  contentVersion?: string;
+  round?: number;
+  sectionId: DashboardId;
+  blockId?: DashboardId;
+  language?: DashboardLanguage;
+  style?: string;
+  actor: 'student';
+  actorId: DashboardId;
+  at: DashboardTime;
+  detail: {
+    /**
+     * The Study Jam line id. Unique within its section, so the key of a saved idea is (`knowledgeId`, `sectionId`, `ideaId`).
+     */
+    ideaId: string;
+    action: 'save' | 'remove';
+    /**
+     * A copy of the saved line (1 to 600 characters). Required on `save`, ignored on `remove`.
+     */
+    text?: string;
+    /**
+     * The speaker's display name (1 to 60 characters). Required on `save`, ignored on `remove`.
+     */
+    who?: string;
+    /**
+     * SET BY THE SERVER ONLY. A client must never send it: intake refuses it on both routes.
+     */
+    redacted?: true;
+  };
+}
+/**
  * A `self-check` event.
  */
 export interface EventSelfCheck {
-  eventId: DashboardId34;
-  profileId: DashboardId35;
+  eventId: DashboardId39;
+  profileId: DashboardId40;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -2024,8 +2136,8 @@ export interface EventSelfCheck {
  * A `switch` event.
  */
 export interface EventSwitch {
-  eventId: DashboardId36;
-  profileId: DashboardId37;
+  eventId: DashboardId41;
+  profileId: DashboardId42;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -2047,8 +2159,8 @@ export interface EventSwitch {
  * A `teach-back` event.
  */
 export interface EventTeachBack {
-  eventId: DashboardId38;
-  profileId: DashboardId39;
+  eventId: DashboardId43;
+  profileId: DashboardId44;
   knowledgeId?: DashboardId;
   contentVersion?: string;
   round?: number;
@@ -3000,6 +3112,9 @@ export interface ReviewItem {
   doneAt?: DashboardTime | null;
   priority: number;
 }
+/**
+ * An event with its server sequence number. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows.
+ */
 export interface ChangeEntry {
   seq: number;
   event: LearningEvent;
@@ -3069,7 +3184,7 @@ export interface EventIntakeResponse {
   results: [EventResult, ...EventResult[]];
 }
 /**
- * Per-event outcome. `error` is present only when result is error (for example EVENT_INVALID). From 2.23.0 an error is one of EVENT_INVALID (permanent), EVENT_KIND_NOT_ALLOWED (permanent: a self learner sent a kind other than note), LINK_ERASED (permanent) or SCHEMA_UNSUPPORTED (version skew: keep the event and retry after an app update). Unknown codes must be treated like SCHEMA_UNSUPPORTED.
+ * Per-event outcome. `error` is present only when result is error (for example EVENT_INVALID). From 2.23.0 an error is one of EVENT_INVALID (permanent), EVENT_KIND_NOT_ALLOWED (permanent: a self learner sent a kind other than note), LINK_ERASED (permanent) or SCHEMA_UNSUPPORTED (version skew: keep the event and retry after an app update). Unknown codes must be treated like SCHEMA_UNSUPPORTED. 2.29.0 adds three permanent codes, returned by the service's authoritative check and not stored: CATEGORY_LIMIT (an 11th custom category), CATEGORY_NAME_TAKEN (a rename to a name already used) and SAVED_IDEAS_LIMIT (a 501st saved idea). While the service switch is off, a new-kind event or a note with `categoryId` is answered SCHEMA_UNSUPPORTED (kept, retried later).
  */
 export interface EventResult {
   eventId: DashboardId;
@@ -3107,7 +3222,14 @@ export interface LearnerStatusResponse {
    * The server sequence watermark of the claim: the guardian sees only notes created after it. A new value tells the app to show the one-time claim sheet before it flushes the outbox. 0 for a guarded profile with nothing older; null for `none` and `self`.
    */
   guardianSince: number | null;
+  /**
+   * Added in 2.29.0. What the service understands, so an app emits only that: documented values `note-categories` and `saved-ideas`. Present only while the service switch (PROGRESS_NOTE_EXTRAS_ENABLED) is on; absent means none. A reader must tolerate an unknown string.
+   */
+  capabilities?: string[];
 }
+/**
+ * A note. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows.
+ */
 export interface Note {
   id: DashboardId;
   knowledgeId: DashboardId;
@@ -3148,6 +3270,11 @@ export interface Note {
    */
   edited?: boolean;
   updatedAt?: DashboardTime1;
+  categoryId?: DashboardId45;
+  /**
+   * Added in 2.29.0. The current, resolved name of the note's custom category, as plain text, only when the category is live. This is the only part of a category a guardian ever sees, and only on a note the claim rule already lets them read. It changes at once when the learner renames or deletes the category. Render as text.
+   */
+  categoryLabel?: string;
 }
 export interface NoteReply {
   id: DashboardId;
@@ -3156,6 +3283,77 @@ export interface NoteReply {
   text?: string;
   reaction?: string;
   at: DashboardTime;
+}
+/**
+ * A live custom category in the learner list (2.29.0).
+ */
+export interface NoteCategoryItem {
+  id: DashboardId;
+  name: string;
+  createdAt: DashboardTime;
+  noteCount: number;
+  /**
+   * Ids of duplicate-name creates that resolve to this category, so the app can re-point a pending note.
+   */
+  aliases?: DashboardId[];
+}
+/**
+ * GET /learners/me/note-categories (2.29.0, learner only: a guardian token gets 403). Live categories, at most 10. ETag as the other reads.
+ */
+export interface NoteCategoryListResponse {
+  /**
+   * @maxItems 10
+   */
+  categories:
+    | []
+    | [NoteCategoryItem]
+    | [NoteCategoryItem, NoteCategoryItem]
+    | [NoteCategoryItem, NoteCategoryItem, NoteCategoryItem]
+    | [NoteCategoryItem, NoteCategoryItem, NoteCategoryItem, NoteCategoryItem]
+    | [NoteCategoryItem, NoteCategoryItem, NoteCategoryItem, NoteCategoryItem, NoteCategoryItem]
+    | [NoteCategoryItem, NoteCategoryItem, NoteCategoryItem, NoteCategoryItem, NoteCategoryItem, NoteCategoryItem]
+    | [
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem
+      ]
+    | [
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem
+      ]
+    | [
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem
+      ]
+    | [
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem,
+        NoteCategoryItem
+      ];
 }
 /**
  * Query parameters of the notes list (2.23.0), shown as an object. There is no `q`: search is a POST (NoteSearchRequest), so note text never reaches a URL.
@@ -3173,9 +3371,10 @@ export interface NoteListQuery {
    * Added in 2.27.0. Only notes created on or before this day (ISO date YYYY-MM-DD, inclusive, UTC day end 23:59:59.999Z). Optional. Same rules as createdFrom.
    */
   createdTo?: string;
+  categoryId?: DashboardId46;
 }
 /**
- * GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.
+ * GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows.
  */
 export interface NoteListResponse {
   notes: Note[];
@@ -3183,7 +3382,7 @@ export interface NoteListResponse {
    * Added in 2.23.0. The documented paging field: pass as `cursor` for the next (older) page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`. Absent means a 2.22 server (everything in one answer).
    */
   cursor?: string | null;
-  studentId?: DashboardId40;
+  studentId?: DashboardId47;
   /**
    * Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`.
    */
@@ -3225,7 +3424,7 @@ export interface NoteSearchResponse {
    * The documented paging field: pass as `cursor` for the next page; null or absent on the last page. The progress service returns both `cursor` and `nextCursor` with the same value; clients should read `cursor`.
    */
   cursor?: string | null;
-  studentId?: DashboardId41;
+  studentId?: DashboardId48;
   /**
    * Added in 2.26.0. An alias of `cursor` that the progress service also sends (always the same value). Optional; clients should read `cursor`.
    */
@@ -3309,6 +3508,41 @@ export interface ReviewRhythm {
   timezone: string;
 }
 /**
+ * A saved Study Jam idea as shown in My notes (2.29.0): a copy of the line as saved. Learner only.
+ */
+export interface SavedIdea {
+  knowledgeId: DashboardId;
+  sectionId: DashboardId;
+  ideaId: string;
+  text: string;
+  who: string;
+  savedAt: DashboardTime;
+  style?: string;
+  language?: DashboardLanguage;
+}
+/**
+ * Query parameters of GET /learners/me/saved-ideas (2.29.0), shown as an object.
+ */
+export interface SavedIdeasQuery {
+  knowledgeId?: DashboardId;
+  sectionId?: DashboardId;
+  /**
+   * Default 20.
+   */
+  limit?: number;
+  cursor?: string;
+}
+/**
+ * GET /learners/me/saved-ideas (2.29.0, learner only: a guardian token gets 403). Newest first.
+ */
+export interface SavedIdeasResponse {
+  /**
+   * @maxItems 50
+   */
+  items: SavedIdea[];
+  nextCursor?: string;
+}
+/**
  * A live note in a learner's own export (2.23.0), with all its versions. No other person's id or name appears: guardian replies are not part of the self export.
  */
 export interface SelfExportNote {
@@ -3329,14 +3563,42 @@ export interface SelfExportNote {
    * @minItems 1
    */
   versions: [NoteVersion, ...NoteVersion[]];
+  categoryId?: DashboardId49;
+}
+/**
+ * A live custom category in the learner's own export (2.29.0).
+ */
+export interface SelfExportNoteCategory {
+  id: DashboardId;
+  name: string;
+  createdAt: DashboardTime;
 }
 /**
  * POST /students/{id}/export when `id` is the caller's own id (2.23.0; self learners only: a guarded child cannot export their own notes, the guardian does). Restricted shape: the learner's own notes with versions, deleted notes as `{ id, deletedAt }`, no other person's id or name. With no link row the export is an empty document (`notes: []`). Own export stays open for a withdrawn or `none` link.
  */
 export interface SelfExportResponse {
-  learnerId: DashboardId42;
+  learnerId: DashboardId50;
   exportedAt: DashboardTime;
   notes: (SelfExportNote | DeletedNote)[];
+  /**
+   * Added in 2.29.0. The learner's live custom categories. Never in a guardian export.
+   */
+  noteCategories?: SelfExportNoteCategory[];
+  /**
+   * Added in 2.29.0. The learner's live saved ideas. Never in a guardian export.
+   */
+  savedIdeas?: SelfExportSavedIdea[];
+}
+/**
+ * A live saved idea in the learner's own export (2.29.0). A removed idea is not exported.
+ */
+export interface SelfExportSavedIdea {
+  knowledgeId: DashboardId;
+  sectionId: DashboardId;
+  ideaId: string;
+  text: string;
+  who: string;
+  savedAt: DashboardTime;
 }
 /**
  * RoundSummary without the parent-judged teach-back count (my-learning shows the child's own numbers only).
@@ -3372,7 +3634,7 @@ export interface Evidence {
   labelKey: string;
 }
 /**
- * POST /students/{studentId}/export (parent only): everything held about the child as one JSON document, sent as an attachment `progress-export.json`. Refused with EXPORT_TOO_LARGE (413) above 20,000 events.
+ * POST /students/{studentId}/export (parent only): everything held about the child as one JSON document, sent as an attachment `progress-export.json`. Refused with EXPORT_TOO_LARGE (413) above 20,000 events. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows. (Applies to `events[].event`: the guardian export holds no such event.)
  */
 export interface ExportResponse {
   studentId: DashboardId;
