@@ -139,6 +139,11 @@ const EXAMPLES_2_26 = {
   'note-server-search-response': ['progress-api', 'NoteSearchResponse'],
   'note-server-note-edited': ['progress-api', 'Note'],
 };
+// 2.27.0 (AGB-1186): created-date range on the notes list and search. No earlier example is edited.
+const EXAMPLES_2_27 = {
+  'note-list-query-created-range': ['progress-api', 'NoteListQuery'],
+  'note-search-request-created-range': ['progress-api', 'NoteSearchRequest'],
+};
 const NEW_EVENT_EXAMPLES_2_23 = ['event-note-quote-offset', 'event-note-redacted-create', 'event-note-redacted-guardian-reply', 'event-correction-redacted'];
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
 const jsonFiles = (dir) => fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
@@ -163,9 +168,9 @@ test('every schema compiles, declares draft-07 and every definition has a title'
 test('every listed example validates against its definition', () => {
   for (const [name, [file, def]] of Object.entries(EXAMPLES)) valid(file, def, example(name));
   for (const [name, [file, def]] of Object.entries(EXAMPLES_2_21)) valid(file, def, example(name));
-  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES_2_23, ...EXAMPLES_2_25, ...EXAMPLES_2_26 })) valid(file, def, example(name));
+  for (const [name, [file, def]] of Object.entries({ ...EXAMPLES_2_23, ...EXAMPLES_2_25, ...EXAMPLES_2_26, ...EXAMPLES_2_27 })) valid(file, def, example(name));
   for (const name of [...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23]) validEvent(example(name));
-  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...Object.keys(EXAMPLES_2_25), ...Object.keys(EXAMPLES_2_26), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
+  const listed = new Set([...Object.keys(EXAMPLES), ...Object.keys(EXAMPLES_2_21), ...Object.keys(EXAMPLES_2_23), ...Object.keys(EXAMPLES_2_25), ...Object.keys(EXAMPLES_2_26), ...Object.keys(EXAMPLES_2_27), ...NEW_EVENT_EXAMPLES, ...NEW_EVENT_EXAMPLES_2_22, ...NEW_EVENT_EXAMPLES_2_23, ...KINDS.map((k) => `event-${k}`)]);
   const onDisk = jsonFiles(EXAMPLE_DIR).map((f) => f.replace(/\.json$/, ''));
   assert.deepEqual(onDisk.filter((n) => !listed.has(n)), [], 'example without a test mapping');
   assert.deepEqual([...listed].filter((n) => !onDisk.includes(n)), [], 'mapping without an example');
@@ -765,6 +770,9 @@ test('2.26.0 is purely additive against the 2.25.0 tag: progress-api.schema.json
     Note: ['status', 'statusKey', 'tagKey', 'edited', 'updatedAt'],
     NoteListResponse: ['studentId', 'nextCursor'],
     NoteSearchResponse: ['studentId', 'nextCursor'],
+    // 2.27.0 additions (AGB-1186), checked on their own against the 2.26.0 tag below
+    NoteListQuery: ['createdFrom', 'createdTo'],
+    NoteSearchRequest: ['createdFrom', 'createdTo'],
   };
   for (const [name, def] of Object.entries(old.definitions)) {
     const cur = now.definitions[name];
@@ -779,6 +787,41 @@ test('2.26.0 is purely additive against the 2.25.0 tag: progress-api.schema.json
       assert.deepEqual(curProps[prop], pdef, `${name}.${prop} changed`);
     }
     for (const prop of added[name]) assert.equal((cur.required || []).includes(prop), false, `${name}.${prop} must stay optional`);
+  }
+});
+
+test('2.27.0 created-date range: valid shapes, invalid dates and unknown fields refused', () => {
+  const q = example('note-list-query-created-range');
+  assert.equal(q.createdFrom, '2026-11-01');
+  valid('progress-api', 'NoteListQuery', { createdFrom: '2026-11-01' });
+  valid('progress-api', 'NoteListQuery', { createdTo: '2026-11-28' });
+  valid('progress-api', 'NoteSearchRequest', { q: 'x', createdFrom: '2026-11-28', createdTo: '2026-11-28' });
+  invalid('progress-api', 'NoteListQuery', { createdFrom: '28-11-2026' }, 'pattern');
+  invalid('progress-api', 'NoteListQuery', { createdTo: '2026-11-28T10:00:00Z' }, 'pattern');
+  invalid('progress-api', 'NoteSearchRequest', { q: 'x', createdFrom: 20261128 }, 'type');
+  invalid('progress-api', 'NoteSearchRequest', { q: 'x', createdAfter: '2026-11-01' }, 'additionalProperties');
+  const defs = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions;
+  for (const name of ['NoteListQuery', 'NoteSearchRequest']) for (const f of ['createdFrom', 'createdTo']) assert.equal((defs[name].required || []).includes(f), false, `${name}.${f} stays optional`);
+});
+
+test('2.27.0 is purely additive against the 2.26.0 tag: only createdFrom and createdTo are new', () => {
+  const git = require('node:child_process');
+  let base;
+  try {
+    base = git.execFileSync('git', ['show', 'v2.26.0:schemas/dashboard/progress-api.schema.json'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch { return; } // the 2.26.0 tag is not in a shallow clone: the example run above still covers it
+  const old = JSON.parse(base);
+  const now = readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json'));
+  assert.deepEqual(Object.keys(now.definitions).filter((k) => !(k in old.definitions)), [], 'no new definition');
+  for (const [name, def] of Object.entries(old.definitions)) {
+    const cur = now.definitions[name];
+    assert.ok(cur, `${name} was removed`);
+    if (name !== 'NoteListQuery' && name !== 'NoteSearchRequest') { assert.deepEqual(cur, def, `${name} changed`); continue; }
+    const { properties: curProps, ...curRest } = cur;
+    const { properties: oldProps, ...oldRest } = def;
+    assert.deepEqual(curRest, oldRest, `${name}: required, additionalProperties and the rest are unchanged`);
+    assert.deepEqual(Object.keys(curProps).filter((k) => !(k in oldProps)).sort(), ['createdFrom', 'createdTo'], `${name}: only the two filters are new`);
+    for (const [prop, pdef] of Object.entries(oldProps)) assert.deepEqual(curProps[prop], pdef, `${name}.${prop} changed`);
   }
 });
 
