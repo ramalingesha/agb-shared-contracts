@@ -160,6 +160,7 @@ const EXAMPLES_2_29 = {
 const NEW_EVENT_EXAMPLES_2_29 = ['event-note-category-rename', 'event-note-category-delete', 'event-note-category-alias', 'event-note-category-redacted', 'event-saved-idea-remove', 'event-note-categoryid', 'event-note-categoryid-clear'];
 // What 2.29.0 added to progress-api.schema.json, removed again so the older tag comparisons below still describe their own release.
 const ADDED_2_29 = { Note: ['categoryId', 'categoryLabel'], SelfExportNote: ['categoryId'], NoteListQuery: ['categoryId'], LearnerStatusResponse: ['capabilities'], SelfExportResponse: ['noteCategories', 'savedIdeas'] };
+const progressApiDefs = () => readJson(path.join(SCHEMA_DIR, 'progress-api.schema.json')).definitions;
 const NEW_DEFINITIONS_2_29 = ['NoteCategoryItem', 'NoteCategoryListResponse', 'SavedIdeasQuery', 'SavedIdea', 'SavedIdeasResponse', 'SelfExportNoteCategory', 'SelfExportSavedIdea'];
 function without229(now, old) {
   const out = structuredClone(now);
@@ -167,6 +168,11 @@ function without229(now, old) {
   for (const [name, props] of Object.entries(ADDED_2_29)) for (const prop of props) delete out.definitions[name].properties[prop];
   out.definitions.EventResult.description = old.definitions.EventResult.description;
   out.definitions.SelfExportResponse.description = old.definitions.SelfExportResponse.description;
+  // privacy wording added in 2.29.0 on guardian-facing definitions
+  for (const name of ['ChangeEntry', 'Note', 'NoteListResponse']) {
+    if (old.definitions[name].description === undefined) delete out.definitions[name].description;
+    else out.definitions[name].description = old.definitions[name].description;
+  }
   return out;
 }
 const INVALID_DIR = path.join(EXAMPLE_DIR, 'invalid');
@@ -855,12 +861,13 @@ test('2.29.0 events: note-category and saved-idea valid shapes, student actor on
   validEvent(event('note-category'));
   for (const name of ['event-note-category-rename', 'event-note-category-delete', 'event-note-category-alias', 'event-note-category-redacted', 'event-saved-idea-remove']) validEvent(example(name));
   validEvent(event('saved-idea'));
-  // note-category: closed action, id required, no lesson ids, name length in UTF-16 units, client junk refused
+  // note-category: closed action, id required, no lesson ids, name length in code points, client junk refused
   invalidEvent(invalidExample('note-category-bad-action'));
   const noId = event('note-category'); delete noId.detail.categoryId; invalidEvent(noId);
   const noAction = event('note-category'); delete noAction.detail.action; invalidEvent(noAction);
   const long = event('note-category'); long.detail.name = 'x'.repeat(101); invalidEvent(long);
   const max = event('note-category'); max.detail.name = 'x'.repeat(100); validEvent(max);
+  const emptyName = event('note-category'); emptyName.detail.name = ''; invalidEvent(emptyName);
   const lesson = event('note-category'); lesson.knowledgeId = 'k-1'; invalidEvent(lesson);
   const extra = event('note-category'); extra.detail.color = 'red'; invalidEvent(extra);
   const parent = event('note-category'); parent.actor = 'parent'; invalidEvent(parent);
@@ -872,6 +879,10 @@ test('2.29.0 events: note-category and saved-idea valid shapes, student actor on
   const act = event('saved-idea'); act.detail.action = 'toggle'; invalidEvent(act);
   for (const bad of ['', 'has space', 'a/b', 'x'.repeat(65)]) { const e = event('saved-idea'); e.detail.ideaId = bad; invalidEvent(e); }
   for (const good of ['line-14', 'a.b:c_d', 'x'.repeat(64)]) { const e = event('saved-idea'); e.detail.ideaId = good; validEvent(e); }
+  for (const field of ['knowledgeId', 'sectionId']) { const e = event('saved-idea'); delete e[field]; invalidEvent(e); }
+  for (const field of ['text', 'who']) { const e = event('saved-idea'); delete e.detail[field]; invalidEvent(e); const z = event('saved-idea'); z.detail[field] = ''; invalidEvent(z); }
+  const removeNoText = example('event-saved-idea-remove'); assert.equal('text' in removeNoText.detail, false); validEvent(removeNoText);
+  const removeWithText = example('event-saved-idea-remove'); removeWithText.detail.text = 'x'; validEvent(removeWithText);
   const text = event('saved-idea'); text.detail.text = 'x'.repeat(601); invalidEvent(text);
   text.detail.text = 'x'.repeat(600); validEvent(text);
   const who = event('saved-idea'); who.detail.who = 'x'.repeat(61); invalidEvent(who);
@@ -885,6 +896,10 @@ test('2.29.0 events: note-category and saved-idea valid shapes, student actor on
     assert.equal(prop.readOnly, true, `${name}.${key}`);
     assert.match(prop.description, /SET BY THE SERVER ONLY/);
     assert.match(prop.description, /intake refuses it/);
+  }
+  for (const [label, text] of [['ChangeEntry', progressApiDefs().ChangeEntry.description], ['Note', progressApiDefs().Note.description], ['NoteListResponse', progressApiDefs().NoteListResponse.description], ['ExportResponse', readJson(path.join(SCHEMA_DIR, 'progress-reads.schema.json')).definitions.ExportResponse.description]]) {
+    assert.match(text, /guardian NEVER receives a `note-category` or `saved-idea` event/, label);
+    assert.match(text, /NEVER receives `categoryId`/, label);
   }
   assert.deepEqual(defs.EventNoteCategory.properties.actor, { type: 'string', const: 'student' });
   assert.deepEqual(defs.EventSavedIdea.properties.actor, { type: 'string', const: 'student' });
@@ -961,7 +976,7 @@ test('2.29.0 is purely additive against the 2.28.0 tag (learning-event, progress
     try { return JSON.parse(git.execFileSync('git', ['show', `v2.28.0:${file}`], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })); } catch { return null; }
   };
   const oldEvent = show('schemas/dashboard/learning-event.schema.json');
-  if (!oldEvent) { console.log('       (v2.28.0 tag not present: fetch tags to run the tag comparison)'); return; }
+  if (!oldEvent) { assert.ok(!process.env.CI, 'v2.28.0 tag missing in CI: checkout with fetch-depth 0 or fetch tags'); console.log('       (v2.28.0 tag not present: fetch tags to run the tag comparison)'); return; }
   const oldApi = show('schemas/dashboard/progress-api.schema.json');
   const oldReads = show('schemas/dashboard/progress-reads.schema.json');
   const oldErrors = show('schemas/dashboard/dashboard-errors.json');
@@ -984,8 +999,8 @@ test('2.29.0 is purely additive against the 2.28.0 tag (learning-event, progress
       for (const [prop, pdef] of Object.entries(oldProps)) assert.deepEqual(curProps[prop], pdef, `${label}: ${name}.${prop} changed`);
     }
   };
-  compare('progress-api', oldApi, nowApi, NEW_DEFINITIONS_2_29, { ...ADDED_2_29, EventResult: [] });
-  compare('progress-reads', oldReads, nowReads, [], {}); // unchanged: the guardian export reuses Note, so categoryLabel arrives through it
+  compare('progress-api', oldApi, nowApi, NEW_DEFINITIONS_2_29, { ...ADDED_2_29, EventResult: [], ChangeEntry: [], NoteListResponse: [] });
+  compare('progress-reads', oldReads, nowReads, [], { ExportResponse: [] }); // unchanged: the guardian export reuses Note, so categoryLabel arrives through it
   // learning-event: EventKind and LearningEvent grow; EventNote.detail grows by categoryId only
   assert.deepEqual(nowEvent.definitions.EventKind.enum.slice(0, 17), oldEvent.definitions.EventKind.enum);
   assert.deepEqual(nowEvent.definitions.EventKind.enum.slice(17), ['note-category', 'saved-idea']);

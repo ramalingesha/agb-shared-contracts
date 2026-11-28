@@ -35,7 +35,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # Need history for changelog check
+          fetch-depth: 0 # full history and tags: changelog check and the additive guard against the previous release tag
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

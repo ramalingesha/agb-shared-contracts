@@ -2435,7 +2435,8 @@
             "name": {
               "type": "string",
               "maxLength": 100,
-              "description": "The category name. Required on `create` and `rename` (service rule, not schema). The real limit is the name rule of the service: 1 to 24 characters not counting combining marks, so the schema allows 100 UTF-16 code units. A blanked or alias event carries no `name`. A name is personal data: never log it."
+              "description": "The category name (1 to 100 characters, counted as code points by the validator). Required on `create` and `rename` (service rule, not schema). The real limit is the name rule of the service: 1 to 24 characters not counting combining marks, so the schema allows up to 100 characters. A blanked or alias event carries no `name`. A name is personal data: never log it.",
+              "minLength": 1
             },
             "aliasOf": {
               "$ref": "common.schema.json#/definitions/DashboardId",
@@ -2450,7 +2451,7 @@
           }
         }
       },
-      "description": "A `note-category` event (2.29.0, AGB-1187): a learner creates, renames or deletes one of their own note categories. Student actor only (a guarded child's student token or a self learner's adult token), never on `/events/parent`. Private to the learner: never visible to a guardian (a guardian sees only the plain-text label on a note). No `knowledgeId`, `sectionId` or `blockId`. Send only when `GET /learners/me/status` lists the `note-categories` capability."
+      "description": "A `note-category` event (2.29.0, AGB-1187): a learner creates, renames or deletes one of their own note categories. Student actor only (a guarded child's student token or a self learner's adult token), never on `/events/parent`. Private to the learner: never visible to a guardian (a guardian sees only the plain-text label on a note). No `knowledgeId`, `sectionId` or `blockId`. Send only when `GET /learners/me/status` lists the `note-categories` capability. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event."
     },
     "EventSavedIdea": {
       "title": "EventSavedIdea",
@@ -2463,7 +2464,9 @@
         "actor",
         "actorId",
         "at",
-        "detail"
+        "detail",
+        "knowledgeId",
+        "sectionId"
       ],
       "properties": {
         "eventId": {
@@ -2538,22 +2541,40 @@
             "text": {
               "type": "string",
               "maxLength": 600,
-              "description": "A copy of the saved line. Required on `save` (service rule), ignored on `remove`."
+              "description": "A copy of the saved line (1 to 600 characters). Required on `save`, ignored on `remove`.",
+              "minLength": 1
             },
             "who": {
               "type": "string",
               "maxLength": 60,
-              "description": "The speaker's display name. Required on `save` (service rule), ignored on `remove`."
+              "description": "The speaker's display name (1 to 60 characters). Required on `save`, ignored on `remove`.",
+              "minLength": 1
             },
             "redacted": {
               "const": true,
               "readOnly": true,
               "description": "SET BY THE SERVER ONLY. A client must never send it: intake refuses it on both routes."
             }
+          },
+          "if": {
+            "properties": {
+              "action": {
+                "const": "save"
+              }
+            },
+            "required": [
+              "action"
+            ]
+          },
+          "then": {
+            "required": [
+              "text",
+              "who"
+            ]
           }
         }
       },
-      "description": "A `saved-idea` event (2.29.0, AGB-1188): a learner saves or removes a Study Jam line as a bookmark. Student actor only, never on `/events/parent`, and learner-only: never visible to a guardian on any path. `knowledgeId` and `sectionId` (the Study Jam section id) are required by the service, `style` is `study-jam`, `language` as the player sends it; neither is part of the key and the first save wins. Never sent with an empty section id. Send only when the `saved-ideas` capability is listed."
+      "description": "A `saved-idea` event (2.29.0, AGB-1188): a learner saves or removes a Study Jam line as a bookmark. Student actor only, never on `/events/parent`, and learner-only: never visible to a guardian on any path. `knowledgeId` and `sectionId` (the Study Jam section id) are required, `style` is `study-jam`, `language` as the player sends it; neither is part of the key and the first save wins. Never sent with an empty section id. Send only when the `saved-ideas` capability is listed. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event."
     }
   }
 }

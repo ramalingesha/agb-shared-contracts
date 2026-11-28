@@ -1884,7 +1884,7 @@ export interface EventNote {
   };
 }
 /**
- * A `note-category` event (2.29.0, AGB-1187): a learner creates, renames or deletes one of their own note categories. Student actor only (a guarded child's student token or a self learner's adult token), never on `/events/parent`. Private to the learner: never visible to a guardian (a guardian sees only the plain-text label on a note). No `knowledgeId`, `sectionId` or `blockId`. Send only when `GET /learners/me/status` lists the `note-categories` capability.
+ * A `note-category` event (2.29.0, AGB-1187): a learner creates, renames or deletes one of their own note categories. Student actor only (a guarded child's student token or a self learner's adult token), never on `/events/parent`. Private to the learner: never visible to a guardian (a guardian sees only the plain-text label on a note). No `knowledgeId`, `sectionId` or `blockId`. Send only when `GET /learners/me/status` lists the `note-categories` capability. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event.
  */
 export interface EventNoteCategory {
   eventId: DashboardId20;
@@ -1899,7 +1899,7 @@ export interface EventNoteCategory {
     categoryId: DashboardId;
     action: 'create' | 'rename' | 'delete';
     /**
-     * The category name. Required on `create` and `rename` (service rule, not schema). The real limit is the name rule of the service: 1 to 24 characters not counting combining marks, so the schema allows 100 UTF-16 code units. A blanked or alias event carries no `name`. A name is personal data: never log it.
+     * The category name (1 to 100 characters, counted as code points by the validator). Required on `create` and `rename` (service rule, not schema). The real limit is the name rule of the service: 1 to 24 characters not counting combining marks, so the schema allows up to 100 characters. A blanked or alias event carries no `name`. A name is personal data: never log it.
      */
     name?: string;
     aliasOf?: DashboardId22;
@@ -2075,16 +2075,16 @@ export interface EventRoundStart {
   detail: {};
 }
 /**
- * A `saved-idea` event (2.29.0, AGB-1188): a learner saves or removes a Study Jam line as a bookmark. Student actor only, never on `/events/parent`, and learner-only: never visible to a guardian on any path. `knowledgeId` and `sectionId` (the Study Jam section id) are required by the service, `style` is `study-jam`, `language` as the player sends it; neither is part of the key and the first save wins. Never sent with an empty section id. Send only when the `saved-ideas` capability is listed.
+ * A `saved-idea` event (2.29.0, AGB-1188): a learner saves or removes a Study Jam line as a bookmark. Student actor only, never on `/events/parent`, and learner-only: never visible to a guardian on any path. `knowledgeId` and `sectionId` (the Study Jam section id) are required, `style` is `study-jam`, `language` as the player sends it; neither is part of the key and the first save wins. Never sent with an empty section id. Send only when the `saved-ideas` capability is listed. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event.
  */
 export interface EventSavedIdea {
   eventId: DashboardId37;
   profileId: DashboardId38;
   kind: 'saved-idea';
-  knowledgeId?: DashboardId;
+  knowledgeId: DashboardId;
   contentVersion?: string;
   round?: number;
-  sectionId?: DashboardId;
+  sectionId: DashboardId;
   blockId?: DashboardId;
   language?: DashboardLanguage;
   style?: string;
@@ -2098,11 +2098,11 @@ export interface EventSavedIdea {
     ideaId: string;
     action: 'save' | 'remove';
     /**
-     * A copy of the saved line. Required on `save` (service rule), ignored on `remove`.
+     * A copy of the saved line (1 to 600 characters). Required on `save`, ignored on `remove`.
      */
     text?: string;
     /**
-     * The speaker's display name. Required on `save` (service rule), ignored on `remove`.
+     * The speaker's display name (1 to 60 characters). Required on `save`, ignored on `remove`.
      */
     who?: string;
     /**
@@ -3112,6 +3112,9 @@ export interface ReviewItem {
   doneAt?: DashboardTime | null;
   priority: number;
 }
+/**
+ * An event with its server sequence number. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows.
+ */
 export interface ChangeEntry {
   seq: number;
   event: LearningEvent;
@@ -3224,6 +3227,9 @@ export interface LearnerStatusResponse {
    */
   capabilities?: string[];
 }
+/**
+ * A note. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows.
+ */
 export interface Note {
   id: DashboardId;
   knowledgeId: DashboardId;
@@ -3368,7 +3374,7 @@ export interface NoteListQuery {
   categoryId?: DashboardId46;
 }
 /**
- * GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.
+ * GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows.
  */
 export interface NoteListResponse {
   notes: Note[];
@@ -3628,7 +3634,7 @@ export interface Evidence {
   labelKey: string;
 }
 /**
- * POST /students/{studentId}/export (parent only): everything held about the child as one JSON document, sent as an attachment `progress-export.json`. Refused with EXPORT_TOO_LARGE (413) above 20,000 events.
+ * POST /students/{studentId}/export (parent only): everything held about the child as one JSON document, sent as an attachment `progress-export.json`. Refused with EXPORT_TOO_LARGE (413) above 20,000 events. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows. (Applies to `events[].event`: the guardian export holds no such event.)
  */
 export interface ExportResponse {
   studentId: DashboardId;

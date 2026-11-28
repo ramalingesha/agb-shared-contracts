@@ -149,7 +149,8 @@
         "event": {
           "$ref": "learning-event.schema.json#/definitions/LearningEvent"
         }
-      }
+      },
+      "description": "An event with its server sequence number. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows."
     },
     "ChangesResponse": {
       "title": "ChangesResponse",
@@ -354,7 +355,8 @@
           "maxLength": 100,
           "description": "Added in 2.29.0. The current, resolved name of the note's custom category, as plain text, only when the category is live. This is the only part of a category a guardian ever sees, and only on a note the claim rule already lets them read. It changes at once when the learner renames or deletes the category. Render as text."
         }
-      }
+      },
+      "description": "A note. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows."
     },
     "CreateNoteRequest": {
       "title": "CreateNoteRequest",
@@ -437,7 +439,7 @@
       "title": "NoteListResponse",
       "type": "object",
       "additionalProperties": false,
-      "description": "GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.",
+      "description": "GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages. Privacy (2.29.0): a guardian NEVER receives a `note-category` or `saved-idea` event on any path, and NEVER receives `categoryId`: the service strips it from note events and notes on guardian paths and refuses `categoryId` on a parent-actor note event. A guardian sees a category only as the plain-text `categoryLabel` on a note the claim rule already allows.",
       "required": [
         "notes"
       ],
