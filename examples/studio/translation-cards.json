@@ -1,0 +1,51 @@
+{
+  "lessonId": "lesson-x",
+  "cards": [
+    {
+      "facet": "narration:simple:en",
+      "style": "simple",
+      "englishState": "approved",
+      "languages": [
+        {
+          "lang": "kn",
+          "state": "changes-requested",
+          "open": 1,
+          "changed": [
+            {
+              "key": "b1",
+              "before": "old",
+              "after": "new"
+            }
+          ],
+          "comments": [
+            {
+              "id": "c-1",
+              "key": "b1",
+              "note": "Use a simpler word",
+              "by": "u-owner",
+              "at": "2026-11-28T10:00:00.000Z",
+              "state": "changed"
+            }
+          ],
+          "approved": null,
+          "published": null,
+          "canApprove": false,
+          "canPublish": false,
+          "englishBlocksPublish": false
+        }
+      ],
+      "pending": {
+        "id": "tj-1",
+        "kind": "import",
+        "state": "failed",
+        "problems": [
+          "part 01, key b2, Kannada: placeholder {{n}} missing"
+        ],
+        "followUpPrompt": "Please fix only these lines",
+        "warnings": 0
+      },
+      "canPrepare": true,
+      "hasPackage": true
+    }
+  ]
+}

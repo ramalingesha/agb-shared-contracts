@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioTranslationActionResult",
+  "description": "Answer of every state-changing translation request (2.27.0). changed:false with confirm means the first click: nothing changed. changed:false with reason means a gate refused (HTTP 409). jobId names the queued Runner job.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "changed"
+  ],
+  "properties": {
+    "changed": {
+      "type": "boolean"
+    },
+    "confirm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "message"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "reason": {
+      "type": "string"
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "jobId": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "noop": {
+      "type": "boolean"
+    }
+  }
+}

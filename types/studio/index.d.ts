@@ -128,6 +128,14 @@ export interface StudioContracts {
   'take-down-result'?: StudioTakeDownResult;
   'template-generate'?: StudioTemplateGenerate;
   template?: StudioTemplate;
+  'translation-accept-request'?: StudioTranslationAcceptRequest;
+  'translation-action-result'?: StudioTranslationActionResult;
+  'translation-cards'?: StudioTranslationCards;
+  'translation-comment-request'?: StudioTranslationCommentRequest;
+  'translation-confirm-request'?: StudioTranslationConfirmRequest;
+  'translation-import-request'?: StudioTranslationImportRequest;
+  'translation-prepare-request'?: StudioTranslationPrepareRequest;
+  'translation-type-request'?: StudioTranslationTypeRequest;
 }
 /**
  * POST /lessons/:lessonId/items/:item/approve (2.17.0): previewHash is required. The older routes POST /jobs/:id/lesson/facets/:facet/approve and POST /jobs/:id/items/:item/approve accept the same body with every field optional (without previewHash they only check that no change request is open). `previewHash` is the hash of the text the reviewer looked at (from the comment list). The Worker refuses with comments_open while a change request is open, with text_changed_since_preview when the text differs from what was looked at (also when it changes while the approval is being written), and with text_changed_since_approval when the item is already approved on other text; the hash it stores is this one.
@@ -1373,4 +1381,170 @@ export interface GenerateItem {
     te?: string;
     hi?: string;
   };
+}
+/**
+ * POST .../translations/:lang/accept (2.27.0). Accepts the changed text of one line.
+ */
+export interface StudioTranslationAcceptRequest {
+  key: string;
+  /**
+   * Must be true for the request to change anything. Without it the Worker changes nothing and answers 200 { changed:false, confirm:{title,message} }.
+   */
+  confirmed?: boolean;
+}
+/**
+ * Answer of every state-changing translation request (2.27.0). changed:false with confirm means the first click: nothing changed. changed:false with reason means a gate refused (HTTP 409). jobId names the queued Runner job.
+ */
+export interface StudioTranslationActionResult {
+  changed: boolean;
+  confirm?: {
+    title: string;
+    message: string;
+  };
+  reason?: string;
+  lines?: string[];
+  jobId?: string;
+  state?: string;
+  noop?: boolean;
+}
+/**
+ * GET /lessons/:lessonId/translations (2.27.0, AGB-1177/1178/1179): per English version (card) the translated languages that exist, with their review state, plus the one Runner job that is queued or running or just ended. Additive: no existing contract changes.
+ */
+export interface StudioTranslationCards {
+  lessonId: string;
+  cards: {
+    facet: string;
+    style: string;
+    /**
+     * The English version state (planned, in-review, approved, published, dropped).
+     */
+    englishState: string;
+    /**
+     * Only languages that exist (an overlay was imported).
+     */
+    languages: {
+      lang: 'kn' | 'ta' | 'te' | 'hi';
+      state: 'in-review' | 'changes-requested' | 'approved' | 'published';
+      /**
+       * Comments still open, sent or changed (not yet accepted).
+       */
+      open: number;
+      changed: {
+        key: string;
+        before: string;
+        after: string;
+      }[];
+      comments: {
+        id: string;
+        key: string;
+        note: string;
+        by: string;
+        at: string;
+        state: 'open' | 'sent' | 'changed' | 'accepted';
+      }[];
+      approved: null | {
+        by: string;
+        at: string;
+        sha256: string;
+      };
+      published: null | {
+        by: string;
+        at: string;
+        sha256: string;
+      };
+      canApprove?: boolean;
+      canPublish?: boolean;
+      /**
+       * True when the English version is not approved or published yet (publish English first).
+       */
+      englishBlocksPublish?: boolean;
+      /**
+       * A small change package was made by Send for changes and can be downloaded.
+       */
+      hasChangePackage?: boolean;
+    }[];
+    pending: null | {
+      id: string;
+      kind: 'package' | 'check' | 'import' | 'change-package' | 'change-import' | 'type';
+      lang?: 'kn' | 'ta' | 'te' | 'hi';
+      state: 'queued' | 'running' | 'done' | 'failed';
+      problems?: string[];
+      followUpPrompt?: string;
+      warnings?: number;
+      /**
+       * The same files were imported before; nothing changed.
+       */
+      noop?: boolean;
+    };
+    canPrepare: boolean;
+    hasPackage?: boolean;
+  }[];
+}
+/**
+ * POST .../translations/:lang/comments (2.27.0). A comment on one line of the translation. Not a state change, so no confirmation.
+ */
+export interface StudioTranslationCommentRequest {
+  key: string;
+  note: string;
+}
+/**
+ * POST .../translations/:lang/send, /approve, /publish (2.27.0). Every state-changing request carries confirmed:true.
+ */
+export interface StudioTranslationConfirmRequest {
+  /**
+   * Must be true for the request to change anything. Without it the Worker changes nothing and answers 200 { changed:false, confirm:{title,message} }.
+   */
+  confirmed?: boolean;
+}
+/**
+ * POST .../translations/import and POST .../translations/:lang/import-change (2.27.0). The returned ChatGPT files (translations-partNN.json, fix files, report.json), read by the browser as text.
+ */
+export interface StudioTranslationImportRequest {
+  /**
+   * @minItems 1
+   * @maxItems 40
+   */
+  files: [
+    {
+      name: string;
+      text: string;
+    },
+    ...{
+      name: string;
+      text: string;
+    }[]
+  ];
+  /**
+   * Must be true for the request to change anything. Without it the Worker changes nothing and answers 200 { changed:false, confirm:{title,message} }.
+   */
+  confirmed?: boolean;
+}
+/**
+ * POST /lessons/:lessonId/facets/:facet/translations/prepare (2.27.0). Queues the Runner job that makes the translation package of an approved English version.
+ */
+export interface StudioTranslationPrepareRequest {
+  /**
+   * @minItems 1
+   * @maxItems 4
+   */
+  langs:
+    | ['kn' | 'ta' | 'te' | 'hi']
+    | ['kn' | 'ta' | 'te' | 'hi', 'kn' | 'ta' | 'te' | 'hi']
+    | ['kn' | 'ta' | 'te' | 'hi', 'kn' | 'ta' | 'te' | 'hi', 'kn' | 'ta' | 'te' | 'hi']
+    | ['kn' | 'ta' | 'te' | 'hi', 'kn' | 'ta' | 'te' | 'hi', 'kn' | 'ta' | 'te' | 'hi', 'kn' | 'ta' | 'te' | 'hi'];
+  /**
+   * Must be true for the request to change anything. Without it the Worker changes nothing and answers 200 { changed:false, confirm:{title,message} }.
+   */
+  confirmed?: boolean;
+}
+/**
+ * POST .../translations/:lang/type (2.27.0). The reviewer types the corrected text of one line; the same rules as an import check it before it shows as before and after.
+ */
+export interface StudioTranslationTypeRequest {
+  key: string;
+  text: string;
+  /**
+   * Must be true for the request to change anything. Without it the Worker changes nothing and answers 200 { changed:false, confirm:{title,message} }.
+   */
+  confirmed?: boolean;
 }

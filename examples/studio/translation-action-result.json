@@ -1,0 +1,7 @@
+{
+  "changed": false,
+  "confirm": {
+    "title": "Approve the translation",
+    "message": "This approves the translated text exactly as it is now. It does not publish it."
+  }
+}

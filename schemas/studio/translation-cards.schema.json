@@ -1,0 +1,292 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StudioTranslationCards",
+  "description": "GET /lessons/:lessonId/translations (2.27.0, AGB-1177/1178/1179): per English version (card) the translated languages that exist, with their review state, plus the one Runner job that is queued or running or just ended. Additive: no existing contract changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lessonId",
+    "cards"
+  ],
+  "properties": {
+    "lessonId": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "facet",
+          "style",
+          "englishState",
+          "languages",
+          "pending",
+          "canPrepare"
+        ],
+        "properties": {
+          "facet": {
+            "type": "string"
+          },
+          "style": {
+            "type": "string"
+          },
+          "englishState": {
+            "type": "string",
+            "description": "The English version state (planned, in-review, approved, published, dropped)."
+          },
+          "languages": {
+            "type": "array",
+            "description": "Only languages that exist (an overlay was imported).",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "lang",
+                "state",
+                "open",
+                "changed",
+                "comments",
+                "approved",
+                "published"
+              ],
+              "properties": {
+                "lang": {
+                  "type": "string",
+                  "enum": [
+                    "kn",
+                    "ta",
+                    "te",
+                    "hi"
+                  ]
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "in-review",
+                    "changes-requested",
+                    "approved",
+                    "published"
+                  ]
+                },
+                "open": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Comments still open, sent or changed (not yet accepted)."
+                },
+                "changed": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "key",
+                      "before",
+                      "after"
+                    ],
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      },
+                      "before": {
+                        "type": "string"
+                      },
+                      "after": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "comments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "key",
+                      "note",
+                      "by",
+                      "at",
+                      "state"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "key": {
+                        "type": "string"
+                      },
+                      "note": {
+                        "type": "string"
+                      },
+                      "by": {
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string",
+                        "enum": [
+                          "open",
+                          "sent",
+                          "changed",
+                          "accepted"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "approved": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "by",
+                        "at",
+                        "sha256"
+                      ],
+                      "properties": {
+                        "by": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string"
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "published": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "by",
+                        "at",
+                        "sha256"
+                      ],
+                      "properties": {
+                        "by": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string"
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "canApprove": {
+                  "type": "boolean"
+                },
+                "canPublish": {
+                  "type": "boolean"
+                },
+                "englishBlocksPublish": {
+                  "type": "boolean",
+                  "description": "True when the English version is not approved or published yet (publish English first)."
+                },
+                "hasChangePackage": {
+                  "type": "boolean",
+                  "description": "A small change package was made by Send for changes and can be downloaded."
+                }
+              }
+            }
+          },
+          "pending": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "kind",
+                  "state"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "package",
+                      "check",
+                      "import",
+                      "change-package",
+                      "change-import",
+                      "type"
+                    ]
+                  },
+                  "lang": {
+                    "type": "string",
+                    "enum": [
+                      "kn",
+                      "ta",
+                      "te",
+                      "hi"
+                    ]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "queued",
+                      "running",
+                      "done",
+                      "failed"
+                    ]
+                  },
+                  "problems": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "followUpPrompt": {
+                    "type": "string"
+                  },
+                  "warnings": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "noop": {
+                    "type": "boolean",
+                    "description": "The same files were imported before; nothing changed."
+                  }
+                }
+              }
+            ]
+          },
+          "canPrepare": {
+            "type": "boolean"
+          },
+          "hasPackage": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
