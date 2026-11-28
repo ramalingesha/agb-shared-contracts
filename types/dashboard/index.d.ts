@@ -3165,6 +3165,14 @@ export interface NoteListQuery {
   tag?: 'Rough note' | 'Remember this' | 'My example' | 'I have a question' | "I don't get this";
   cursor?: string;
   limit?: number;
+  /**
+   * Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 VALIDATION_ERROR. It only narrows the result: a guardian still sees only notes created after the claim.
+   */
+  createdFrom?: string;
+  /**
+   * Added in 2.27.0. Only notes created on or before this day (ISO date YYYY-MM-DD, inclusive, UTC day end 23:59:59.999Z). Optional. Same rules as createdFrom.
+   */
+  createdTo?: string;
 }
 /**
  * GET /students/{id}/notes and GET /learners/me/notes (filters: chapter, tag, and from 2.23.0 `cursor` and `limit`, see NoteListQuery). Newest first; no repeats or skips between pages.
@@ -3199,6 +3207,14 @@ export interface NoteSearchRequest {
    */
   cursor?: string;
   limit?: number;
+  /**
+   * Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 VALIDATION_ERROR. It only narrows the result: a guardian still sees only notes created after the claim.
+   */
+  createdFrom?: string;
+  /**
+   * Added in 2.27.0. Only notes created on or before this day (ISO date YYYY-MM-DD, inclusive, UTC day end 23:59:59.999Z). Optional. Same rules as createdFrom.
+   */
+  createdTo?: string;
 }
 /**
  * Answer of POST /learners/me/notes/search (2.23.0): newest first; no repeats or skips between pages. A learner with no link row gets an empty list (200).

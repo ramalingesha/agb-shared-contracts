@@ -697,6 +697,16 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 50
+        },
+        "createdFrom": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 VALIDATION_ERROR. It only narrows the result: a guardian still sees only notes created after the claim."
+        },
+        "createdTo": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Added in 2.27.0. Only notes created on or before this day (ISO date YYYY-MM-DD, inclusive, UTC day end 23:59:59.999Z). Optional. Same rules as createdFrom."
         }
       }
     },
@@ -963,6 +973,16 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 50
+        },
+        "createdFrom": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Added in 2.27.0. Only notes created on or after this day (ISO date YYYY-MM-DD, inclusive, UTC day start 00:00:00.000Z). Optional. A real calendar date; an invalid date, or createdFrom after createdTo, is a 400 VALIDATION_ERROR. It only narrows the result: a guardian still sees only notes created after the claim."
+        },
+        "createdTo": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Added in 2.27.0. Only notes created on or before this day (ISO date YYYY-MM-DD, inclusive, UTC day end 23:59:59.999Z). Optional. Same rules as createdFrom."
         }
       }
     },
